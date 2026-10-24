@@ -223,6 +223,54 @@ ul.checks-list .ck{font:800 1rem var(--f-mono);color:var(--muted)}ul.checks-list
 .rdt th{white-space:normal}
 @media (max-width:560px){.rdt th,.rdt td{padding:8px 8px}.rdcol{display:none}.rdbar .meter{display:none}ul.checks-list li{grid-template-columns:24px minmax(0,1fr)}ul.checks-list li .note{grid-column:2}}
 details.strat summary{cursor:pointer}details.strat ul{margin:10px 0 0;padding-left:20px;display:grid;gap:8px;max-width:75ch}
+
+/* ===== Hype mode ===== */
+:root{--t1:#ea580c;--t2:#9333ea;--t3:#dc2626;--t4:#475569;--t5:#b8860b;--t6:#0891b2;--t7:#16a34a;--fx-bg:rgba(8,10,16,.82)}
+.hypeslot{display:flex}
+.hypebtn{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 14px;font:700 .82rem var(--f-mono);cursor:pointer;color:var(--muted)}
+.hypebtn.on{border-color:var(--t1);color:var(--t1);background:color-mix(in srgb,var(--t1) 12%,transparent)}
+.hud{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 .9rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);cursor:pointer}
+.hud .hn{font:800 1.2rem var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
+.hud .ht{font-size:.7rem;letter-spacing:.08em}
+.hud .hl{font-size:.7rem;color:var(--muted);border-left:1px solid var(--line);padding-left:8px}
+.hud.t1{border-color:var(--t1);color:var(--t1)}.hud.t2{border-color:var(--t2);color:var(--t2)}.hud.t3{border-color:var(--t3);color:var(--t3);box-shadow:0 0 18px color-mix(in srgb,var(--t3) 55%,transparent)}
+.hud.t4{border-color:var(--t4);color:var(--ink)}.hud.t5{border-color:var(--t5);color:var(--t5)}.hud.t6{border-color:var(--t6);color:var(--t6);box-shadow:0 0 18px color-mix(in srgb,var(--t6) 55%,transparent)}.hud.t7{border-color:var(--t7);color:var(--t7);background:#05140a}
+.hud.bump{animation:bump .35s}
+@keyframes bump{40%{transform:scale(1.18)}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:41;max-width:min(92vw,460px);padding:10px 16px;border-radius:10px;background:var(--ink);color:var(--paper);font-weight:700;font-size:.9rem;box-shadow:0 8px 24px rgba(0,0,0,.25);text-align:center}
+.toast.bad{background:var(--bad);color:#fff}.toast.good{background:var(--good);color:#fff}
+.tierfx{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--fx-bg);cursor:pointer;animation:fxin .2s;padding:16px}
+.tierfx.out{opacity:0;transition:opacity .25s}
+@keyframes fxin{from{opacity:0}}
+.tbox{text-align:center;color:#fff;display:grid;gap:10px;justify-items:center}
+.reels{display:flex;gap:8px;padding:10px;border-radius:14px;background:#111;border:3px solid var(--tc,#fff);box-shadow:0 0 40px color-mix(in srgb,var(--tc,#fff) 50%,transparent)}
+.reel{width:72px;height:72px;overflow:hidden;border-radius:8px;background:#fff;font-size:44px;line-height:72px}
+.strip{display:flex;flex-direction:column;transform:translateY(0);animation:spin 1s cubic-bezier(.15,.8,.3,1.02) forwards}
+.strip span{height:72px;display:block}
+.strip.s1{animation-duration:1.15s}.strip.s2{animation-duration:1.3s}
+@keyframes spin{to{transform:translateY(-1008px)}}
+.tierfx.still .strip{animation:none;transform:translateY(-1008px)}
+.tname{font:900 clamp(2.6rem,12vw,5.5rem)/1 var(--f-display);font-stretch:75%;letter-spacing:.02em;color:var(--tc,#fff);text-shadow:0 0 24px color-mix(in srgb,var(--tc,#fff) 70%,transparent);animation:slam .45s 1.05s both cubic-bezier(.2,1.6,.4,1)}
+.tierfx.still .tname{animation:none}
+@keyframes slam{from{transform:scale(2.2);opacity:0}}
+.tsub{font:600 .95rem var(--f-mono);opacity:.9}.tsub .jack{color:#ffd54a}
+.tskip{font-size:.75rem;opacity:.55}
+.tierfx.t1{--tc:#fb923c}.tierfx.t2{--tc:#c084fc}.tierfx.t3{--tc:#f87171}.tierfx.t4{--tc:#cbd5e1}.tierfx.t5{--tc:#facc15}.tierfx.t6{--tc:#22d3ee}.tierfx.t7{--tc:#4ade80}
+.tierfx.full{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--tc) 35%,#000) 0,rgba(0,0,0,.92) 70%)}
+main.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){main.shake,.hud.bump{animation:none}}
+.hof .hofgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:10px}
+.hof .hofgrid>div{display:grid;gap:3px;align-content:start}
+.hof .big2{font:800 2rem/1 var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.hof .hofgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tierlad{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tl{font:700 .72rem var(--f-mono);padding:4px 9px;border-radius:6px;border:1.5px dashed var(--line);color:var(--muted)}
+.tl small{opacity:.7}
+.tl.got{border-style:solid;color:#fff}
+.tl.got.t1{background:var(--t1);border-color:var(--t1)}.tl.got.t2{background:var(--t2);border-color:var(--t2)}.tl.got.t3{background:var(--t3);border-color:var(--t3)}.tl.got.t4{background:var(--t4);border-color:var(--t4)}.tl.got.t5{background:var(--t5);border-color:var(--t5)}.tl.got.t6{background:var(--t6);border-color:var(--t6)}.tl.got.t7{background:var(--t7);border-color:var(--t7)}
+.sndl{display:inline-flex;gap:6px;align-items:center;font-size:.85rem;cursor:pointer}
+main{padding-bottom:70px}
 .empty{color:var(--muted);text-align:center;padding:30px 10px}
 .confirm{display:inline-flex;gap:8px;align-items:center}
 </style>
@@ -230,6 +278,7 @@ details.strat summary{cursor:pointer}details.strat ul{margin:10px 0 0;padding-le
 <header class="mast">
   <div class="wrap">
     <h1>Core 2 Drill Room<small>CompTIA A+ 220-1202 · built from Professor Messer course notes v1.40 · plus TIA (Ramdayal) notes · checked against objectives v3.0</small></h1>
+    <div id="hypeslot" class="hypeslot"></div>
     <div class="facts"><span>Max <b>90</b> questions</span><span><b>90</b> minutes</span><span>Pass <b>700</b> / 900</span><span>MC, drag-and-drop, PBQs</span></div>
     <div class="wbar" role="img" aria-label="Domain weights: Operating systems 28%, Security 28%, Software troubleshooting 23%, Operational procedures 21%">
       <span class="w1" style="width:28%">1.0 · 28%</span><span class="w2" style="width:28%">2.0 · 28%</span><span class="w3" style="width:23%">3.0 · 23%</span><span class="w4" style="width:21%">4.0 · 21%</span>
@@ -1095,6 +1144,7 @@ function record(key, d, o, ok, kind) {
   ok ? it.r++ : it.w++;
   store.set("stats", stats);
   if (!key.startsWith("p:")) missUpdate(key, d, o, ok);
+  hypeEvent(key, d, ok);
 }
 
 /* ---------- domains ---------- */
@@ -1212,7 +1262,7 @@ function renderType() {
       <div class="row"><button class="btn" id="fcnext">Next card →</button>${!ok && !give && inp.value.trim() ? `<button class="btn ghost" id="fcover">I was right, count it</button>` : ""}</div>`;
     $("#fcnext").onclick = nextCard; $("#fcnext").focus();
     const ov = $("#fcover");
-    if (ov) ov.onclick = () => { missRevertLast("c:" + c.t); fc.r++; const it = stats.items["c:" + c.t]; it.w--; it.r++; store.set("stats", stats); ov.remove(); $("#fcscore").textContent = `${fc.r}/${fc.n} · card ${fc.i + 1} of ${fc.deck.length}`; };
+    if (ov) ov.onclick = () => { missRevertLast("c:" + c.t); hypeRevert(); fc.r++; const it = stats.items["c:" + c.t]; it.w--; it.r++; store.set("stats", stats); ov.remove(); $("#fcscore").textContent = `${fc.r}/${fc.n} · card ${fc.i + 1} of ${fc.deck.length}`; };
     $("#fcscore").textContent = `${fc.r}/${fc.n} · card ${fc.i + 1} of ${fc.deck.length}`;
   };
   $("#fccheck").onclick = () => grade(false);
@@ -1406,7 +1456,9 @@ function examMC(v) {
 }
 function finishMC() {
   clearInterval(ex.tick);
+  hypeMute = true;
   ex.qs.forEach((q, i) => record("e:" + q.k, q.d, q.o, isRight(q, ex.ans[i]), "exam"));
+  hypeMute = false;
   const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length, pct = right / ex.qs.length;
   const scaled = Math.round(100 + 800 * pct);
   stats.exams.push({ t: Date.now(), mode: "mc", n: ex.qs.length, pct, label: `${right}/${ex.qs.length} multiple choice (${Math.round(pct * 100)}%, ≈${scaled})` });
@@ -1551,7 +1603,7 @@ function renderStats() {
   wireSync();
   $("#reset").onclick = () => {
     $("#resetrow").innerHTML = `<span class="confirm"><span class="note">Erase all saved progress in this browser?</span><button class="btn" id="resetyes">Erase</button><button class="btn ghost" id="resetno">Cancel</button></span>`;
-    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); paintBadges(); renderStats(); };
+    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); paintHud(); paintBadges(); renderStats(); };
     $("#resetno").onclick = renderStats;
   };
 }
@@ -1919,6 +1971,7 @@ function renderToday() {
   const ready = checks.filter(c => c[0]).length;
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
       <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
+    ${hallHTML()}
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
       <p class="note" style="margin:4px 0 10px">Weighted by the official domain weights. Built from flashcards retained after a gap, exam-question accuracy and lab completion, so it's an estimate, not a score prediction.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
@@ -1936,6 +1989,7 @@ function renderToday() {
         <li><b>Day before:</b> do your due reviews and one light pass of the Missed list, then stop. Sleep beats cramming.</li>
         <li><b>Logistics:</b> bring a valid government ID. For online proctoring, start check-in about 30 minutes early with a clear desk and a tested webcam.</li>
       </ul></details>`;
+  wireHall();
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
   go("pdue", () => startDeck(due, "Today", "review", "today"));
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); });
@@ -1946,7 +2000,7 @@ function renderToday() {
 }
 
 /* ================= PROGRESS SYNC (export / import) ================= */
-const SYNC_KEYS = ["stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
+const SYNC_KEYS = ["hype", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
 function syncPanelHTML() {
   return `<div class="panel"><h3>Move progress to another device</h3><p class="note" style="margin:6px 0 10px">Progress is saved separately in each browser. Copy this code on one device and paste it on the other to bring over your stats, review schedule and lab scores. Importing replaces the progress on that device.</p>
     <div class="row" style="margin-top:0"><button class="btn ghost" id="sxexp" type="button">Show my progress code</button><button class="btn ghost" id="sximp" type="button">Paste a code</button></div><div id="sxbox"></div></div>`;
@@ -1967,13 +2021,148 @@ function wireSync() {
       if (!pendingImport) { pendingImport = true; msg.textContent = `Code from ${new Date(obj.t).toLocaleString()}. This replaces the progress on this device. Press Import again to confirm.`; return; }
       pendingImport = false;
       Object.entries(obj.data || {}).forEach(([k, v]) => store.set(k, v));
-      stats = store.get("stats", { items: {}, exams: [] }); srs = store.get("srs", {}); active = new Set(store.get("domains", [1, 2, 3, 4]));
+      stats = store.get("stats", { items: {}, exams: [] }); srs = store.get("srs", {}); hype = Object.assign(H0(), store.get("hype", {})); paintHud(); const hb = $("#hypetoggle"); if (hb) { hb.outerHTML = hypeToggleHTML(); wireHypeToggle(); } active = new Set(store.get("domains", [1, 2, 3, 4]));
       buildDomainBar(); paintBadges(); renderStats();
       const m = $("#sxmsg") || $("#view-stats"); if ($("#sxbox")) $("#sxbox").innerHTML = `<div class="fb good"><b class="v">Imported</b>Progress from the other device is now on this one.</div>`;
     };
   };
 }
 let pendingImport = false;
+
+/* ================= HYPE MODE: streaks, tiers, slot reels, XP ================= */
+const TIERS = [
+  { at: 5, name: "SAVAGE", icon: "🔥", cls: "t1" },
+  { at: 10, name: "MONSTER", icon: "👹", cls: "t2", shake: true },
+  { at: 20, name: "DEMON", icon: "😈", cls: "t3", shake: true },
+  { at: 30, name: "WARLORD", icon: "⚔️", cls: "t4", shake: true },
+  { at: 50, name: "OVERLORD", icon: "👑", cls: "t5", shake: true, full: true },
+  { at: 75, name: "GODLIKE", icon: "⚡", cls: "t6", shake: true, full: true },
+  { at: 100, name: "ROOT ACCESS", icon: "💻", cls: "t7", shake: true, full: true }
+];
+const SHIELD_EVERY = 25, SHIELD_MAX = 3;
+const REEL_SYMS = ["🔥", "👹", "😈", "⚔️", "👑", "⚡", "💻", "💀", "💎", "⭐"];
+const H0 = () => ({ on: false, sound: false, streak: 0, best: 0, bestTier: -1, shields: 0, xp: 0, jackpots: 0, dom: { 1: 0, 2: 0, 3: 0, 4: 0 }, bestDom: { 1: 0, 2: 0, 3: 0, 4: 0 }, days: [], dayN: 0, day: 0 });
+let hype = Object.assign(H0(), store.get("hype", {}));
+let hypeMute = false, hypeUndo = null;
+const tierOf = s => { let t = -1; TIERS.forEach((x, i) => { if (s >= x.at) t = i; }); return t; };
+const levelOf = xp => Math.min(50, Math.floor(Math.sqrt(xp / 60)) + 1);
+const levelXp = l => 60 * (l - 1) * (l - 1);
+const saveHype = () => store.set("hype", hype);
+
+function hypeEvent(key, d, ok) {
+  if (!hype.on || hypeMute) return;
+  const p = key.split(":")[0];
+  hypeUndo = JSON.parse(JSON.stringify(hype));
+  // daily activity
+  const today = sod(nowMs());
+  if (hype.day !== today) { hype.day = today; hype.dayN = 0; }
+  hype.dayN++;
+  if (hype.dayN >= 10 && !hype.days.includes(today)) { hype.days.push(today); hype.days = hype.days.slice(-400); }
+  const w = p === "p" || p === "t" ? 5 : p === "k" ? 2 : 1;
+  if (ok) {
+    const before = hype.streak, beforeT = tierOf(before);
+    hype.streak += w; hype.xp += 10 * w;
+    if (d) { hype.dom[d] = (hype.dom[d] || 0) + w; hype.bestDom[d] = Math.max(hype.bestDom[d] || 0, hype.dom[d]); }
+    hype.best = Math.max(hype.best, hype.streak);
+    const earned = Math.floor(hype.streak / SHIELD_EVERY) - Math.floor(before / SHIELD_EVERY);
+    let gotShield = false;
+    if (earned > 0 && hype.shields < SHIELD_MAX) { hype.shields = Math.min(SHIELD_MAX, hype.shields + earned); gotShield = true; }
+    const t = tierOf(hype.streak);
+    if (t > beforeT) {
+      const mult = 1 + Math.floor(Math.random() * 3); // jackpot reel: x1, x2 or x3
+      const bonus = 50 * (t + 1) * mult;
+      hype.xp += bonus; if (mult === 3) hype.jackpots++;
+      hype.bestTier = Math.max(hype.bestTier, t);
+      saveHype(); paintHud(true); showTier(TIERS[t], mult, bonus, gotShield);
+      return;
+    }
+    saveHype(); paintHud(true);
+    if (gotShield) toast(`🛡️ Shield earned. Your next miss won't break the streak.`, "good");
+  } else {
+    if (d) hype.dom[d] = 0;
+    if (hype.shields > 0 && hype.streak > 0) { hype.shields--; saveHype(); paintHud(); toast(`🛡️ Shield blocked it. Streak ${hype.streak} survives.`, "good"); sfx("shield"); return; }
+    const lost = hype.streak; hype.streak = 0; saveHype(); paintHud();
+    if (lost >= 5) { toast(`💥 Streak broken at ${lost}${tierOf(lost) >= 0 ? " (" + TIERS[tierOf(lost)].name + ")" : ""}`, "bad"); sfx("break"); }
+  }
+}
+function hypeRevert() { if (!hypeUndo) return; hype = Object.assign(hype, hypeUndo, { on: hype.on, sound: hype.sound }); hypeUndo = null; saveHype(); paintHud(); }
+
+/* ---------- HUD ---------- */
+function paintHud(bump) {
+  let hud = $("#hud");
+  if (!hype.on) { if (hud) hud.hidden = true; return; }
+  if (!hud) { hud = document.createElement("button"); hud.id = "hud"; hud.type = "button"; hud.className = "hud"; document.body.appendChild(hud); hud.onclick = () => { setTab("today"); setTimeout(() => { const h = $("#hof"); if (h) h.scrollIntoView({ block: "start", behavior: "smooth" }); }, 50); }; }
+  hud.hidden = false;
+  const t = tierOf(hype.streak), lv = levelOf(hype.xp), next = TIERS.find(x => x.at > hype.streak);
+  hud.className = "hud " + (t >= 0 ? TIERS[t].cls : "t0");
+  hud.setAttribute("aria-label", `Streak ${hype.streak}, ${t >= 0 ? TIERS[t].name : "no tier yet"}, level ${lv}. Open Hall of Fame.`);
+  hud.innerHTML = `<span class="hfire">${hype.streak ? "🔥" : "·"}</span><span class="hn">${hype.streak}</span><span class="ht">${t >= 0 ? TIERS[t].name : next ? `${next.at - hype.streak} to ${next.name}` : ""}</span>${hype.shields ? `<span class="hs" title="Shields">🛡️${hype.shields > 1 ? hype.shields : ""}</span>` : ""}<span class="hl">Lv ${lv}</span>`;
+  if (bump && !matchMedia("(prefers-reduced-motion: reduce)").matches) { hud.classList.remove("bump"); void hud.offsetWidth; hud.classList.add("bump"); }
+}
+function toast(msg, kind) {
+  let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.className = "toast " + (kind || ""); t.textContent = msg; t.hidden = false;
+  clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 2600);
+}
+
+/* ---------- slot-reel tier banner ---------- */
+function showTier(T, mult, bonus, gotShield) {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let o = $("#tierfx"); if (o) o.remove();
+  o = document.createElement("div"); o.id = "tierfx"; o.className = "tierfx " + T.cls + (T.full ? " full" : ""); o.setAttribute("role", "alert");
+  const strip = final => { const s = []; for (let i = 0; i < 14; i++) s.push(REEL_SYMS[Math.floor(Math.random() * REEL_SYMS.length)]); s.push(final); return s.map(x => `<span>${x}</span>`).join(""); };
+  o.innerHTML = `<div class="tbox"><div class="reels">${[0, 1, 2].map(i => `<div class="reel"><div class="strip s${i}">${strip(T.icon)}</div></div>`).join("")}</div>
+    <div class="tname">${T.name}</div><div class="tsub">${T.at} in a row${mult > 1 ? ` · <b class="jack">×${mult} ${mult === 3 ? "JACKPOT" : "BONUS"}</b>` : ""} · +${bonus} XP${gotShield ? " · 🛡️ shield earned" : ""}</div><div class="tskip">tap to continue</div></div>`;
+  document.body.appendChild(o);
+  if (reduce) o.classList.add("still");
+  sfx("spin"); setTimeout(() => sfx(mult === 3 ? "jackpot" : "tier"), reduce ? 0 : 900);
+  if (T.shake && !reduce) { const m = $("main"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); }
+  const close = () => { o.classList.add("out"); setTimeout(() => o.remove(), 250); };
+  o.onclick = close; setTimeout(close, T.full ? 2600 : 1900);
+}
+
+/* ---------- optional sound (WebAudio, no files) ---------- */
+let actx = null;
+function sfx(kind) {
+  if (!hype.on || !hype.sound) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const tone = (f, t0, dur, type = "square", vol = .06) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, actx.currentTime + t0); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + t0 + dur); o.connect(g).connect(actx.destination); o.start(actx.currentTime + t0); o.stop(actx.currentTime + t0 + dur + .02); };
+    if (kind === "spin") for (let i = 0; i < 10; i++) tone(500 + i * 40, i * .07, .04, "square", .03);
+    if (kind === "tier") [523, 659, 784].forEach((f, i) => tone(f, i * .09, .18, "triangle", .08));
+    if (kind === "jackpot") [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i * .08, .22, "square", .07));
+    if (kind === "break") tone(140, 0, .35, "sawtooth", .07);
+    if (kind === "shield") tone(880, 0, .15, "sine", .08);
+  } catch { }
+}
+
+/* ---------- toggle + Hall of Fame ---------- */
+function hypeToggleHTML() { return `<button type="button" class="hypebtn${hype.on ? " on" : ""}" id="hypetoggle" aria-pressed="${hype.on}">🔥 Hype mode ${hype.on ? "on" : "off"}</button>`; }
+function wireHypeToggle() {
+  const b = $("#hypetoggle"); if (!b) return;
+  b.onclick = () => { hype.on = !hype.on; saveHype(); b.outerHTML = hypeToggleHTML(); wireHypeToggle(); paintHud(); if (hype.on) toast("🔥 Hype mode on. Five in a row gets you SAVAGE.", "good"); if (tab === "today") renderToday(); };
+}
+function dailyStreak() {
+  const set = new Set(hype.days); let n = 0, d = sod(nowMs());
+  if (!set.has(d)) d -= DAY; // today not finished yet: count back from yesterday
+  while (set.has(d)) { n++; d -= DAY; }
+  return n;
+}
+function hallHTML() {
+  if (!hype.on) return "";
+  const lv = levelOf(hype.xp), into = hype.xp - levelXp(lv), need = levelXp(lv + 1) - levelXp(lv), bt = hype.bestTier >= 0 ? TIERS[hype.bestTier] : null;
+  return `<div class="panel hof" id="hof"><div class="bar"><h3 style="margin-right:auto">🏆 Hall of Fame</h3><label class="sndl"><input type="checkbox" id="hsound" ${hype.sound ? "checked" : ""}> Sound effects</label></div>
+    <div class="hofgrid">
+      <div><span class="lbl">Level</span><b class="big2">${lv}</b><div class="meter"><i style="width:${lv >= 50 ? 100 : Math.round(100 * into / need)}%"></i></div><span class="note">${hype.xp.toLocaleString()} XP${lv < 50 ? ` · ${(levelXp(lv + 1) - hype.xp).toLocaleString()} to Lv ${lv + 1}` : " · max level"}</span></div>
+      <div><span class="lbl">Current streak</span><b class="big2">${hype.streak}</b><span class="note">${tierOf(hype.streak) >= 0 ? TIERS[tierOf(hype.streak)].icon + " " + TIERS[tierOf(hype.streak)].name : "no tier yet"}${hype.shields ? ` · 🛡️×${hype.shields}` : ""}</span></div>
+      <div><span class="lbl">Best streak</span><b class="big2">${hype.best}</b><span class="note">${bt ? `Highest tier: ${bt.icon} ${bt.name}` : "Reach 5 for SAVAGE"}</span></div>
+      <div><span class="lbl">Daily streak</span><b class="big2">${dailyStreak()}</b><span class="note">days in a row with 10+ answers${hype.jackpots ? ` · ${hype.jackpots} jackpot${hype.jackpots === 1 ? "" : "s"}` : ""}</span></div>
+    </div>
+    <div class="tierlad">${TIERS.map((T, i) => `<span class="tl ${T.cls}${hype.bestTier >= i ? " got" : ""}" title="${T.at} in a row">${T.icon} ${T.name} <small>${T.at}</small></span>`).join("")}</div>
+    <div class="bar" style="margin-top:10px;gap:6px"><span class="lbl">Best by domain</span>${[1, 2, 3, 4].map(d => `<span class="chip" style="cursor:default"><i style="background:var(--d${d})"></i>${d}.0 · ${hype.bestDom[d] || 0}</span>`).join("")}</div>
+    <p class="note" style="margin:10px 0 0">Streaks build from auto-graded answers: flashcards, commands (×2), PBQ labs and tickets (+5), and typed exam drills. Timed mock exams and self-graded flip reviews don't count. A miss resets the streak unless you have a shield (earn one every ${SHIELD_EVERY} in a row).</p></div>`;
+}
+function wireHall() { const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); }; }
 
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
@@ -1991,6 +2180,7 @@ function render() {
 document.addEventListener("keydown", e => { if (fc.keyHandler) fc.keyHandler(e); });
 buildDomainBar();
 paintMissBadge();
+$("#hypeslot").innerHTML = hypeToggleHTML(); wireHypeToggle(); paintHud();
 setTab(tab);
 })();
 
