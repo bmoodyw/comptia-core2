@@ -289,6 +289,40 @@ details.strat summary{cursor:pointer}details.strat ul{margin:10px 0 0;padding-le
 main.shake{animation:shake .45s}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @media (prefers-reduced-motion:reduce){main.shake,.hud.bump{animation:none}}
+
+/* ---------- outside benchmark ---------- */
+.benchform{gap:8px}.benchform select{flex:1 1 220px;min-width:0;width:auto}.benchform input{width:110px;flex:0 0 110px}
+.benchlist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.benchlist li{display:grid;grid-template-columns:56px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+.benchlist b.good{color:var(--good)}
+/* ---------- Windows-style simulated PBQs ---------- */
+.win.sim{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.win.sim .wintitle{background:color-mix(in srgb,var(--accent) 10%,var(--wash));color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif}
+.wmenu{display:flex;gap:16px;font-size:.82rem;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.gtask{padding:10px 0 14px;border-bottom:1px dashed var(--line);display:grid;gap:8px;min-width:0}
+.gtask:last-child{border-bottom:0}
+.glabel{font-weight:700;font-size:.93rem}
+.gnum{font:700 .68rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent);margin-right:4px;vertical-align:1px}
+.lv{border:1px solid var(--line);border-radius:4px;background:var(--card);overflow-x:auto;max-width:100%}
+.lv table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:520px}
+.lv th{text-align:left;font-weight:600;color:var(--muted);padding:5px 10px;border-bottom:1px solid var(--line);background:var(--wash);white-space:nowrap}
+.lv td{padding:6px 10px;border-bottom:1px solid color-mix(in srgb,var(--line) 50%,transparent);white-space:nowrap}
+.lv tr:last-child td{border-bottom:0}
+.lvr{cursor:pointer}
+.lvr:hover td{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.lvr:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.lvr.sel td{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.lvr.y td{background:var(--good-soft)}.lvr.n td{background:var(--bad-soft)}
+.lvic{display:inline-block;width:1.4em}
+.lvdetail{border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:var(--paper);font-size:.84rem;min-height:2.6em}
+.ctx{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+@media (max-width:600px){.lv table{min-width:0;font-size:.78rem}.lv td,.lv th{white-space:normal;padding:6px 7px;vertical-align:top}}
+.ctx.off .ctxb{opacity:.5}
+.ctxb{font:600 .8rem "Segoe UI",system-ui,sans-serif;padding:6px 10px;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.ctxb:hover:not(:disabled){border-color:var(--accent)}
+.ctxb.on{border-color:var(--accent);background:var(--accent-soft)}
+.ctxb.y{border-color:var(--good);background:var(--good-soft)}.ctxb.n{border-color:var(--bad);background:var(--bad-soft)}
+.ctxb:disabled{cursor:default}
 /* ---------- anime cut-ins ---------- */
 .animefx{position:fixed;inset:0;z-index:70;overflow:hidden;cursor:pointer;background:var(--ad);animation:fxin .12s}
 .animefx.out{opacity:0;transition:opacity .25s}
@@ -1224,6 +1258,333 @@ EXAM.push(
   {d:4,o:"4.10",q:"An employee pastes AI-generated text that closely paraphrases a published article into a client report, with no citation. What's the concern?",c:["Hallucination","Plagiarism","Bias","Data source"],a:1,why:"Presenting others' work, even paraphrased by AI, without attribution is plagiarism.",key:"Plagiarism: cite the source or rewrite it, and follow the company's AI-use policy.",kw:[["plagiar"]]}
 );
 
+/* ===== Round 4: coverage audit. Fills every 220-1202 sub-objective that had no card or question ===== */
+CARDS.push(
+  // 1.1
+  {d:1,o:"1.1",t:"ChromeOS",def:"Google's Linux-based OS for Chromebooks. Browser-centric, cloud-first, auto-updates, and runs Android and web apps."},
+  {d:1,o:"1.1",t:"iPadOS",def:"Apple's tablet OS, split from iOS in 2019. Adds multitasking (Split View, Stage Manager) and desktop-class browsing."},
+  {d:1,o:"1.1",t:"Vendor life-cycle limits",def:"After end of life (EOL), an OS stops getting security patches and updates. Plan replacements before EOL to avoid unpatched systems."},
+  {d:1,o:"1.1",t:"OS compatibility concerns",def:"Moving files between OSs: Windows can't natively read ext4 or APFS, macOS reads NTFS but can't write it. exFAT works on all three."},
+  // 1.2
+  {d:1,o:"1.2",t:"Internet-based install",def:"OS install or reset that downloads the image over the internet: macOS Recovery's reinstall, Windows 'Cloud download' reset."},
+  {d:1,o:"1.2",t:"Image deployment",def:"Capturing one configured reference install (after Sysprep) and copying it to many PCs. Faster and more consistent than separate clean installs."},
+  {d:1,o:"1.2",t:"Remote network installation",def:"Installing the OS from a network share or deployment server (often booted via PXE) instead of local media."},
+  {d:1,o:"1.2",t:"Load driver (setup)",def:"Setup can't see the disk (RAID or NVMe controller)? Use 'Load driver' to add the third-party storage driver from USB."},
+  {d:1,o:"1.2",t:"Upgrade compatibility check",def:"Before upgrading: back up files and user preferences, confirm apps and drivers support the new OS, and confirm hardware meets requirements."},
+  {d:1,o:"1.2",t:"External / hot-swappable drive boot",def:"Booting setup from an external USB drive or eSATA drive you can connect without powering down. Set the boot order in UEFI first."},
+  // 1.3
+  {d:1,o:"1.3",t:"Edition RAM limits",def:"Windows 11 Home: 128 GB. Pro: 2 TB. Pro for Workstations and Enterprise: 6 TB."},
+  {d:1,o:"1.3",t:"Remote Desktop host",def:"Only Pro, Pro for Workstations, Education and Enterprise can accept incoming RDP sessions. Home can only connect out."},
+  // 1.5
+  {d:1,o:"1.5",t:"cd",def:"Change directory. cd \\ goes to the root, cd .. goes up one level. cd with no argument shows the current path."},
+  {d:1,o:"1.5",t:"dir",def:"Lists files and folders. /a shows hidden and system files, /s searches subfolders, /p pauses each screen."},
+  {d:1,o:"1.5",t:"xcopy",def:"Copies files AND folders. /s copies subfolders, /e includes empty ones. Robocopy is the more robust replacement."},
+  {d:1,o:"1.5",t:"md / rd",def:"md (mkdir) makes a directory; rd (rmdir) removes it. rd /s deletes a folder and everything in it."},
+  {d:1,o:"1.5",t:"hostname",def:"Prints the computer's name. Quick check before remote support or when mapping drives."},
+  {d:1,o:"1.5",t:"shutdown /r /t 0",def:"Restarts immediately. /s shuts down, /t sets a delay in seconds, /a aborts a pending shutdown."},
+  {d:1,o:"1.5",t:"[command] /?",def:"Shows the help for any Windows command, listing its switches and syntax."},
+  // 1.6
+  {d:1,o:"1.6",t:"Settings: Update & Security",def:"Windows Update, delivery optimization, recovery and backup options. In Windows 11, Windows Update has its own section."},
+  {d:1,o:"1.6",t:"Settings: Personalization",def:"Background, colors, lock screen, themes, Start and taskbar."},
+  {d:1,o:"1.6",t:"Settings: Network & Internet",def:"Wi-Fi, Ethernet, VPN, proxy, mobile hotspot, airplane mode, and changing a network between Public and Private."},
+  {d:1,o:"1.6",t:"Settings: Gaming",def:"Xbox Game Bar, captures, and Game Mode, which prioritizes the game's performance."},
+  {d:1,o:"1.6",t:"Settings: Apps",def:"Uninstall or modify apps, set default apps, manage startup apps and optional features."},
+  {d:1,o:"1.6",t:"Settings: Accounts",def:"Your info, sign-in options (Windows Hello, PIN), email accounts, family and other users, access work or school."},
+  // 1.7
+  {d:1,o:"1.7",t:"Firewall exception",def:"'Allow an app through Windows Firewall' opens access for a specific program on Private and/or Public networks instead of opening a port to everyone."},
+  {d:1,o:"1.7",t:"UNC network path",def:"\\\\server\\share\\folder. Type it into File Explorer or use it with net use to map a drive."},
+  {d:1,o:"1.7",t:"WWAN connection",def:"Cellular data connection (LTE/5G) using a built-in modem or USB adapter. Often set as metered."},
+  // 1.8
+  {d:1,o:"1.8",t:"Apple ID (corporate)",def:"Personal Apple account for the App Store and iCloud. Companies use Managed Apple IDs and MDM to restrict personal accounts on work Macs."},
+  {d:1,o:"1.8",t:"Gestures (macOS)",def:"Multi-finger trackpad actions: swipe between desktops, Mission Control, App Exposé. Set in System Settings › Trackpad."},
+  {d:1,o:"1.8",t:"Dock",def:"Bar of app shortcuts at the bottom of the macOS screen. A dot marks running apps."},
+  {d:1,o:"1.8",t:"Finder",def:"macOS file manager, the equivalent of File Explorer."},
+  {d:1,o:"1.8",t:"Uninstall a Mac app",def:"Drag the .app from Applications to the Trash (or use its own uninstaller if it came as a .pkg)."},
+  // 1.9
+  {d:1,o:"1.9",t:"Bootloader (GRUB)",def:"Loads the Linux kernel at startup. GRUB is the common one and can offer a menu to choose kernels or OSs."},
+  {d:1,o:"1.9",t:"Root account",def:"Linux superuser (UID 0) with unlimited rights. Log in as a normal user and elevate with sudo instead of using root directly."},
+  {d:1,o:"1.9",t:"systemd",def:"Init system and service manager on most Linux distros. systemctl start, stop, enable and status control services."},
+  {d:1,o:"1.9",t:"Kernel",def:"Core of the OS. Manages hardware, memory and processes. uname -r shows its version."},
+  // 1.10
+  {d:1,o:"1.10",t:"Dedicated vs. integrated graphics",def:"Integrated GPU shares system RAM. Dedicated card has its own VRAM. CAD, video and 3D apps often require dedicated."},
+  {d:1,o:"1.10",t:"32-bit vs. 64-bit app",def:"A 64-bit app needs a 64-bit OS and CPU. A 32-bit app runs on 64-bit Windows. A 32-bit OS is limited to about 4 GB of RAM."},
+  {d:1,o:"1.10",t:"Mountable ISO",def:"Disk image you double-click to mount as a virtual drive. Replaces physical install media."},
+  {d:1,o:"1.10",t:"Install impact: device",def:"Will the app slow the PC, conflict with other software or change system settings? Test before rollout."},
+  {d:1,o:"1.10",t:"Install impact: network",def:"Large downloads, new traffic or ports, license-server calls. Schedule mass installs off-hours."},
+  {d:1,o:"1.10",t:"Install impact: operation and business",def:"Operation: training, support load, workflow changes. Business: licensing cost, downtime, compliance."},
+  // 1.11
+  {d:1,o:"1.11",t:"Cloud email system",def:"Hosted mailbox such as Exchange Online or Gmail. Accessed by web, mobile and desktop clients with no local mail server."},
+  {d:1,o:"1.11",t:"Cloud storage sync",def:"OneDrive, Google Drive, Dropbox. Folder settings pick what syncs. 'Files on demand' keeps placeholders until opened."},
+  {d:1,o:"1.11",t:"Collaboration tools",def:"Cloud word processing, spreadsheets, presentations, videoconferencing and instant messaging (Microsoft 365, Google Workspace, Teams, Slack)."},
+  {d:1,o:"1.11",t:"License assignment",def:"Cloud suites are licensed per user. An admin assigns or removes licenses in the admin center during onboarding and offboarding."},
+  // 2.1
+  {d:2,o:"2.1",t:"Badge reader",def:"Reads an ID card or key fob to unlock a door and logs who entered and when."},
+  {d:2,o:"2.1",t:"Video surveillance",def:"CCTV cameras that deter and record activity. Footage supports incident investigations."},
+  {d:2,o:"2.1",t:"Motion sensors and alarms",def:"Detect movement or forced entry after hours and alert security."},
+  {d:2,o:"2.1",t:"Equipment lock",def:"Cable lock (Kensington slot) or locked rack that stops someone walking off with hardware."},
+  {d:2,o:"2.1",t:"Mobile digital key",def:"Phone acts as the badge or key using NFC or Bluetooth."},
+  {d:2,o:"2.1",t:"Biometric types",def:"Fingerprint, palm print, retina, facial recognition, voice recognition: 'something you are'."},
+  {d:2,o:"2.1",t:"Directory services",def:"Central database of users, groups and devices (Active Directory, LDAP) used for authentication and access control."},
+  {d:2,o:"2.1",t:"Fencing and lighting",def:"Perimeter controls. Fences keep people to entrances; lighting removes hiding spots and helps cameras."},
+  // 2.2
+  {d:2,o:"2.2",t:"Defender definitions update",def:"Windows Security › Virus & threat protection › Protection updates. Also arrives through Windows Update."},
+  {d:2,o:"2.2",t:"Standard vs. administrator account",def:"Standard users run apps and change their own settings. Administrators install software and change system settings. Use standard for daily work."},
+  {d:2,o:"2.2",t:"Power Users group",def:"Legacy Windows group kept for compatibility. On modern Windows it has no more rights than standard Users by default."},
+  {d:2,o:"2.2",t:"Guest account",def:"Built-in limited account, disabled by default. Leave it off."},
+  {d:2,o:"2.2",t:"Windows Hello / passwordless",def:"Sign in with face, fingerprint or a device-bound PIN instead of a password."},
+  {d:2,o:"2.2",t:"File attributes",def:"Read-only, Hidden, System, Archive. View with attrib or file Properties. Separate from NTFS permissions."},
+  {d:2,o:"2.2",t:"Run as administrator",def:"Right-click › Run as administrator, or Ctrl+Shift+Enter from Start search. Triggers a UAC prompt."},
+  {d:2,o:"2.2",t:"Logon script and home folder",def:"Set on the user's Profile tab in Active Directory Users and Computers. Home folder maps a personal network drive."},
+  {d:2,o:"2.2",t:"BitLocker To Go",def:"BitLocker encryption for removable USB drives."},
+  // 2.4
+  {d:2,o:"2.4",t:"Recovery console (WinRE)",def:"Windows Recovery Environment command prompt. Repairs boot records (bootrec) and removes malware when Windows won't start."},
+  {d:2,o:"2.4",t:"User education / anti-phishing training",def:"Teaching users to spot phishing and report it. Often the most effective malware prevention."},
+  {d:2,o:"2.4",t:"Software firewall",def:"Host-based firewall (Windows Defender Firewall) that filters traffic for that one device and can block malware calling home."},
+  // 2.5
+  {d:2,o:"2.5",t:"Unpatched / unprotected systems",def:"Missing updates, or missing antivirus and firewall. Top vulnerabilities attackers exploit."},
+  {d:2,o:"2.5",t:"Non-compliant system",def:"Device that fails the organization's security policy (old OS, encryption off). Quarantine or block it until fixed."},
+  {d:2,o:"2.5",t:"BYOD risk",def:"Personal devices may be unpatched, shared or lost. Use MDM, containerization and an acceptable-use policy."},
+  {d:2,o:"2.5",t:"Quishing (QR code phishing)",def:"Malicious QR code that sends the victim to a phishing site, often stuck over a legitimate code."},
+  {d:2,o:"2.5",t:"Denial of service",def:"Overwhelming a service so legitimate users can't reach it. DDoS uses many machines (a botnet)."},
+  // 2.7
+  {d:2,o:"2.7",t:"Password best practices",def:"Long (length beats complexity), mixed character types, unique per site, and changed on the organization's expiration schedule."},
+  {d:2,o:"2.7",t:"Screensaver / screen lock",def:"Auto-lock after inactivity with a password required to wake. Press Win+L when walking away."},
+  {d:2,o:"2.7",t:"Account lockout",def:"Locks an account after a set number of failed logins, stopping brute-force guessing."},
+  {d:2,o:"2.7",t:"Login time restrictions",def:"Allow sign-in only during set hours (configured in AD account settings)."},
+  {d:2,o:"2.7",t:"Data-at-rest encryption",def:"Encrypts stored data (BitLocker, FileVault, EFS) so a stolen drive is unreadable."},
+  {d:2,o:"2.7",t:"Disable unused services",def:"Fewer running services means a smaller attack surface."},
+  {d:2,o:"2.7",t:"Rename / change default admin",def:"Change the default administrator password (and ideally rename or disable the account) so attackers can't guess it."},
+  // 2.8
+  {d:2,o:"2.8",t:"Locator app",def:"Find My (Apple) or Find My Device (Google). Shows location, plays a sound, locks or wipes a lost phone."},
+  {d:2,o:"2.8",t:"Failed-login restrictions",def:"Phone erases itself or adds delays after too many wrong passcodes."},
+  {d:2,o:"2.8",t:"Mobile patch management",def:"Keep the OS and apps updated. MDM can enforce minimum OS versions."},
+  {d:2,o:"2.8",t:"BYOD vs. corporate-owned",def:"Corporate-owned: full MDM control and full wipe. BYOD: a work profile/container, and only corporate data is wiped."},
+  {d:2,o:"2.8",t:"Remote backup apps",def:"iCloud or Google backup, so a lost or wiped phone can be restored."},
+  // 2.9
+  {d:2,o:"2.9",t:"Standard format",def:"Quick format only rebuilds the file table, so data is recoverable. Not safe for disposal."},
+  {d:2,o:"2.9",t:"Drive wiping",def:"Overwrites every sector with patterns or zeros so data can't be recovered. Drive can be reused."},
+  {d:2,o:"2.9",t:"Third-party destruction vendor",def:"Outsourced shredding or recycling. Get a certificate of destruction as proof."},
+  {d:2,o:"2.9",t:"Physical destruction methods",def:"Drilling, shredding, crushing, incineration, degaussing (magnetic media only, not SSDs)."},
+  // 2.10
+  {d:2,o:"2.10",t:"Change router default password",def:"First step on any new router or AP. Default credentials are published online."},
+  {d:2,o:"2.10",t:"IP filtering",def:"Router allow/deny lists by IP address to control which devices pass traffic."},
+  {d:2,o:"2.10",t:"Router physical placement",def:"Secure location (locked closet), centrally placed for coverage, away from exterior walls and public access."},
+  {d:2,o:"2.10",t:"Secure management access",def:"Manage the router over HTTPS from inside only. Disable remote (WAN-side) admin."},
+  {d:2,o:"2.10",t:"Disable SSID broadcast",def:"Hides the network name from casual scans. Weak on its own because the SSID is still visible in traffic."},
+  {d:2,o:"2.10",t:"Guest network",def:"Separate SSID that gives visitors internet access but isolates them from internal devices."},
+  {d:2,o:"2.10",t:"Firmware updates",def:"Patches router vulnerabilities. Check the vendor site or enable auto-update."},
+  // 2.11
+  {d:2,o:"2.11",t:"Trusted download source",def:"Get browsers and extensions from the official vendor site or store. Untrusted mirrors may bundle malware."},
+  {d:2,o:"2.11",t:"Clear browsing data / cache",def:"Removes history, cookies and cached files. Fixes stale pages and removes tracking data."},
+  {d:2,o:"2.11",t:"Private browsing",def:"Incognito/InPrivate: no history or cookies kept after closing. It doesn't hide you from your ISP or employer."},
+  {d:2,o:"2.11",t:"Pop-up and ad blockers",def:"Block unwanted windows and ads. They cut malvertising risk."},
+  {d:2,o:"2.11",t:"Browser sync",def:"Signing in to the browser syncs bookmarks, passwords and history across devices. Protect the account with MFA."},
+  {d:2,o:"2.11",t:"Password manager",def:"Generates and stores unique strong passwords and autofills only on the matching site."},
+  // 3.1
+  {d:3,o:"3.1",t:"No OS found",def:"Check boot order and remove USB media, then repair boot records: bootrec /fixmbr, /fixboot, /rebuildbcd. Check the drive in UEFI."},
+  {d:3,o:"3.1",t:"USB controller resource warning",def:"Too many devices on one USB controller. Move some to a port on a different controller or a powered hub."},
+  {d:3,o:"3.1",t:"Slow profile load",def:"Large roaming profile or network delay. Clean up the profile or rebuild it."},
+  {d:3,o:"3.1",t:"Services not starting",def:"Check services.msc: the startup type, the service's dependencies and its logon account. Event Viewer shows the error."},
+  {d:3,o:"3.1",t:"Frequent shutdowns",def:"Often overheating or power problems. Check fans, dust, temperatures and the PSU."},
+  {d:3,o:"3.1",t:"Low memory warnings",def:"Close apps, find leaks in Task Manager, increase the page file or add RAM."},
+  {d:3,o:"3.1",t:"Rebuild a Windows profile",def:"Corrupt profile: back up the user's data, rename or delete the profile folder and registry entry, then sign in to create a fresh one."},
+  // 3.2
+  {d:3,o:"3.2",t:"App fails to launch / crashes",def:"Force-stop, clear the app cache, update or reinstall, then restart the phone. Check storage space."},
+  {d:3,o:"3.2",t:"App or OS fails to update",def:"Check free storage, network, battery level (usually 50%+) and device compatibility."},
+  {d:3,o:"3.2",t:"Poor battery life",def:"Check battery usage per app, reduce brightness and background refresh, and check battery health."},
+  {d:3,o:"3.2",t:"Random reboots",def:"Overheating, a faulty app, low storage or a failing battery. Update the OS and remove recent apps."},
+  {d:3,o:"3.2",t:"Connectivity issues (Bluetooth, Wi-Fi, NFC)",def:"Toggle the radio or airplane mode, forget and re-pair, update the OS, reset network settings."},
+  // 3.3
+  {d:3,o:"3.3",t:"Unofficial app store",def:"Apps outside Google Play or Apple's App Store skip vetting and are a common malware source."},
+  {d:3,o:"3.3",t:"Data-usage limit notification",def:"Unexpected data spike can mean malware sending data out. Check per-app data usage."},
+  {d:3,o:"3.3",t:"Fake security warnings (mobile)",def:"Pop-ups claiming infection that push you to install an 'antivirus'. Usually malicious ads or adware."},
+  {d:3,o:"3.3",t:"Leaked personal files",def:"Photos or data showing up online can mean a compromised account or malicious app. Change passwords and audit app permissions."},
+  // 3.4
+  {d:3,o:"3.4",t:"Rogue antivirus",def:"False alerts from fake security software demanding payment. A sign of malware."},
+  {d:3,o:"3.4",t:"Unwanted OS notifications",def:"Spammy desktop notifications, often from a website allowed to send browser push notifications. Revoke them in browser settings."},
+  {d:3,o:"3.4",t:"OS update failures (security)",def:"Malware often blocks Windows Update and security tools. Investigate if updates keep failing."},
+  {d:3,o:"3.4",t:"Altered or missing files",def:"Renamed, encrypted or missing files suggest ransomware or other malware."},
+  {d:3,o:"3.4",t:"Degraded browser performance",def:"Slow browser with odd toolbars or redirects. Check for malicious extensions and reset the browser."},
+  // 4.1
+  {d:4,o:"4.1",t:"Ticket fields",def:"User info, device info, problem description, category, severity, escalation level, progress notes, resolution."},
+  {d:4,o:"4.1",t:"Procurement life cycle",def:"Request › approve › purchase › receive and tag › deploy › maintain › retire and dispose. Track warranties and licenses along the way."},
+  {d:4,o:"4.1",t:"New-user setup checklist",def:"Onboarding SOP: create accounts, assign licenses and groups, issue hardware, set up email and access."},
+  {d:4,o:"4.1",t:"Incident report",def:"Documents what happened, when, who was affected, actions taken and lessons learned."},
+  {d:4,o:"4.1",t:"Escalation levels",def:"Tier 1 help desk › Tier 2 specialists › Tier 3 engineers/vendors. Escalate when you lack skill or permissions."},
+  // 4.2
+  {d:4,o:"4.2",t:"Change request form",def:"Documents purpose, scope, change type, date/time, affected systems, risk level, rollback plan and the responsible staff member."},
+  {d:4,o:"4.2",t:"Change advisory board (CAB)",def:"Reviews and approves change requests based on risk and business impact."},
+  {d:4,o:"4.2",t:"Risk analysis (change)",def:"Rates the likelihood and impact of a change failing. Sets the risk level the CAB uses to approve or deny."},
+  {d:4,o:"4.2",t:"Peer review",def:"Another technician checks the change plan or work for mistakes before or after implementation."},
+  {d:4,o:"4.2",t:"Backup plan (change)",def:"If the change and the rollback both fail, how will you restore service? Usually tested backups."},
+  // 4.3
+  {d:4,o:"4.3",t:"Recovery testing",def:"Regularly restoring from backup to prove it works. An untested backup isn't a backup."},
+  {d:4,o:"4.3",t:"Onsite vs. offsite backup",def:"Onsite: fast restores. Offsite (cloud or another building): survives fire, flood or theft. Use both."},
+  // 4.4
+  {d:4,o:"4.4",t:"ESD mat",def:"Antistatic work surface connected to ground. Use it with a wrist strap."},
+  {d:4,o:"4.4",t:"Antistatic bag",def:"Store and move components in shielded bags. Hold parts by the edges."},
+  {d:4,o:"4.4",t:"Equipment grounding",def:"Three-prong grounded outlets send fault current safely to ground. Never remove the ground pin."},
+  {d:4,o:"4.4",t:"Disconnect power first",def:"Unplug before opening a PC. Never open a power supply or CRT: capacitors hold a charge."},
+  {d:4,o:"4.4",t:"Lifting technique",def:"Bend at the knees, keep your back straight, hold the load close, get help for heavy items."},
+  {d:4,o:"4.4",t:"Safety goggles and air filtration mask",def:"Goggles for cutting or flying debris; a mask when cleaning dust or toner."},
+  {d:4,o:"4.4",t:"Government regulations (safety)",def:"Follow OSHA and local building and electrical codes. They override company preference."},
+  // 4.5
+  {d:4,o:"4.5",t:"Battery disposal",def:"Batteries are hazardous waste. Recycle them per the SDS and local rules, never in the trash."},
+  {d:4,o:"4.5",t:"Toner disposal",def:"Return or recycle cartridges. Clean spills with a toner vacuum, not a regular vacuum."},
+  {d:4,o:"4.5",t:"Humidity",def:"Too low = static/ESD risk. Too high = condensation and corrosion. Aim for roughly 40–60% relative humidity."},
+  {d:4,o:"4.5",t:"Ventilation and dust",def:"Keep vents clear, clean dust with compressed air or an electronics vacuum, and place equipment away from heat sources."},
+  {d:4,o:"4.5",t:"Under-voltage (brownout)",def:"Voltage drops below normal. Can crash or damage equipment. A UPS or line conditioner helps."},
+  {d:4,o:"4.5",t:"Surge suppressor",def:"Absorbs voltage spikes. It doesn't help during a power loss (blackout); a UPS does."},
+  // 4.6
+  {d:4,o:"4.6",t:"Inform management / law enforcement",def:"When you find illegal content or a security incident, stop, preserve the evidence and report through proper channels. Management decides on law enforcement."},
+  {d:4,o:"4.6",t:"Forensic copy of drive",def:"Bit-for-bit image of the evidence drive, hashed to prove integrity. Analyze the copy, never the original."},
+  {d:4,o:"4.6",t:"Documentation of incident",def:"Record what you saw, when, and every action taken, with times. It supports the chain of custody."},
+  {d:4,o:"4.6",t:"Perpetual license",def:"Pay once, use that version forever (no new versions). Subscription licenses expire if not renewed."},
+  {d:4,o:"4.6",t:"Personal vs. corporate license",def:"Personal/home licenses usually forbid business use. Corporate licenses cover commercial use and multiple seats."},
+  {d:4,o:"4.6",t:"Open-source license",def:"Source code is free to view, modify and share under its license terms (GPL, MIT, Apache)."},
+  {d:4,o:"4.6",t:"Regulated data types",def:"Credit card data (PCI DSS), government-issued IDs, PII, healthcare data (PHI/HIPAA). Each has handling rules."},
+  {d:4,o:"4.6",t:"Data retention requirements",def:"Laws or policy that set how long records must be kept, and when they must be destroyed."},
+  // 4.7
+  {d:4,o:"4.7",t:"Professional attire",def:"Match the environment: formal for executive or client-facing settings, business casual otherwise."},
+  {d:4,o:"4.7",t:"Avoid jargon",def:"Use plain language the customer understands. Explain acronyms."},
+  {d:4,o:"4.7",t:"Avoid distractions",def:"No personal calls, texting or social media while with a customer."},
+  {d:4,o:"4.7",t:"Difficult customers",def:"Don't argue or get defensive, don't dismiss the problem, repeat it back to confirm, and never post about it on social media."},
+  {d:4,o:"4.7",t:"Open-ended questions",def:"'What happened right before the error?' Gets detail that yes/no questions miss."},
+  {d:4,o:"4.7",t:"Set and meet expectations",def:"Give a realistic timeline, provide status updates, offer repair vs. replace options, and follow up after."},
+  {d:4,o:"4.7",t:"Cultural sensitivity",def:"Use appropriate professional titles and respect cultural communication differences."},
+  {d:4,o:"4.7",t:"Customer confidential materials",def:"Don't read, copy or share documents or data on a customer's desk or PC."},
+  {d:4,o:"4.7",t:"Be on time",def:"Arrive when promised. If you'll be late, contact the customer beforehand."},
+  // 4.8
+  {d:4,o:"4.8",t:"Script use cases",def:"Basic automation: restarting machines, remapping network drives, installing applications, automated backups, gathering information, initiating updates."},
+  {d:4,o:"4.8",t:"Script risks",def:"Downloaded scripts can introduce malware; mistakes can change system settings or crash systems through runaway resource use. Test first."},
+  // 4.9
+  {d:4,o:"4.9",t:"MSRA / Quick Assist",def:"Windows Remote Assistance (msra.exe) and Quick Assist: the user invites a tech and stays present to watch the session."},
+  {d:4,o:"4.9",t:"Third-party remote tools",def:"Screen-sharing, videoconferencing, file transfer and desktop management software. Vet each one and require MFA."},
+  {d:4,o:"4.9",t:"Remote access security",def:"Don't expose RDP to the internet. Use a VPN, MFA, strong passwords, current patches and logging."},
+  // 4.10
+  {d:4,o:"4.10",t:"AI application integration",def:"AI built into existing tools (Copilot in Office, AI in help desk software)."},
+  {d:4,o:"4.10",t:"AI appropriate-use policy",def:"Company rules on which AI tools are allowed and what data can go into them."},
+  {d:4,o:"4.10",t:"AI data privacy",def:"Public AI may store prompts and use them for training. Never paste confidential data or PII; use the approved private AI."},
+  // audit pass 2
+  {d:2,o:"2.6",t:"Malware removal step 1",def:"Investigate and verify malware symptoms. Confirm it's really malware before acting."},
+  {d:2,o:"2.6",t:"Malware removal step 2",def:"Quarantine the infected system: disconnect it from the network so it can't spread."},
+  {d:2,o:"2.6",t:"Malware removal step 3",def:"Disable System Restore (Windows) so infected restore points are deleted and can't reinfect the PC."},
+  {d:2,o:"2.6",t:"Malware removal step 4",def:"Remediate: update the anti-malware software, then scan and remove (Safe Mode or a preinstallation environment if needed)."},
+  {d:2,o:"2.6",t:"Malware removal step 5",def:"Schedule scans and run updates (OS and anti-malware) so it stays clean."},
+  {d:2,o:"2.6",t:"Malware removal step 6",def:"Enable System Restore and create a new, clean restore point."},
+  {d:2,o:"2.6",t:"Malware removal step 7",def:"Educate the end user on how the infection happened and how to avoid it."},
+  {d:2,o:"2.9",t:"Regulatory and environmental disposal rules",def:"Data-privacy laws can require proof of destruction; environmental laws (e-waste) control how hardware is recycled. Follow both."},
+  {d:2,o:"2.10",t:"Disable unused router ports",def:"Close unused switch/router ports and firewall ports so attackers can't plug in or connect through them."},
+  {d:2,o:"2.11",t:"Browser patching",def:"Keep the browser auto-updating. Most browser attacks target known, already-patched bugs."},
+  {d:2,o:"2.11",t:"Valid certificate (secure site)",def:"HTTPS with a padlock and a certificate that's trusted, unexpired and matches the site name. Warnings mean don't enter data."},
+  {d:2,o:"2.11",t:"Untrusted extensions / plug-ins",def:"Install add-ons only from the official store and remove ones you don't use. Malicious extensions can read every page."},
+  {d:3,o:"3.1",t:"Degraded performance (Windows)",def:"Check Task Manager for CPU, RAM or disk hogs, startup apps, malware, low free space. Fix: add resources (RAM/SSD) or remove the load."},
+  {d:3,o:"3.1",t:"Windows fix ladder",def:"Reboot › restart services › update/reinstall the app › verify requirements › add resources › sfc › repair Windows › System Restore › roll back updates › reimage."},
+  {d:3,o:"3.1",t:"System instability",def:"Random freezes or crashes. Check recent driver or update changes, Reliability Monitor, RAM (mdsched) and temperatures."},
+  {d:3,o:"3.2",t:"App slow to respond",def:"Low storage or RAM, too many background apps, outdated app or OS. Close apps, update, then restart."},
+  {d:3,o:"3.3",t:"Rooting (Android)",def:"Gaining root access on Android, the equivalent of jailbreaking iOS. Removes security sandboxing; usually blocked by MDM."},
+  {d:3,o:"3.3",t:"Unexpected app behavior",def:"Apps opening by themselves, new permissions or settings changing: possible malware or a spoofed app."},
+  {d:3,o:"3.4",t:"Unable to access the network",def:"Malware can change DNS, proxy or firewall settings to cut access or redirect traffic. Check them after ruling out hardware."},
+  {d:4,o:"4.6",t:"Valid, non-expired licenses",def:"Every installed copy needs a current license. Track expiration dates in asset management and renew before they lapse."},
+  {d:4,o:"4.7",t:"Positive attitude",def:"Project confidence, stay calm, and focus on the fix rather than blame."}
+);
+
+EXAM.push(
+  // ---- Domain 1 ----
+  {d:1,o:"1.1",q:"A school wants cheap, low-maintenance laptops for students that update automatically and do almost everything in a browser and Google's cloud apps. Which OS fits best?",c:["Windows 11 Pro","ChromeOS","macOS","Ubuntu Server"],a:1,why:"ChromeOS is built for browser and cloud work, updates itself and is easy to manage centrally.",key:"ChromeOS (Chromebooks).",kw:[["chrome"]]},
+  {d:1,o:"1.1",q:"A user needs one USB flash drive that both their Windows PC and Mac can read AND write, with files larger than 4 GB. How should it be formatted?",c:["NTFS","FAT32","exFAT","APFS"],a:2,why:"exFAT is read/write on Windows and macOS and has no 4 GB file limit. macOS can't write NTFS natively, FAT32 caps files at 4 GB, and Windows can't read APFS.",key:"exFAT.",kw:[["exfat"]]},
+  {d:1,o:"1.1",q:"A clinic still runs a PC on an OS that reached end of life last year. What is the main security problem?",c:["It can't connect to Wi-Fi","It no longer receives security patches","Its license becomes illegal","It can't run Office"],a:1,why:"After EOL the vendor stops releasing security updates, so new vulnerabilities stay open.",key:"No more security patches after end of life.",kw:[["patch","update","security"]]},
+  {d:1,o:"1.2",q:"Windows Setup on a new server-grade PC doesn't list any drives to install on. The disks sit behind a RAID controller. What should the technician do?",c:["Convert the disk to MBR","Use Load driver to add the RAID controller's storage driver","Run chkdsk /r","Boot from PXE instead"],a:1,why:"Setup lacks the third-party storage driver. Load driver lets you supply it from USB.",key:"Click Load driver and supply the third-party RAID/storage controller driver.",kw:[["driver"]]},
+  {d:1,o:"1.2",q:"An IT team must set up 60 identical PCs with the OS, apps and settings already configured. Which method is MOST efficient?",c:["Clean install from USB on each PC","Image deployment from a sysprepped reference image","Repair installation","In-place upgrade on each PC"],a:1,why:"Capture one configured reference image (after Sysprep) and deploy it to all 60.",key:"Image deployment of a sysprepped reference image (often over the network).",kw:[["image"]]},
+  {d:1,o:"1.2",q:"Before an in-place upgrade to a new Windows version, which TWO steps should come first? (Choose two.)",c:["Back up user files and preferences","Confirm apps and drivers are compatible with the new version","Delete the recovery partition","Disable the firewall","Convert the disk to MBR"],a:[0,1],why:"Upgrade prep: back up data, and check application, driver and hardware compatibility.",key:"Back up files/preferences and check app, driver and hardware compatibility.",kw:[["back"],["compat","driver","support"]]},
+  {d:1,o:"1.3",q:"A video editor's PC needs 512 GB of RAM. It runs Windows 11 Home. What's the problem?",c:["Home supports up to 128 GB of RAM","Home only supports 4 GB","Home supports 2 TB, so there's no problem","RAM limits only apply to 32-bit Pro"],a:0,why:"Windows 11 Home tops out at 128 GB. Pro supports 2 TB, Pro for Workstations and Enterprise 6 TB.",key:"Home is capped at 128 GB; upgrade to Pro (2 TB) or higher.",kw:[["128"]]},
+  {d:1,o:"1.5",q:"A technician needs to copy the folder D:\\Projects, including all subfolders and empty folders, to E:\\Backup using a classic Windows command (not robocopy). Which command does this?",c:["copy D:\\Projects E:\\Backup","xcopy D:\\Projects E:\\Backup /e","move D:\\Projects E:\\Backup","md E:\\Backup\\Projects"],a:1,why:"xcopy /e copies the folder tree including empty subfolders. copy handles files only.",key:"xcopy D:\\Projects E:\\Backup /e",kw:[["xcopy"],["/e"]]},
+  {d:1,o:"1.5",q:"A remote user is on the phone and needs to tell you their computer's name. Which command shows it?",c:["whoami","hostname","winver","ipconfig /release"],a:1,why:"hostname prints the computer name. whoami shows the signed-in user, winver the Windows version.",key:"hostname",kw:[["hostname"]]},
+  {d:1,o:"1.6",q:"A user wants to change their desktop background and lock screen picture. Which Windows Settings section should they open?",c:["System","Personalization","Accounts","Apps"],a:1,why:"Personalization covers background, colors, lock screen, themes, Start and taskbar.",key:"Settings › Personalization.",kw:[["personali"]]},
+  {d:1,o:"1.6",q:"A laptop on a hotel Wi-Fi is set to a Private network profile. Where in Windows Settings do you switch it to Public?",c:["Network & Internet","Privacy","Accounts","Time & Language"],a:0,why:"Network & Internet › Wi-Fi › the network's properties holds the Public/Private network profile.",key:"Settings › Network & Internet, then the connection's properties.",kw:[["network"]]},
+  {d:1,o:"1.7",q:"A payroll app needs to accept connections on the office network, but the firewall blocks it. What is the BEST fix?",c:["Turn off Windows Defender Firewall","Add the app as an exception for Private networks","Open every port on the Public profile","Set the network to Public"],a:1,why:"'Allow an app through Windows Firewall' scopes access to that program on the right profile. Disabling the firewall is never the best answer.",key:"Create a firewall exception for that app on Private (domain) networks.",kw:[["exception","allow"]]},
+  {d:1,o:"1.7",q:"A user wants to open the Finance share on server FS01 directly in File Explorer. What should they type?",c:["http://FS01/Finance","\\\\FS01\\Finance","FS01:/Finance","//Finance/FS01"],a:1,why:"Windows network paths use UNC format: \\\\server\\share.",key:"\\\\FS01\\Finance",kw:[["fs01"]]},
+  {d:1,o:"1.8",q:"A new Mac user asks how to see all open windows and desktops at once using the trackpad. Where would you point them?",c:["Keychain Access","Trackpad gestures for Mission Control (e.g., three-finger swipe up)","FileVault","Disk Utility"],a:1,why:"Mission Control shows all windows and desktops, and trackpad gestures (System Settings › Trackpad) open it.",key:"Mission Control via a trackpad gesture (three/four-finger swipe up).",kw:[["mission"]]},
+  {d:1,o:"1.9",q:"A Linux PC shows a menu at startup listing two kernel versions before the OS loads. Which component provides that menu?",c:["systemd","The bootloader (GRUB)","/etc/fstab","The kernel"],a:1,why:"GRUB is the bootloader. It loads the chosen kernel, which then starts systemd.",key:"The bootloader (GRUB).",kw:[["grub","boot"]]},
+  {d:1,o:"1.9",q:"Why should Linux admins avoid logging in directly as root for daily work?",c:["Root can't run sudo","Mistakes or malware run with unlimited privileges, and actions aren't tied to a named user","Root can't use the GUI","Root expires after 30 days"],a:1,why:"Root (UID 0) can do anything. Using a normal account plus sudo limits damage and logs who ran what.",key:"Root has unlimited rights; use a normal account and sudo for least privilege and accountability.",kw:[["privilege","sudo","unlimited"]]},
+  {d:1,o:"1.10",q:"A company plans to deploy a new 3 GB application to 200 PCs during business hours. Which impact is the BIGGEST concern?",c:["Device impact on the monitors","Network impact from 600 GB of downloads at once","Business impact on the logo","Operation impact on printer toner"],a:1,why:"Mass downloads saturate bandwidth. Schedule off-hours or use a local distribution point.",key:"Network impact (bandwidth); schedule after hours or stage locally.",kw:[["network","bandwidth"]]},
+  {d:1,o:"1.10",q:"A 64-bit engineering application won't install on an older PC. Which is the MOST likely reason?",c:["The PC runs a 32-bit OS","The monitor is too small","The PC has an SSD","The user is a standard account"],a:0,why:"A 64-bit app needs a 64-bit OS (and CPU). 32-bit apps can run on 64-bit Windows, not the other way round.",key:"The OS is 32-bit; 64-bit apps need a 64-bit OS.",kw:[["32"]]},
+  {d:1,o:"1.11",q:"A new hire can sign in to Microsoft 365 but has no Outlook mailbox or Teams. What did the admin MOST likely forget?",c:["Assign a Microsoft 365 license to the user","Run gpupdate","Join the PC to a workgroup","Enable BitLocker"],a:0,why:"Cloud services are licensed per user. With no license assigned, the account exists but gets no mailbox or apps.",key:"Assign the user a Microsoft 365 license.",kw:[["licen"]]},
+  {d:1,o:"1.11",q:"A user's laptop is low on space because OneDrive downloads every file. Which setting helps MOST?",c:["Turn off Windows Update","Files On-Demand, so files stay in the cloud until opened","Format the drive to FAT32","Disable the recycle bin"],a:1,why:"Files On-Demand (or choosing which folders sync) keeps placeholders locally and saves disk space.",key:"Enable Files On-Demand or limit which folders sync.",kw:[["demand","sync","folder"]]},
+  // ---- Domain 2 ----
+  {d:2,o:"2.1",q:"A data center wants to know exactly who entered the server room and when, using the employees' ID cards. What should be installed?",c:["Bollards","A badge reader with access logging","A magnetometer","Motion-activated lighting"],a:1,why:"Badge readers control entry and log each card swipe with a timestamp.",key:"A badge reader (with access logs).",kw:[["badge"]]},
+  {d:2,o:"2.1",q:"Which TWO are biometric authentication methods? (Choose two.)",c:["Retina scan","Voice recognition","Key fob","Smart card","PIN"],a:[0,1],why:"Biometrics are 'something you are': retina, fingerprint, palm, face, voice. Fobs and smart cards are 'something you have'; a PIN is 'something you know'.",key:"Retina scan and voice recognition (also fingerprint, palm, face).",kw:[["retina"],["voice"]]},
+  {d:2,o:"2.1",q:"Laptops keep disappearing from a shared training room during the day. Which control is the simplest fix?",c:["Cable locks on each laptop","A fence around the building","Zero trust","Longer passwords"],a:0,why:"Equipment (cable) locks physically secure devices in shared areas.",key:"Equipment/cable locks.",kw:[["lock","cable"]]},
+  {d:2,o:"2.2",q:"A user needs to install software once but shouldn't be an admin day to day. Which approach follows least privilege?",c:["Add them to Administrators permanently","Keep a standard account; an admin approves the UAC prompt with admin credentials","Enable the Guest account","Add them to Power Users"],a:1,why:"Standard account for daily work; elevate only when needed through UAC. Power Users has no extra rights on modern Windows.",key:"Keep them standard; an admin enters credentials at the UAC prompt (Run as administrator).",kw:[["standard","uac","credential"]]},
+  {d:2,o:"2.2",q:"Every user in Sales needs a personal network drive (H:) mapped when they sign in. Where is this set in Active Directory?",c:["The user's Profile tab: home folder (and/or logon script)","The OU's Delegation tab","Local Users and Groups","Device Manager"],a:0,why:"In AD Users and Computers, the Profile tab sets the home folder drive and the logon script.",key:"User properties › Profile tab › Home folder (or a logon script / GPO).",kw:[["home","profile","logon","login"]]},
+  {d:2,o:"2.2",q:"A sales rep carries client files on a USB flash drive. Which feature encrypts the drive with no third-party software?",c:["EFS","BitLocker To Go","FileVault","NTFS compression"],a:1,why:"BitLocker To Go encrypts removable drives. EFS encrypts individual files on NTFS, and FileVault is macOS.",key:"BitLocker To Go.",kw:[["to go"]]},
+  {d:2,o:"2.2",q:"A user wants to sign in to Windows with their face instead of a password. Which feature provides this?",c:["Windows Hello","Credential Manager","SSO","UAC"],a:0,why:"Windows Hello supports facial recognition, fingerprint and PIN, which enables passwordless sign-in.",key:"Windows Hello (facial recognition).",kw:[["hello"]]},
+  {d:2,o:"2.4",q:"A PC's boot sector is infected and Windows won't start. Which tool lets you run bootrec and remove the infection?",c:["Task Manager","Windows Recovery Environment (recovery console)","Event Viewer","msconfig"],a:1,why:"WinRE's command prompt runs offline: bootrec /fixmbr and /fixboot, and offline scans.",key:"Windows Recovery Environment (recovery console) with bootrec / offline scanning.",kw:[["recovery","winre","bootrec"]]},
+  {d:2,o:"2.4",q:"Several staff keep clicking malicious links in emails. Which control addresses the ROOT cause?",c:["Reinstall Windows on their PCs","Anti-phishing user education and training","Disable USB ports","Upgrade to WPA3"],a:1,why:"The cause is user behavior, so training addresses it. Email gateways help, but people still need to recognize phishing.",key:"Anti-phishing training / user education.",kw:[["train","educat"]]},
+  {d:2,o:"2.5",q:"A sticker over a restaurant's menu QR code sends diners to a fake payment site. What is this?",c:["Vishing","QR code phishing","Evil twin","Whaling"],a:1,why:"QR code phishing (quishing) uses a malicious QR code to lead victims to a phishing site.",key:"QR code phishing (quishing).",kw:[["qr"]]},
+  {d:2,o:"2.5",q:"Which TWO are vulnerabilities rather than attacks? (Choose two.)",c:["A PC missing six months of patches","A laptop with antivirus and firewall disabled","Tailgating","SQL injection","Vishing"],a:[0,1],why:"Unpatched and unprotected systems are weaknesses. Tailgating, SQL injection and vishing are attacks that exploit weaknesses.",key:"Unpatched systems and unprotected systems (no AV/firewall).",kw:[["patch"],["antivirus","firewall","unprotected"]]},
+  {d:2,o:"2.7",q:"Which policy BEST stops attackers from guessing passwords over and over?",c:["Account lockout after several failed attempts","Password expiration every 7 days","Disabling AutoRun","Login time restrictions"],a:0,why:"Lockout after failed attempts directly blocks brute-force and guessing.",key:"Account lockout after a set number of failed logins.",kw:[["lockout","lock"]]},
+  {d:2,o:"2.7",q:"Office PCs are left signed in when people go to lunch. Which TWO controls help? (Choose two.)",c:["Screensaver lock with password after inactivity","Train users to press Win+L when leaving","Disable the Guest account","Enable UPnP","Use FAT32"],a:[0,1],why:"Automatic screen lock plus the habit of locking (Win+L) protect unattended PCs.",key:"Auto screen lock (screensaver password) and locking manually with Win+L.",kw:[["screen","saver","lock"],["win+l","lock"]]},
+  {d:2,o:"2.7",q:"A new batch of workstations all have the same default local administrator password. What should be done FIRST?",c:["Change the default admin password (and rename or disable the account)","Enable the Guest account","Disable Windows Update","Install a screensaver"],a:0,why:"Default credentials are well known. Change them before deployment.",key:"Change the default administrator password (rename/disable the account).",kw:[["change","default","password"]]},
+  {d:2,o:"2.8",q:"An employee's personal phone is enrolled with a work profile. They quit. What should IT wipe?",c:["The entire phone","Only the corporate work profile and its data","Nothing, it's personal","The SIM card"],a:1,why:"With BYOD, MDM removes only corporate data and apps. A full wipe is for corporate-owned devices.",key:"Only the corporate/work profile (selective wipe).",kw:[["work","corporate","profile","selective"]]},
+  {d:2,o:"2.8",q:"A user left their phone in a taxi. Which feature helps find it, and erase it if it can't be recovered?",c:["A locator app such as Find My","Developer mode","Rotation lock","NFC"],a:0,why:"Locator apps show location, play a sound, lock and remote-wipe.",key:"A locator app (Find My / Find My Device) with remote lock and wipe.",kw:[["find","locat"]]},
+  {d:2,o:"2.9",q:"A technician quick-formats a hard drive before donating the PC. Why is this NOT enough?",c:["Quick format only rebuilds the file table, so the data can be recovered","Quick format destroys the drive","Quick format only works on SSDs","Donations require NTFS"],a:0,why:"Standard (quick) format leaves the data on the platters. Wipe or overwrite the drive, or destroy it.",key:"A quick/standard format leaves data recoverable; use a wipe/overwrite tool.",kw:[["recover"]]},
+  {d:2,o:"2.9",q:"A company outsources disposal of 300 old drives. What should it get from the vendor?",c:["A certificate of destruction","An EULA","An SLA for uptime","A restore point"],a:0,why:"A certificate of destruction proves the drives were destroyed. Keep it for audits.",key:"A certificate of destruction.",kw:[["certificate"]]},
+  {d:2,o:"2.10",q:"A family wants visitors to have internet access without seeing their NAS or smart TV. What should be configured on the router?",c:["A guest network","Port forwarding","UPnP","A screened subnet for the NAS"],a:0,why:"Guest networks isolate visitors from internal devices.",key:"A guest Wi-Fi network (client isolation).",kw:[["guest"]]},
+  {d:2,o:"2.10",q:"Which TWO steps harden a new SOHO router's management? (Choose two.)",c:["Change the default admin password","Disable remote (WAN-side) administration","Enable UPnP","Broadcast the default SSID","Turn off firmware updates"],a:[0,1],why:"Change default credentials and manage only from inside (HTTPS). UPnP and default SSIDs weaken security.",key:"Change the default admin password and disable WAN-side remote management.",kw:[["password"],["remote","wan"]]},
+  {d:2,o:"2.11",q:"A website keeps showing an old version of a page after the company updated it. What should the user try FIRST?",c:["Clear the browser cache","Disable the pop-up blocker","Install an extension","Reinstall Windows"],a:0,why:"A stale cache serves old files. Clearing the cache (or a hard refresh) loads the new version.",key:"Clear the browser cache (or hard refresh).",kw:[["cache"]]},
+  {d:2,o:"2.11",q:"A user finds a 'faster' version of a popular browser on a file-sharing site. What's the risk?",c:["None if it's free","Untrusted sources can bundle malware; download from the vendor and verify the hash","It will only work in private browsing","It disables HTTPS"],a:1,why:"Install browsers only from trusted sources, and verify downloads with the published hash.",key:"Untrusted source may contain malware; get it from the official vendor and check the hash.",kw:[["trust","vendor","official","hash"]]},
+  // ---- Domain 3 ----
+  {d:3,o:"3.1",q:"After a power outage, a PC shows 'No operating system found'. A USB stick is still plugged in. What should you do FIRST?",c:["Remove the USB stick and check the boot order","Reinstall Windows","Run bootrec /rebuildbcd","Replace the drive"],a:0,why:"Start with the simplest cause: the PC is trying to boot from USB. Fix the boot order before repairing boot records.",key:"Remove the USB media and check the UEFI boot order.",kw:[["usb","boot order"]]},
+  {d:3,o:"3.1",q:"Windows warns 'USB controller resource' errors after a user plugs in a hub full of webcams and drives. What's the fix?",c:["Move some devices to ports on a different USB controller","Run sfc /scannow","Disable USB selective suspend","Replace the CPU"],a:0,why:"A USB controller has limited endpoints. Spread devices across controllers.",key:"Move devices to a different USB controller/port.",kw:[["controller","port"]]},
+  {d:3,o:"3.1",q:"A service won't start and reports a dependency error. Where do you check what it depends on?",c:["The service's Properties › Dependencies tab in services.msc","Disk Management","Device Manager","msinfo32"],a:0,why:"services.msc shows dependencies, startup type and the logon account. Event Viewer has the details.",key:"services.msc › the service's Dependencies tab (and Event Viewer).",kw:[["services","dependenc"]]},
+  {d:3,o:"3.1",q:"One user's profile loads with a temporary desktop and their settings missing on every sign-in. Other users are fine. What fixes it?",c:["Rebuild the user's Windows profile","Reinstall Windows","Replace the hard drive","Run ipconfig /renew"],a:0,why:"A corrupt profile affects one user. Back up their data, remove the bad profile and let Windows create a new one.",key:"Rebuild the Windows profile (back up data first).",kw:[["profile"]]},
+  {d:3,o:"3.1",q:"A desktop shuts itself off after about 20 minutes of heavy use, with no BSOD. What's the MOST likely cause?",c:["Overheating","A corrupt user profile","An expired license","DNS misconfiguration"],a:0,why:"Sudden shutdowns under load usually mean thermal protection. Check fans, dust and temperatures.",key:"Overheating; check fans, dust and temperatures.",kw:[["heat","thermal","temperature"]]},
+  {d:3,o:"3.2",q:"An iPhone won't install the latest iOS update. It has 1 GB free and a 15% battery. Which TWO steps help? (Choose two.)",c:["Free up storage space","Charge the battery or plug in","Enable developer mode","Jailbreak it","Turn on airplane mode"],a:[0,1],why:"OS updates need free space and enough battery or power.",key:"Free up storage and charge / connect power.",kw:[["storage","space"],["charge","battery","power"]]},
+  {d:3,o:"3.2",q:"One app keeps closing on an Android phone right after opening. What should you try FIRST?",c:["Force-stop it and clear the app's cache","Factory reset the phone","Replace the battery","Root the phone"],a:0,why:"Start with the least invasive app-level fixes: force stop, clear cache, update or reinstall. Then restart the phone.",key:"Force stop, clear cache, update or reinstall the app.",kw:[["cache","force","reinstall","update"]]},
+  {d:3,o:"3.2",q:"A phone's battery now lasts half a day. Battery settings show one social app using 45%. What's the BEST next step?",c:["Restrict that app's background activity or uninstall it","Replace the screen","Enable NFC","Perform a factory reset"],a:0,why:"Per-app battery stats point to the culprit. Restrict its background refresh, update it or remove it.",key:"Restrict/uninstall the battery-hungry app.",kw:[["app","background","restrict","uninstall"]]},
+  {d:3,o:"3.3",q:"A user installed a flashlight app from an unofficial store. Now the phone shows a 'data-usage limit' warning and runs hot. What's the MOST likely cause?",c:["Malicious app sending data in the background","Normal flashlight usage","A failing screen","Weak Wi-Fi"],a:0,why:"Unofficial app source plus high data use and heat point to a malicious app. Remove it and scan.",key:"A malicious app from an unofficial store; uninstall it and scan.",kw:[["malicious","malware","app"]]},
+  {d:3,o:"3.3",q:"Which TWO are common symptoms of a compromised phone? (Choose two.)",c:["Fake security warnings urging you to install an app","A sudden flood of ads","The screen autorotates","Bluetooth pairs normally","Updates install on schedule"],a:[0,1],why:"Fake warnings and lots of ads point to adware or malware.",key:"Fake security warnings and a high number of ads.",kw:[["fake","warning"],["ad"]]},
+  {d:3,o:"3.4",q:"A user sees a pop-up from 'PC Shield Pro' (not installed by IT) saying 37 viruses were found and demanding payment. What is this?",c:["A rogue antivirus false alert (malware)","A legitimate Defender alert","A Windows activation notice","A driver update"],a:0,why:"Fake security software showing false alerts is a classic PC security symptom. Treat it as malware.",key:"Rogue antivirus / false alert; follow the malware removal process.",kw:[["rogue","fake","malware","false"]]},
+  {d:3,o:"3.4",q:"A PC's Windows updates and Defender updates have failed for weeks, and Defender won't open. What should you suspect?",c:["Malware disabling security tools","A bad monitor cable","Low disk space only","A DNS cache problem"],a:0,why:"Malware often blocks updates and security tools. Start the malware removal process.",key:"Malware blocking updates and antivirus.",kw:[["malware"]]},
+  {d:3,o:"3.4",q:"A user keeps getting spammy 'You won a prize!' notifications in the corner of the screen, even with the browser closed. What's the BEST fix?",c:["Revoke the website's notification permission in the browser","Reinstall Windows","Replace the NIC","Disable UAC"],a:0,why:"Sites allowed to send push notifications can do so in the background. Revoke the permission and scan.",key:"Remove the site's notification permission in browser settings.",kw:[["notification"]]},
+  // ---- Domain 4 ----
+  {d:4,o:"4.1",q:"A tier 1 tech can't fix a server error because they lack permissions. What should they do?",c:["Escalate the ticket to the next tier with clear notes","Close the ticket","Ask the user for the admin password","Reinstall the server"],a:0,why:"Escalate per the process and document everything you tried in the progress notes.",key:"Escalate to tier 2/3 with progress notes.",kw:[["escalat"]]},
+  {d:4,o:"4.1",q:"Which document tells a technician step by step how to set up accounts, email and hardware for a new employee?",c:["New-user setup checklist (onboarding SOP)","Incident report","EULA","Change request"],a:0,why:"Onboarding checklists are standard operating procedures for new-user setup.",key:"A new-user setup checklist (SOP).",kw:[["checklist","onboard","sop"]]},
+  {d:4,o:"4.2",q:"Which group reviews a change request's risk and decides whether it's approved?",c:["The change advisory board (CAB)","The help desk","End users","The vendor"],a:0,why:"The CAB approves or rejects changes after reviewing the risk analysis.",key:"The change advisory board (CAB).",kw:[["cab","advisory","board"]]},
+  {d:4,o:"4.2",q:"A change request form must include which TWO items? (Choose two.)",c:["The purpose and scope of the change","A rollback plan","The technician's home address","The user's password","The CEO's approval only"],a:[0,1],why:"Requests document purpose, scope, type, date/time, affected systems, risk, rollback plan and the responsible staff member.",key:"Purpose/scope and a rollback plan (also date/time, affected systems, risk level).",kw:[["purpose","scope"],["rollback","back out","backout"]]},
+  {d:4,o:"4.3",q:"A company has nightly backups but has never tried restoring from them. What's the risk?",c:["The backups may not actually restore when needed","None, backups always work","The license is invalid","The backups are too fast"],a:0,why:"Recovery testing proves the backups work. Untested backups can fail when you need them.",key:"Untested backups may fail; schedule regular recovery tests.",kw:[["test","restore"]]},
+  {d:4,o:"4.3",q:"A small office keeps its only backup on a NAS next to the server. Which threat does this NOT protect against?",c:["A fire in the server room","Accidental file deletion","A single failed drive in the server","A corrupted spreadsheet"],a:0,why:"An onsite-only backup burns along with the server. Keep an offsite copy (3-2-1 rule).",key:"Fire, flood or theft at the site; add an offsite copy.",kw:[["fire","offsite","site"]]},
+  {d:4,o:"4.4",q:"Which TWO should a tech do before replacing a RAM module? (Choose two.)",c:["Unplug the power cord","Use an ESD strap and mat","Wear safety goggles only","Open the power supply","Work on carpet"],a:[0,1],why:"Disconnect power, then ground yourself and the work area with ESD gear.",key:"Disconnect power and use ESD protection (strap and mat).",kw:[["power","unplug"],["esd","strap","mat"]]},
+  {d:4,o:"4.4",q:"A tech needs to move a 70-lb UPS. What's the correct approach?",c:["Bend at the knees, keep the back straight, and get help or a cart","Lift with the back quickly","Drag it by the power cord","Lift above the head"],a:0,why:"Proper lifting: use your legs, keep the load close, and team-lift or use a cart for heavy items.",key:"Lift with the legs, back straight, and get help or use a cart.",kw:[["knee","legs","help","cart"]]},
+  {d:4,o:"4.5",q:"A toner cartridge cracked and spilled powder in the printer. What should be used to clean it up?",c:["A toner vacuum (or ESD-safe vacuum with a fine filter)","A household vacuum","A wet paper towel and hot water","Compressed air indoors"],a:0,why:"Toner particles are fine enough to pass through, or even ignite in, a normal vacuum. Use a toner vacuum and check the SDS.",key:"A toner vacuum (not a household vacuum); dispose per the SDS.",kw:[["toner vacuum","vacuum"]]},
+  {d:4,o:"4.5",q:"A server room's air is very dry in winter. What risk increases?",c:["Electrostatic discharge","Condensation","Toner fusing","DNS failures"],a:0,why:"Low humidity increases ESD. High humidity causes condensation and corrosion.",key:"ESD / static electricity.",kw:[["static","esd"]]},
+  {d:4,o:"4.5",q:"Lights in an office dim briefly several times a day, and PCs sometimes reboot. What's this and what helps?",c:["Under-voltage (brownouts); use a UPS","Power surge; use a fan","Blackout; use a KVM","Normal; nothing needed"],a:0,why:"Brownouts are under-voltage events. A UPS or line conditioner keeps power stable.",key:"Brownouts (under-voltage); install a UPS.",kw:[["brownout","under"],["ups"]]},
+  {d:4,o:"4.6",q:"While fixing a PC, a tech finds what appears to be illegal content. What should they do FIRST?",c:["Stop, preserve the evidence and report it to management per policy","Delete the files","Copy them to a USB drive to show coworkers","Confront the employee"],a:0,why:"Don't alter evidence. Follow incident response: report through the proper channel and start the chain of custody.",key:"Stop, preserve evidence, report to management (who involves law enforcement), document everything.",kw:[["report","management","preserve"]]},
+  {d:4,o:"4.6",q:"Investigators need to analyze a suspect's hard drive. What protects data integrity?",c:["Make a forensic image, hash it, and work only on the copy","Boot the original drive and browse it","Defragment the drive first","Run chkdsk /r on it"],a:0,why:"A hashed bit-for-bit copy proves nothing changed. Never work on the original.",key:"Create a hashed forensic copy and analyze the copy.",kw:[["copy","image"],["hash"]]},
+  {d:4,o:"4.6",q:"A small business bought a 'Home & Student' office license to use on company PCs. What's the issue?",c:["Personal-use licenses usually forbid commercial use","Home licenses expire after 1 day","It's open source","Nothing, any license works"],a:0,why:"Personal and corporate licenses differ. Business use needs a commercial license.",key:"Personal-use license doesn't cover commercial use; buy a business license.",kw:[["personal","commercial","business","corporate"]]},
+  {d:4,o:"4.6",q:"Which TWO are regulated data types that need special handling? (Choose two.)",c:["Credit card numbers","Patient medical records","A company's public website text","The office Wi-Fi SSID","Printer model numbers"],a:[0,1],why:"Payment card data (PCI DSS) and healthcare data (PHI/HIPAA) are regulated, along with government IDs and PII.",key:"Credit card data and healthcare records (PHI).",kw:[["credit","card"],["medical","health","patient"]]},
+  {d:4,o:"4.7",q:"A frustrated customer says the laptop is 'totally broken'. What's the BEST first response?",c:["Ask open-ended questions and repeat the problem back to confirm","Tell them they probably broke it","Start replacing parts immediately","Use technical terms to show expertise"],a:0,why:"Stay calm, don't argue or dismiss them, ask open-ended questions and clarify by repeating back.",key:"Listen, ask open-ended questions, and restate the problem to confirm.",kw:[["open","question","repeat","clarif","listen"]]},
+  {d:4,o:"4.7",q:"A tech will arrive 30 minutes late to an on-site appointment. What should they do?",c:["Contact the customer beforehand and give a new arrival time","Show up late without saying anything","Skip the appointment","Text a friend instead"],a:0,why:"Being on time and setting expectations are professionalism basics. Communicate delays early.",key:"Call the customer ahead of time with a new ETA.",kw:[["call","contact","notify"]]},
+  {d:4,o:"4.7",q:"While working at an exec's desk, a tech notices printed salary reports. What should they do?",c:["Ignore them and avoid reading or touching them","Take a photo for later","Mention the numbers to coworkers","Move them to the printer"],a:0,why:"Treat customers' confidential materials with discretion: don't read, copy or discuss them.",key:"Leave them alone and keep it confidential.",kw:[["ignore","confidential","leave","don"]]},
+  {d:4,o:"4.8",q:"An admin downloads a 'cleanup' PowerShell script from a forum and runs it on 50 PCs. Which TWO risks does this create? (Choose two.)",c:["It could introduce malware","It could change system settings unintentionally","It will improve battery life","It speeds up DNS","It encrypts traffic"],a:[0,1],why:"Untested scripts can carry malware or misconfigure systems. Some can also crash machines by misusing resources.",key:"Malware and unintended system setting changes (also crashes from runaway resource use).",kw:[["malware"],["setting","change"]]},
+  {d:4,o:"4.8",q:"Which task is a GOOD fit for a scheduled script?",c:["Remapping network drives at every sign-in","Comforting an upset user","Replacing a failed PSU","Signing a change approval"],a:0,why:"Scripting use cases: remapping drives, restarts, installs, backups, gathering information, starting updates.",key:"Remapping network drives (also restarts, installs, backups, data gathering).",kw:[["map","drive"]]},
+  {d:4,o:"4.9",q:"A user wants help but needs to watch everything the tech does and approve the session. Which built-in Windows tool fits?",c:["Quick Assist / Windows Remote Assistance","SSH","RDP to a locked screen","Telnet"],a:0,why:"Quick Assist and MSRA are invitation-based: the user stays signed in and watches. RDP signs the user out of the console.",key:"Quick Assist or Windows Remote Assistance (msra).",kw:[["quick assist","remote assistance","msra"]]},
+  {d:4,o:"4.9",q:"A company's RDP port is open to the internet and logs show thousands of failed logins. What's the BEST fix?",c:["Close the port and require a VPN with MFA for remote access","Change RDP to a different port only","Disable the firewall","Use VNC without a password"],a:0,why:"Don't expose RDP directly. Put it behind a VPN (or gateway) with MFA. Changing the port alone is only obscurity.",key:"Remove internet exposure; require VPN + MFA.",kw:[["vpn"]]},
+  {d:4,o:"4.10",q:"An employee pastes a customer list with phone numbers into a free public AI chatbot. What's the main concern?",c:["Data privacy: the public AI may store or train on the PII","The AI might be slow","Plagiarism of the phone numbers","Hallucinated phone numbers"],a:0,why:"Public AI tools may keep prompts. Confidential data and PII belong only in approved private AI tools under the appropriate-use policy.",key:"Data privacy / PII exposure; use only approved private AI per policy.",kw:[["privacy","pii","data"]]},
+  {d:4,o:"4.10",q:"Which document tells employees which AI tools they're allowed to use and what data they can enter?",c:["An AI appropriate-use policy","An SLA","A EULA","An incident report"],a:0,why:"Appropriate-use policies govern AI tools and the data put into them.",key:"An AI appropriate-use (acceptable use) policy.",kw:[["policy","use"]]}
+);
+
+/* spread the correct answers across A–E with a fixed (deterministic) reorder, so positions never give the answer away.
+   Applies to the whole bank: the original questions leaned heavily on B. */
+EXAM.forEach((q, n) => {
+  const len = q.c.length, perm = [...Array(len).keys()];
+  let seed = 7 + n * 131;
+  for (let i = len - 1; i > 0; i--) { seed = (seed * 1103515245 + 12345) % 2147483648; const j = seed % (i + 1); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+  const c = perm.map(i => q.c[i]), m = old => perm.indexOf(old);
+  q.c = c; q.a = Array.isArray(q.a) ? q.a.map(m).sort((x, y) => x - y) : m(q.a);
+});
+
 /* ===== Round 4: drag-and-drop PBQs ===== */
 PBQS.push(
   {id:"dnd-remote",d:4,o:"4.9",title:"Match the remote access technology",win:"Drag and drop · Remote access",
@@ -1251,6 +1612,82 @@ PBQS.push(
    fields:[{id:"m",type:"dnd",label:"Commands",items:["df","grep","find","chmod","chown","fsck","ip","pwd"],
      targets:[{t:"Show free space on each mounted file system",ans:"df"},{t:"Search inside log files for 'Failed password'",ans:"grep"},{t:"Locate every *.conf file under /etc",ans:"find"},{t:"Make deploy.sh executable",ans:"chmod"},{t:"Give alice ownership of app.conf",ans:"chown"},{t:"Repair the file system on an unmounted disk",ans:"fsck"},{t:"Show the server's IP addresses and routes",ans:"ip"}],
      why:"pwd prints your current directory, so it's the extra item here. passwd is the command that changes passwords."}]}
+);
+
+/* ===== Windows-style simulated PBQs: click rows in a mock tool, then choose the action ===== */
+PBQS.push(
+{id:"sim-disk",d:1,o:"1.4",sim:true,title:"Disk Management: new drive, full C:",win:"Disk Management",menu:["File","Action","View","Help"],
+ brief:"A user's PC has three storage problems. In Disk Management, select the right disk or volume for each task, then pick the action you'd use.",
+ fields:[
+  {id:"g1",type:"grid",label:"A new 2 TB drive was installed, but it doesn't appear in File Explorer.",cols:["Disk / Volume","Layout","File system","Status","Capacity"],
+   rows:[{c:["Disk 0 · C:","Simple","NTFS","Healthy (Boot, Page File, Primary Partition)","237 GB"],ic:"💽"},{c:["Disk 0 · Unallocated","-","-","Unallocated","200 GB"],ic:"⬛"},{c:["Disk 1 · Unknown","-","-","Not Initialized","1863 GB"],ic:"⚠️"},{c:["Disk 2 · USB (no letter)","Simple","exFAT","Healthy (Primary Partition)","58 GB"],ic:"🔌"}],
+   ans:2,acts:["Initialize Disk","Extend Volume…","Format…","Change Drive Letter and Paths…","Delete Volume…"],act:"Initialize Disk",
+   why:"A brand-new disk shows as Unknown / Not Initialized. Initialize it (GPT for 2 TB+ or UEFI), then create and format a new simple volume."},
+  {id:"g2",type:"grid",label:"C: is almost full. The 200 GB of free space right after C: on the same disk should be added to it.",cols:["Disk / Volume","Layout","File system","Status","Capacity"],
+   rows:[{c:["Disk 0 · C:","Simple","NTFS","Healthy (Boot, Page File, Primary Partition)","237 GB"],ic:"💽"},{c:["Disk 0 · Unallocated","-","-","Unallocated","200 GB"],ic:"⬛"},{c:["Disk 1 · Unknown","-","-","Not Initialized","1863 GB"],ic:"⚠️"},{c:["Disk 2 · USB (no letter)","Simple","exFAT","Healthy (Primary Partition)","58 GB"],ic:"🔌"}],
+   ans:0,acts:["Initialize Disk","Extend Volume…","Shrink Volume…","Format…","Mark Partition as Active"],act:"Extend Volume…",
+   why:"Right-click the volume you want to grow (C:) and choose Extend Volume. It works because the unallocated space sits directly after C: on the same disk."},
+  {id:"g3",type:"grid",label:"The user's USB flash drive is healthy but never gets a drive letter, so it doesn't show in File Explorer.",cols:["Disk / Volume","Layout","File system","Status","Capacity"],
+   rows:[{c:["Disk 0 · C:","Simple","NTFS","Healthy (Boot, Page File, Primary Partition)","237 GB"],ic:"💽"},{c:["Disk 0 · Unallocated","-","-","Unallocated","200 GB"],ic:"⬛"},{c:["Disk 1 · Unknown","-","-","Not Initialized","1863 GB"],ic:"⚠️"},{c:["Disk 2 · USB (no letter)","Simple","exFAT","Healthy (Primary Partition)","58 GB"],ic:"🔌"}],
+   ans:3,acts:["Format…","Change Drive Letter and Paths…","Delete Volume…","Extend Volume…","Initialize Disk"],act:"Change Drive Letter and Paths…",
+   why:"The volume is fine; it just has no letter. Change Drive Letter and Paths › Add assigns one without touching the data. Formatting would erase it."}
+ ]},
+{id:"sim-evt",d:3,o:"3.1",sim:true,title:"Event Viewer: overnight reboot and a failing drive",win:"Event Viewer › Windows Logs › System",menu:["File","Action","View","Help"],
+ brief:"A workstation restarted overnight and users report corrupted files on D:. Click each event to read its details, then answer.",
+ fields:[
+  {id:"g1",type:"grid",label:"Select the event that shows Windows restarted WITHOUT a clean shutdown.",cols:["Level","Date and Time","Source","Event ID"],
+   rows:[
+    {c:["Information","10/22 7:58:12 AM","Service Control Manager","7036"],name:"Service Control Manager event 7036 (Information)",ic:"ℹ️",detail:"The Windows Update service entered the running state."},
+    {c:["Information","10/22 2:15:40 AM","EventLog","6005"],name:"EventLog event 6005 (Information)",ic:"ℹ️",detail:"The Event log service was started."},
+    {c:["Critical","10/22 2:15:31 AM","Kernel-Power","41"],name:"Kernel-Power event 41 (Critical)",ic:"⛔",detail:"The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly."},
+    {c:["Warning","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Warning)",ic:"⚠️",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
+    {c:["Information","10/21 6:02:55 PM","EventLog","6006"],name:"EventLog event 6006 (Information)",ic:"ℹ️",detail:"The Event log service was stopped."},
+    {c:["Information","10/21 6:01:12 PM","WindowsUpdateClient","19"],name:"WindowsUpdateClient event 19 (Information)",ic:"ℹ️",detail:"Installation Successful: Windows successfully installed the following update: Security Intelligence Update for Microsoft Defender Antivirus."}],
+   ans:2,
+   why:"Kernel-Power 41 (Critical) means the PC restarted without a clean shutdown: power loss, a hang or a crash. 6006/6005 mark a normal stop and start of the log service."},
+  {id:"g2",type:"grid",label:"Select the event that explains the corrupted files on D: (Disk 1).",cols:["Level","Date and Time","Source","Event ID"],
+   rows:[
+    {c:["Information","10/22 7:58:12 AM","Service Control Manager","7036"],name:"Service Control Manager event 7036 (Information)",ic:"ℹ️",detail:"The Windows Update service entered the running state."},
+    {c:["Critical","10/22 2:15:31 AM","Kernel-Power","41"],name:"Kernel-Power event 41 (Critical)",ic:"⛔",detail:"The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly."},
+    {c:["Warning","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Warning)",ic:"⚠️",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
+    {c:["Information","10/21 6:01:12 PM","WindowsUpdateClient","19"],name:"WindowsUpdateClient event 19 (Information)",ic:"ℹ️",detail:"Installation Successful: Windows successfully installed the following update: Security Intelligence Update for Microsoft Defender Antivirus."}],
+   ans:2,
+   why:"Disk event 7 reports a bad block on Harddisk1 (the second physical disk, D:). Bad sectors cause read errors and corrupted files."},
+  {id:"s3",type:"select",label:"What's the BEST next step for D:?",opts:["Back up D: now, run chkdsk /r, and plan to replace the drive","Defragment D:","Run sfc /scannow","Clear the System log","Disable Windows Update"],ans:"Back up D: now, run chkdsk /r, and plan to replace the drive",
+   why:"Protect the data first. chkdsk /r maps out bad sectors and recovers readable data, but a drive growing bad blocks is failing and should be replaced. sfc repairs Windows system files, not a data drive."},
+  {id:"s4",type:"select",label:"What should you check about the overnight reboot?",opts:["Power: UPS, power cables, and whether there was an outage at 2:15 AM","The user's desktop wallpaper","The DNS cache","The Recycle Bin size"],ans:"Power: UPS, power cables, and whether there was an outage at 2:15 AM",
+   why:"Kernel-Power 41 with no BSOD logged usually points to power loss or a hard hang. Check the power path first, then temperatures and drivers."}
+ ]},
+{id:"sim-task",d:1,o:"1.4",sim:true,title:"Task Manager: frozen app, slow boot, no printing",win:"Task Manager",menu:["File","Options","View"],
+ brief:"A user reports three problems. Use the Task Manager tab shown in each task to find the cause and pick the fix.",
+ fields:[
+  {id:"g1",type:"grid",label:"Processes tab: Outlook has been frozen for five minutes. Select it and choose the action.",cols:["Name","Status","CPU","Memory"],
+   rows:[{c:["Microsoft Edge","","2.1%","612 MB"],ic:"🌐"},{c:["Microsoft Outlook","Not responding","0%","488 MB"],ic:"📧"},{c:["Microsoft Teams","","1.4%","402 MB"],ic:"💬"},{c:["Windows Explorer","","0.3%","96 MB"],ic:"📁"},{c:["Antimalware Service Executable","","0.8%","210 MB"],ic:"🛡️"}],
+   ans:1,acts:["End task","Restart","Open file location","Search online","Properties"],act:"End task",
+   why:"Select the 'Not responding' app and End task, then reopen it. Ending Windows Explorer or the antimalware service isn't the fix."},
+  {id:"g2",type:"grid",label:"Startup apps tab: the PC takes 4 minutes to boot. The user never uses the game launcher. Select it and choose the action.",cols:["Name","Publisher","Status","Startup impact"],
+   rows:[{c:["Windows Security notification icon","Microsoft Corporation","Enabled","Low"],ic:"🛡️"},{c:["Realtek HD Audio Manager","Realtek Semiconductor","Enabled","Low"],ic:"🔊"},{c:["GameHub Launcher","GameHub Inc.","Enabled","High"],ic:"🎮"},{c:["Microsoft OneDrive","Microsoft Corporation","Enabled","Medium"],ic:"☁️"}],
+   ans:2,acts:["Disable","Enable","End task","Uninstall"],act:"Disable",
+   why:"Disable unneeded High-impact startup apps. Task Manager's Startup apps tab only enables/disables; it doesn't uninstall. Leave security tools enabled."},
+  {id:"g3",type:"grid",label:"Services tab: nothing will print and jobs won't queue. Select the service and choose the action.",cols:["Name","PID","Description","Status"],
+   rows:[{c:["Dhcp","1420","DHCP Client","Running"],ic:"⚙️"},{c:["Dnscache","2088","DNS Client","Running"],ic:"⚙️"},{c:["Spooler","","Print Spooler","Stopped"],ic:"⚙️"},{c:["wuauserv","","Windows Update","Stopped"],ic:"⚙️"},{c:["WinDefend","3304","Microsoft Defender Antivirus Service","Running"],ic:"⚙️"}],
+   ans:2,acts:["Start","Stop","Restart","Open Services","Go to details"],act:"Start",
+   why:"The Print Spooler queues print jobs. It's stopped, so start it (and check in services.msc that its startup type is Automatic). Windows Update being stopped is normal: it's a trigger-start service."}
+ ]},
+{id:"sim-dev",d:3,o:"3.1",sim:true,title:"Device Manager: broken NIC after a driver update",win:"Device Manager",menu:["File","Action","View","Help"],
+ brief:"Since yesterday's driver update, the wired network is down, and a new webcam isn't working. Select the device for each task and pick the action.",
+ fields:[
+  {id:"g1",type:"grid",label:"The Ethernet adapter stopped working right after yesterday's driver update. Select it and pick the fastest safe fix.",cols:["Device","Category","Status"],
+   rows:[{c:["Intel(R) UHD Graphics 770","Display adapters","This device is working properly."],ic:"🖥️"},{c:["Intel(R) Ethernet Connection I219-V","Network adapters","This device cannot start. (Code 10)"],ic:"⚠️"},{c:["Intel(R) Wi-Fi 6 AX201","Network adapters","This device is disabled. (Code 22)"],ic:"⬇️"},{c:["Unknown device","Other devices","The drivers for this device are not installed. (Code 28)"],ic:"❓"},{c:["HID Keyboard Device","Keyboards","This device is working properly."],ic:"⌨️"}],
+   ans:1,acts:["Update driver","Roll Back Driver","Disable device","Uninstall device","Scan for hardware changes"],act:"Roll Back Driver",
+   why:"The problem started with a driver update, so Properties › Driver › Roll Back Driver restores the previous working version."},
+  {id:"g2",type:"grid",label:"The new USB webcam shows up with no driver installed. Select it and pick the action.",cols:["Device","Category","Status"],
+   rows:[{c:["Intel(R) UHD Graphics 770","Display adapters","This device is working properly."],ic:"🖥️"},{c:["Intel(R) Ethernet Connection I219-V","Network adapters","This device cannot start. (Code 10)"],ic:"⚠️"},{c:["Intel(R) Wi-Fi 6 AX201","Network adapters","This device is disabled. (Code 22)"],ic:"⬇️"},{c:["Unknown device","Other devices","The drivers for this device are not installed. (Code 28)"],ic:"❓"},{c:["HID Keyboard Device","Keyboards","This device is working properly."],ic:"⌨️"}],
+   ans:3,acts:["Update driver","Roll Back Driver","Enable device","Disable device","Uninstall device"],act:"Update driver",
+   why:"Code 28 means no driver is installed. Update driver (from Windows Update or the vendor's download). There's nothing to roll back."},
+  {id:"s3",type:"select",label:"The Wi-Fi adapter shows a down arrow (Code 22). What does that mean?",opts:["It was disabled; right-click › Enable device","Its driver is missing","The hardware has failed","It's an unknown device"],ans:"It was disabled; right-click › Enable device",
+   why:"A down-arrow icon and Code 22 mean the device is disabled in Device Manager. Enabling it is the fix."}
+ ]}
 );
 
 /* CompTIA 220-1202 acronyms (d = domain where they mostly appear) */
@@ -1581,7 +2018,7 @@ function examMC(v) {
   const answeredN = ex.qs.filter((qq, k) => answered(qq, ex.ans[k])).length;
   v.innerHTML = `<div class="bar"><span class="lbl">${ex.tag === "daily" ? "Daily challenge · " : ex.tag === "gen" ? "AI questions · " : ex.mode === "sim" ? "Simulation · " : ""}Question ${ex.cur + 1} / ${n}</span><span class="note">${answeredN} answered</span>
       <span class="score">${ex.end ? `<span class="timer" id="timer">${fmt(ex.end - Date.now())}</span>` : "untimed"}</span></div>
-    <div class="panel">${q.pbq ? `<div class="bar">${tagHTML(q)}<span class="tag">· PBQ · 3 points</span></div><h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p><div class="win"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="xbody">${pbqFormHTML(q, ex.ans[ex.cur], false, "xf-" + ex.cur)}</div></div>` : `${tagHTML(q)}${q.gk ? ' <span class="tag">· ✨ AI-generated</span>' : ""}<div class="prompt">${esc(q.q)}</div>
+    <div class="panel">${q.pbq ? `<div class="bar">${tagHTML(q)}<span class="tag">· PBQ · 3 points</span></div><h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p><div class="win${q.sim ? " sim" : ""}"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="xbody">${pbqFormHTML(q, ex.ans[ex.cur], false, "xf-" + ex.cur)}</div></div>` : `${tagHTML(q)}${q.gk ? ' <span class="tag">· ✨ AI-generated</span>' : ""}<div class="prompt">${esc(q.q)}</div>
       ${isMulti(q) ? `<p class="note" style="margin:-6px 0 10px"><b>Choose ${q.a.length}.</b> ${(ex.ans[ex.cur] || []).length}/${q.a.length} selected</p>` : ""}<div class="opts">${q.c.map((o, i) => `<button class="opt${(isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i) ? " sel" : ""}${isMulti(q) ? " multi" : ""}" type="button" data-i="${i}" aria-pressed="${isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i}"><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>`}
       <div class="row"><button class="btn ghost" id="exprev" ${ex.cur === 0 ? "disabled" : ""}>← Back</button>
       <button class="btn ghost" id="exflag">${ex.flags.has(ex.cur) ? "Unflag" : "Flag for review"}</button>
@@ -1769,7 +2206,7 @@ function renderStats() {
   wireSync();
   $("#reset").onclick = () => {
     $("#resetrow").innerHTML = `<span class="confirm"><span class="note">Erase all saved progress in this browser?</span><button class="btn" id="resetyes">Erase</button><button class="btn ghost" id="resetno">Cancel</button></span>`;
-    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); paintHud(); paintBadges(); renderStats(); };
+    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); store.set("bench", []); paintHud(); paintBadges(); renderStats(); };
     $("#resetno").onclick = renderStats;
   };
 }
@@ -1783,6 +2220,7 @@ function pbqBlank(q) {
     if (f.type === "order") { let o; do { o = shuffle(f.ans); } while (f.ans.length > 1 && o.every((x, i) => x === f.ans[i])); vals[f.id] = o; }
     else if (f.type === "check") vals[f.id] = [];
     else if (f.type === "dnd") vals[f.id] = f.targets.map(() => null);
+    else if (f.type === "grid") vals[f.id] = { r: null, a: "" };
     else vals[f.id] = "";
   });
   return vals;
@@ -1793,6 +2231,7 @@ function fieldOK(f, v) {
   if (f.type === "check") return v.length === f.ans.length && f.ans.every(a => v.includes(a));
   if (f.type === "order") return v.every((x, i) => x === f.ans[i]);
   if (f.type === "dnd") return f.targets.every((t, i) => v[i] === t.ans);
+  if (f.type === "grid") return v.r === f.ans && (!f.acts || v.a === f.act);
   return v === f.ans;
 }
 function pbqScore(q, vals) {
@@ -1804,14 +2243,19 @@ function pbqScore(q, vals) {
   });
   return { pts, tot };
 }
-function pbqFilled(q, vals) { return q.fields.every(f => f.type === "order" || f.type === "check" || (f.type === "dnd" ? vals[f.id].every(x => x !== null) : String(vals[f.id]).trim() !== "")); }
+function pbqFilled(q, vals) { return q.fields.every(f => f.type === "order" || f.type === "check" || (f.type === "grid" ? vals[f.id].r !== null && (!f.acts || vals[f.id].a) : f.type === "dnd" ? vals[f.id].every(x => x !== null) : String(vals[f.id]).trim() !== "")); }
+/* plain-text answer for any field type (used in grading and the Missed tab) */
+function fieldAnsText(f) {
+  if (f.type === "grid") { const r = f.rows[f.ans]; return (r.name || r.c[0]) + (f.acts ? " → " + f.act : ""); }
+  return Array.isArray(f.ans) ? (f.type === "order" ? "see order above" : f.ans.join(", ") || "none") : f.ans;
+}
 const dndSel = {};
 /* generic form renderer: used by the PBQ lab and the full exam simulation */
 function pbqFormHTML(q, vals, graded, prefix) {
-  return q.fields.map(f => {
+  return (q.menu ? `<div class="wmenu">${q.menu.map(m => `<span>${esc(m)}</span>`).join("")}</div>` : "") + q.fields.map(f => {
     const ok = graded ? fieldOK(f, vals[f.id]) : null;
     const mark = ok === null ? "" : `<span class="fmark ${ok ? "y" : "n"}" aria-label="${ok ? "correct" : "incorrect"}">${ok ? "✓" : "✗"}</span>`;
-    const why = graded ? `<div class="fwhy ${ok ? "y" : "n"}">${ok ? "" : `<b>Answer:</b> ${esc(Array.isArray(f.ans) ? (f.type === "order" ? "see order above" : f.ans.join(", ") || "none") : f.ans)}. `}${esc(f.why)}</div>` : "";
+    const why = graded ? `<div class="fwhy ${ok ? "y" : "n"}">${ok ? "" : `<b>Answer:</b> ${esc(fieldAnsText(f))}. `}${esc(f.why)}</div>` : "";
     const fid = `${prefix}-${f.id}`;
     let ctl = "";
     if (f.type === "select") ctl = `<select id="${fid}" ${graded ? "disabled" : ""}><option value="">Select…</option>${f.opts.map(o => `<option${vals[f.id] === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
@@ -1822,6 +2266,16 @@ function pbqFormHTML(q, vals, graded, prefix) {
         const good = graded ? s === f.ans[i] : null;
         return `<li class="${good === null ? "" : good ? "y" : "n"}"><span class="onum">${i + 1}</span><span class="ot">${esc(s)}${good === false ? `<span class="note"> → belongs at #${f.ans.indexOf(s) + 1}</span>` : ""}</span><span class="ob"><button type="button" data-mv="${i}" data-d="-1" aria-label="Move up" ${i === 0 || graded ? "disabled" : ""}>▲</button><button type="button" data-mv="${i}" data-d="1" aria-label="Move down" ${i === vals[f.id].length - 1 || graded ? "disabled" : ""}>▼</button></span></li>`;
       }).join("")}</ol>${graded ? `<div class="fwhy">${esc(f.why)}</div>` : ""}`;
+    }
+    else if (f.type === "grid") {
+      const v = vals[f.id], sel = v.r, row = sel !== null ? f.rows[sel] : null;
+      const cls = i => !graded ? (i === sel ? " sel" : "") : i === f.ans ? " y" : i === sel ? " n" : "";
+      return `<div class="gtask"><div class="glabel"><span class="gnum">Task</span> ${esc(f.label)} ${mark}</div>
+        <div class="lv" id="${fid}" role="group" aria-label="${esc(f.label)}"><table><thead><tr>${f.cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>
+        ${f.rows.map((r, i) => `<tr class="lvr${cls(i)}" data-r="${i}" tabindex="${graded ? -1 : 0}" role="button" aria-pressed="${i === sel}">${r.c.map((c, k) => `<td>${k === 0 && r.ic ? `<span class="lvic">${r.ic}</span>` : ""}${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+        ${f.rows.some(r => r.detail) ? `<div class="lvdetail">${row && row.detail ? `<b>${esc(row.name || row.c[0])}</b><br>${esc(row.detail)}` : `<span class="note">Select a row to see its details.</span>`}</div>` : ""}
+        ${f.acts ? `<div class="ctx${sel === null && !graded ? " off" : ""}"><span class="note">${sel === null && !graded ? "Select a row, then choose an action:" : "Action:"}</span>${f.acts.map(a => `<button type="button" class="ctxb${v.a === a ? " on" : ""}${graded && a === f.act ? " y" : graded && v.a === a ? " n" : ""}" data-act="${esc(a)}" aria-pressed="${v.a === a}" ${graded || sel === null ? "disabled" : ""}>${esc(a)}</button>`).join("")}</div>` : ""}
+        ${why}</div>`;
     }
     else if (f.type === "dnd") {
       const placed = vals[f.id], sel = dndSel[fid];
@@ -1847,6 +2301,12 @@ function wirePbqForm(q, vals, root, prefix, rerender) {
       const i = +b.dataset.mv, j = i + +b.dataset.d, a = vals[f.id];[a[i], a[j]] = [a[j], a[i]];
       rerender(); const nb = $(`#${fid} [data-mv="${j}"][data-d="${b.dataset.d}"]`) || $(`#${fid} [data-mv="${j}"]`); if (nb) nb.focus();
     });
+    else if (f.type === "grid") {
+      const box = $("#" + fid); if (!box) return;
+      const pick = i => { vals[f.id].r = i; rerender(); const r = $(`#${fid} [data-r="${i}"]`); if (r) r.focus(); };
+      box.querySelectorAll(".lvr").forEach(tr => { tr.onclick = () => pick(+tr.dataset.r); tr.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(+tr.dataset.r); } }; });
+      const host = box.closest(".gtask"); if (host) host.querySelectorAll(".ctxb").forEach(b => b.onclick = () => { vals[f.id].a = b.dataset.act; rerender(); const n = host.ownerDocument.querySelector(`#${fid}`); const nb = n && n.closest(".gtask").querySelector(".ctxb.on"); if (nb) nb.focus(); });
+    }
     else if (f.type === "dnd") {
       const box = $("#" + fid); if (!box) return;
       const place = (item, ti) => { const a = vals[f.id]; const prev = a.indexOf(item); if (prev >= 0) a[prev] = null; a[ti] = item; dndSel[fid] = null; rerender(); const z = $(`#${fid} [data-zone="${ti}"]`); if (z) z.focus(); };
@@ -1873,7 +2333,7 @@ function renderPBQ() {
   v.innerHTML = `<select class="txt pickm" id="pbqsel" aria-label="Choose a lab">${list.map(x => `<option value="${x.id}"${x.id === q.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] != null ? " (" + best[x.id] + "%)" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="pbq-${x.id}" aria-pressed="${x.id === q.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] != null ? ` <span class="mono note">${best[x.id]}%</span>` : ""}</button>`).join("")}</div>
     <div class="panel"><div class="bar">${tagHTML(q)}<span class="tag">· Performance-based${q.fields.some(f => f.type === "dnd") ? " · drag and drop" : ""}</span></div>
       <h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p>
-      <div class="win"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="pbqbody"></div></div>
+      <div class="win${q.sim ? " sim" : ""}"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="pbqbody"></div></div>
       <div class="row"><button class="btn" id="pbqsub" ${pq.graded ? "disabled" : ""}>Submit</button><button class="btn ghost" id="pbqreset">Reset</button>${pq.graded ? `<button class="btn ghost" id="pbqnext">Next PBQ →</button>` : ""}</div>
       <div id="pbqres"></div></div>`;
   list.forEach(x => { $("#pbq-" + x.id).onclick = () => { pbqInit(x); renderPBQ(); }; });
@@ -2045,7 +2505,7 @@ function missCard(key) {
   if (p === "e") { const q = EXAM[+id]; return q && { src: "Exam", d: q.d, o: q.o, front: `<div class="prompt" style="font-size:1.1rem">${esc(q.q)}</div>`, back: `<b>${esc(keyText(q))}</b><br>${esc(q.why)}`, short: q.q }; }
   if (p === "t") { const s = SCENS.find(x => x.id === id); return s && { src: "Ticket", d: s.d, o: s.o, front: `<div class="ticket" style="margin:0"><span class="lbl">Ticket</span><p>${esc(s.ticket)}</p></div><p class="note">Root cause and fix?</p>`, back: `<b>Cause:</b> ${esc(s.diag.c[s.diag.a])}<br><b>Fix:</b> ${esc(s.fix.c[s.fix.a])}`, short: s.title }; }
   if (p === "pf") { const [qid, fid] = id.split(":"); const q = PBQS.find(x => x.id === qid), f = q && q.fields.find(x => x.id === fid); if (!f) return null;
-    const ans = f.type === "dnd" ? `<ul style="margin:4px 0 0;padding-left:18px">${f.targets.map(x => `<li>${esc(x.t)} → <b>${esc(x.ans)}</b></li>`).join("")}</ul>` : f.type === "order" ? `<ol style="margin:4px 0 0;padding-left:20px">${f.ans.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : `<b>${esc(Array.isArray(f.ans) ? (f.ans.join(", ") || "none") : f.ans)}</b>`;
+    const ans = f.type === "grid" ? `<b>${esc(fieldAnsText(f))}</b>` : f.type === "dnd" ? `<ul style="margin:4px 0 0;padding-left:18px">${f.targets.map(x => `<li>${esc(x.t)} → <b>${esc(x.ans)}</b></li>`).join("")}</ul>` : f.type === "order" ? `<ol style="margin:4px 0 0;padding-left:20px">${f.ans.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : `<b>${esc(Array.isArray(f.ans) ? (f.ans.join(", ") || "none") : f.ans)}</b>`;
     return { src: "PBQ", d: q.d, o: q.o, front: `<span class="lbl">${esc(q.title)}</span><div class="prompt" style="font-size:1.1rem">${esc(f.label)}</div>${q.brief.length < 260 ? `<p class="note">${esc(q.brief)}</p>` : ""}`, back: `${ans}<br>${esc(f.why)}`, short: q.title + ": " + f.label }; }
   return extraCard(p, id);
 }
@@ -2172,20 +2632,24 @@ function renderToday() {
   const nextPbq = PBQS.find(q => (best[q.id] || 0) < 100), nextTicket = SCENS.find(s => !sb[s.id]);
   const mocks = stats.exams.filter(e => (e.mode === "mc" || e.mode === "sim") && e.n >= 30), lastMock = mocks[mocks.length - 1];
   const daysSinceMock = lastMock ? Math.floor((nowMs() - lastMock.t) / DAY) : null;
-  const plan = [];
+  const plan = [], bench = store.get("bench", []) || [];
+  const lastBak = store.get("lastbak", 0) || 0, bakDays = Math.floor((nowMs() - lastBak) / DAY);
+  const needBak = Object.keys(srs).length >= 30 && (!lastBak || bakDays >= 7);
   plan.push(due.length ? { t: `Review ${due.length} due card${due.length === 1 ? "" : "s"}`, s: `${dueMiss} from misses, ${due.length - dueMiss} scheduled flashcards · about ${Math.max(1, Math.round(due.length * 0.25))} min`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true });
   plan.push(dailyPlanItem());
   if (unseen.length) { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; plan.push({ t: `Learn ${Math.min(15, pick.length)} new flashcards`, s: `From ${weakDom}.0 ${DOMAINS[weakDom].name}, your lowest-readiness domain · ${unseen.length} cards not started yet`, b: "Learn", id: "pnew" }); }
   if (weakObj) plan.push({ t: `Drill objective ${weakObj.o}`, s: `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
   if (nextPbq) plan.push({ t: `PBQ lab: ${nextPbq.title}`, s: best[nextPbq.id] != null ? `Best so far ${best[nextPbq.id]}%. Get it to 100%.` : "Not attempted yet", b: "Open lab", id: "ppbq" });
   else if (nextTicket) plan.push({ t: `Troubleshoot: ${nextTicket.title}`, s: "Unsolved ticket", b: "Open ticket", id: "ptkt" });
+  if (needBak) plan.push({ t: "Back up your progress", s: lastBak ? `Last backup was ${bakDays} days ago. Clearing browser data would wipe your review schedule.` : "Your progress only lives in this browser. Save a backup file or code so it can't be lost.", b: "Back up", id: "pbak" });
   if (daysSinceMock === null || daysSinceMock >= 3) plan.push({ t: "Take a 30-question mock exam", s: lastMock ? `Last full mock was ${daysSinceMock} days ago (${Math.round(lastMock.pct * 100)}%)` : "You haven't taken one yet. It gives your readiness a baseline.", b: "Start mock", id: "pmock" });
   const checks = [
     [R[1].ret + R[2].ret + R[3].ret + R[4].ret >= 0.8 * CARDS.length, `Retain 80% of flashcards (recalled after a gap of 3+ days)`, `${Math.round(100 * (R[1].ret + R[2].ret + R[3].ret + R[4].ret) / CARDS.length)}%`],
     [mocks.length >= 2 && mocks.slice(-2).every(m => m.pct >= 0.85), "85%+ on your last two mock exams of 30+ questions", mocks.length ? mocks.slice(-2).map(m => Math.round(m.pct * 100) + "%").join(", ") : "none yet"],
     [PBQS.every(q => (best[q.id] || 0) === 100), `All ${PBQS.length} PBQ labs at 100%`, `${PBQS.filter(q => best[q.id] === 100).length}/${PBQS.length}`],
     [SCENS.every(s => sb[s.id]), `All ${SCENS.length} Troubleshoot tickets solved`, `${SCENS.filter(s => sb[s.id]).length}/${SCENS.length}`],
-    [Object.keys(srs).length >= 100 && missKeys().length < 10 && !due.length, "100+ cards started, Missed list under 10, nothing overdue", `${Object.keys(srs).length} started · ${missKeys().length} missed · ${due.length} due`]
+    [Object.keys(srs).length >= 100 && missKeys().length < 10 && !due.length, "100+ cards started, Missed list under 10, nothing overdue", `${Object.keys(srs).length} started · ${missKeys().length} missed · ${due.length} due`],
+    [bench.some(b => b.pct >= 85), "85%+ on a practice exam from an outside source", bench.length ? `best ${Math.max(...bench.map(b => b.pct))}%` : "none logged"]
   ];
   const ready = checks.filter(c => c[0]).length;
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
@@ -2198,7 +2662,13 @@ function renderToday() {
       ${[1, 2, 3, 4].map(d => `<tr><td><span class="tag"><span class="dd d${d}">${d}.0</span></span> ${esc(DOMAINS[d].short)} <span class="note">${DOMAINS[d].w}%</span></td><td class="num">${R[d].ret}/${R[d].total}</td><td class="num rdcol">${pct(R[d].exam)}${R[d].examN ? ` <span class="note">(${R[d].examN})</span>` : ""}</td><td class="num rdcol">${pct(R[d].labs)}</td><td><div class="bar rdbar" style="gap:8px;flex-wrap:nowrap"><div class="meter" style="flex:1"><i style="width:${Math.round(R[d].score * 100)}%;background:var(--d${d})"></i></div><span class="num mono" style="font-size:.8rem">${Math.round(R[d].score * 100)}%</span></div></td></tr>`).join("")}
       </tbody></table></div>
       <h3 style="margin:16px 0 6px">Ready to book? ${ready}/${checks.length}</h3>
-      <ul class="checks-list">${checks.map(c => `<li class="${c[0] ? "y" : ""}"><span class="ck">${c[0] ? "✓" : "○"}</span><span>${esc(c[1])}</span><span class="note mono">${esc(c[2])}</span></li>`).join("")}</ul></div>
+      <ul class="checks-list">${checks.map(c => `<li class="${c[0] ? "y" : ""}"><span class="ck">${c[0] ? "✓" : "○"}</span><span>${esc(c[1])}</span><span class="note mono">${esc(c[2])}</span></li>`).join("")}</ul>
+      <div class="bench" id="bench"><h3 style="margin:18px 0 4px">Outside practice exams</h3>
+        <p class="note" style="margin:0 0 10px">This site's readiness score is built from its own questions, so check it against someone else's. Take a full practice exam from another source near the end and log the score. If you're at 85%+ there too, book it.</p>
+        <div class="bar benchform"><select class="txt" id="bsrc" aria-label="Practice exam source">${BENCH_SRC.map(x => `<option>${esc(x)}</option>`).join("")}</select><input class="txt" id="bpct" type="number" min="0" max="100" inputmode="numeric" placeholder="Score %" aria-label="Score percent"><button class="btn sm" id="bgo" type="button">Log score</button></div>
+        <span class="note" id="bmsg"></span>
+        ${bench.length ? `<ul class="benchlist">${bench.map((b, i) => `<li><b class="mono${b.pct >= 85 ? " good" : ""}">${b.pct}%</b><span>${esc(b.src)}</span><span class="note">${new Date(b.t).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span><button class="btn ghost sm" type="button" data-bdel="${i}" aria-label="Delete this score">✕</button></li>`).join("")}</ul>` : ""}
+      </div></div>
     <details class="panel strat"><summary><h3 style="display:inline">Exam-day strategy</h3></summary>
       <ul>
         <li><b>PBQs usually come first.</b> If one is eating your time, flag it, move on and come back at the end. Don't burn 15 minutes on question 2.</li>
@@ -2218,20 +2688,61 @@ function renderToday() {
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); });
   go("ppbq", () => { pbqInit(nextPbq); setTab("pbq"); });
   go("ptkt", () => { scInit(nextTicket); setTab("scen"); });
+  go("pbak", () => { setTab("stats"); setTimeout(() => { const p = $("#syncpanel"); if (p) p.scrollIntoView({ block: "start", behavior: "smooth" }); }, 60); });
+  go("bgo", () => {
+    const pct = Math.round(+$("#bpct").value);
+    if (!$("#bpct").value || !(pct >= 0 && pct <= 100)) { $("#bmsg").textContent = "Enter a score from 0 to 100."; return; }
+    const b = store.get("bench", []) || []; b.push({ src: $("#bsrc").value, pct, t: nowMs() }); store.set("bench", b);
+    const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+  });
+  document.querySelectorAll("[data-bdel]").forEach(x => x.onclick = () => { const b = store.get("bench", []) || []; b.splice(+x.dataset.bdel, 1); store.set("bench", b); const y = window.scrollY; renderToday(); window.scrollTo({ top: y }); });
   go("pmock", () => { ex.phase = "setup"; ex.mode = "mc"; ex.len = 30; store.set("exmode", "mc"); store.set("exlen", 30); setTab("exam"); });
 }
 
 /* ================= PROGRESS SYNC (export / import) ================= */
-const SYNC_KEYS = ["hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
+const BENCH_SRC = ["Professor Messer practice exam", "Jason Dion practice exam", "CompTIA CertMaster Practice", "Mike Meyers / Total Seminars", "Other"];
+const SYNC_KEYS = ["bench", "hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
 function syncPanelHTML() {
-  return `<div class="panel"><h3>Move progress to another device</h3><p class="note" style="margin:6px 0 10px">Progress is saved separately in each browser. Copy this code on one device and paste it on the other to bring over your stats, review schedule and lab scores. Importing replaces the progress on that device.</p>
-    <div class="row" style="margin-top:0"><button class="btn ghost" id="sxexp" type="button">Show my progress code</button><button class="btn ghost" id="sximp" type="button">Paste a code</button></div><div id="sxbox"></div></div>`;
+  const lb = store.get("lastbak", 0) || 0;
+  return `<div class="panel" id="syncpanel"><h3>Back up and move your progress</h3><p class="note" style="margin:6px 0 10px">Progress is saved only in this browser, so clearing browser data wipes it. Save a backup file (or code) every week. Use the same file or code to move progress to another device. Restoring replaces the progress on that device.</p>
+    <p class="note" style="margin:0 0 6px">${lb ? `Last backup: ${new Date(lb).toLocaleDateString(undefined, { month: "short", day: "numeric" })} (${Math.floor((nowMs() - lb) / DAY)} days ago)` : "No backup yet."}</p>
+    <div class="row" style="margin-top:0">${window.claude ? "" : `<button class="btn" id="sxdl" type="button">Download backup file</button>`}<label class="btn ghost" for="sxfile" style="cursor:pointer">Restore from file<input type="file" id="sxfile" accept=".c2p,.txt,text/plain" hidden></label><button class="btn ghost" id="sxexp" type="button">Show my progress code</button><button class="btn ghost" id="sximp" type="button">Paste a code</button></div><div id="sxbox"></div></div>`;
+}
+function progressCode() {
+  const data = {}; SYNC_KEYS.forEach(k => { const v = store.get(k, undefined); if (v !== undefined) data[k] = v; });
+  return "C2P1." + btoa(unescape(encodeURIComponent(JSON.stringify({ v: 1, t: nowMs(), data }))));
+}
+function parseCode(raw) { raw = (raw || "").trim(); if (!raw.startsWith("C2P1.")) throw 0; return JSON.parse(decodeURIComponent(escape(atob(raw.slice(5))))); }
+function applyImport(obj) {
+  Object.entries(obj.data || {}).forEach(([k, v]) => store.set(k, v));
+  stats = store.get("stats", { items: {}, exams: [] }); srs = store.get("srs", {}); hype = Object.assign(H0(), store.get("hype", {})); paintHud(); const hb = $("#hypetoggle"); if (hb) { hb.outerHTML = hypeToggleHTML(); wireHypeToggle(); } active = new Set(store.get("domains", [1, 2, 3, 4]));
+  store.set("lastbak", nowMs());
+  buildDomainBar(); paintBadges(); renderStats();
+  if ($("#sxbox")) $("#sxbox").innerHTML = `<div class="fb good"><b class="v">Restored</b>Your saved progress is now on this device.</div>`;
 }
 function wireSync() {
   const box = $("#sxbox");
+  if ($("#sxdl")) $("#sxdl").onclick = () => {
+    const code = progressCode(), d = new Date(nowMs()), name = `core2-progress-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}.c2p`;
+    try {
+      const url = URL.createObjectURL(new Blob([code], { type: "text/plain" })), a = document.createElement("a");
+      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+      store.set("lastbak", nowMs());
+      box.innerHTML = `<div class="fb good"><b class="v">Backup saved</b>${esc(name)} is in your downloads. If nothing downloaded, use "Show my progress code" and save the code instead.</div>`;
+    } catch { box.innerHTML = `<div class="fb part">Downloads are blocked here. Use "Show my progress code" and save the code somewhere safe.</div>`; }
+  };
+  $("#sxfile").onchange = e => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      let obj; try { obj = parseCode(String(rd.result)); } catch { box.innerHTML = `<div class="fb bad">That file isn't a Core 2 Drill Room backup.</div>`; return; }
+      box.innerHTML = `<div class="fb part">Backup from ${esc(new Date(obj.t).toLocaleString())}. Restoring replaces the progress on this device.<div class="row"><button class="btn" id="sxfyes" type="button">Restore it</button><button class="btn ghost" id="sxfno" type="button">Cancel</button></div></div>`;
+      $("#sxfyes").onclick = () => applyImport(obj); $("#sxfno").onclick = () => { box.innerHTML = ""; };
+    };
+    rd.readAsText(file); e.target.value = "";
+  };
   $("#sxexp").onclick = () => {
-    const data = {}; SYNC_KEYS.forEach(k => { const v = store.get(k, undefined); if (v !== undefined) data[k] = v; });
-    const code = "C2P1." + btoa(unescape(encodeURIComponent(JSON.stringify({ v: 1, t: nowMs(), data }))));
+    const code = progressCode(); store.set("lastbak", nowMs());
     box.innerHTML = `<textarea class="txt mono" id="sxcode" readonly style="margin-top:10px;min-height:90px;font-size:.75rem">${esc(code)}</textarea><div class="row"><button class="btn" id="sxcopy" type="button">Copy code</button><span class="note" id="sxmsg">${Math.round(code.length / 1024)} KB</span></div>`;
     $("#sxcopy").onclick = async () => { try { await navigator.clipboard.writeText(code); $("#sxmsg").textContent = "Copied. Paste it on your other device."; } catch { $("#sxcode").select(); $("#sxmsg").textContent = "Copy blocked here. The code is selected, so press Ctrl+C or Cmd+C."; } };
   };
@@ -2239,13 +2750,9 @@ function wireSync() {
     box.innerHTML = `<textarea class="txt mono" id="sxin" placeholder="Paste your C2P1… code" style="margin-top:10px;min-height:90px;font-size:.75rem"></textarea><div class="row"><button class="btn" id="sxgo" type="button">Import</button><span class="note" id="sxmsg"></span></div>`;
     $("#sxgo").onclick = () => {
       const raw = $("#sxin").value.trim(), msg = $("#sxmsg");
-      let obj = null; try { if (!raw.startsWith("C2P1.")) throw 0; obj = JSON.parse(decodeURIComponent(escape(atob(raw.slice(5))))); } catch { msg.textContent = "That code isn't valid. Copy the whole code, starting with C2P1."; return; }
+      let obj = null; try { obj = parseCode(raw); } catch { msg.textContent = "That code isn't valid. Copy the whole code, starting with C2P1."; return; }
       if (!pendingImport) { pendingImport = true; msg.textContent = `Code from ${new Date(obj.t).toLocaleString()}. This replaces the progress on this device. Press Import again to confirm.`; return; }
-      pendingImport = false;
-      Object.entries(obj.data || {}).forEach(([k, v]) => store.set(k, v));
-      stats = store.get("stats", { items: {}, exams: [] }); srs = store.get("srs", {}); hype = Object.assign(H0(), store.get("hype", {})); paintHud(); const hb = $("#hypetoggle"); if (hb) { hb.outerHTML = hypeToggleHTML(); wireHypeToggle(); } active = new Set(store.get("domains", [1, 2, 3, 4]));
-      buildDomainBar(); paintBadges(); renderStats();
-      const m = $("#sxmsg") || $("#view-stats"); if ($("#sxbox")) $("#sxbox").innerHTML = `<div class="fb good"><b class="v">Imported</b>Progress from the other device is now on this one.</div>`;
+      pendingImport = false; applyImport(obj);
     };
   };
 }
