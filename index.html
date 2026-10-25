@@ -1287,7 +1287,7 @@ CARDS.push(
   {d:1,o:"1.2",t:"Image deployment",def:"Capturing one configured reference install (after Sysprep) and copying it to many PCs. Faster and more consistent than separate clean installs."},
   {d:1,o:"1.2",t:"Remote network installation",def:"Installing the OS from a network share or deployment server (often booted via PXE) instead of local media."},
   {d:1,o:"1.2",t:"Load driver (setup)",def:"Setup can't see the disk (RAID or NVMe controller)? Use 'Load driver' to add the third-party storage driver from USB."},
-  {d:1,o:"1.2",t:"Upgrade compatibility check",def:"Before upgrading: back up files and user preferences, confirm apps and drivers support the new OS, and confirm hardware meets requirements."},
+  {d:1,o:"1.2",t:"Upgrade compatibility check",def:"Before upgrading: back up files and user preferences, confirm application and driver support (backward compatibility), and confirm hardware meets requirements."},
   {d:1,o:"1.2",t:"External / hot-swappable drive boot",def:"Booting setup from an external USB drive or eSATA drive you can connect without powering down. Set the boot order in UEFI first."},
   // 1.3
   {d:1,o:"1.3",t:"Edition RAM limits",def:"Windows 11 Home: 128 GB. Pro: 2 TB. Pro for Workstations and Enterprise: 6 TB."},
@@ -1483,6 +1483,30 @@ CARDS.push(
   {d:4,o:"4.10",t:"AI appropriate-use policy",def:"Company rules on which AI tools are allowed and what data can go into them."},
   {d:4,o:"4.10",t:"AI data privacy",def:"Public AI may store prompts and use them for training. Never paste confidential data or PII; use the approved private AI."},
   // audit pass 2
+  // audit pass 3: checked against the official 220-1202 objectives (v3.0)
+  {d:3,o:"3.3",t:"Limited or no internet (mobile)",def:"Malware can hijack DNS or proxy settings or eat bandwidth, leaving a phone with limited or no connectivity. Check for unknown VPN or proxy profiles and recent apps."},
+  {d:1,o:"1.1",t:"Update limitations",def:"Older or unsupported OS versions stop getting feature and security updates, and new apps may drop support for them."},
+  {d:1,o:"1.2",t:"Multiboot",def:"Installing two or more OSs on one PC (separate partitions). A boot menu picks which one starts."},
+  {d:1,o:"1.2",t:"Product life cycle",def:"Each OS version has a support end date. Plan upgrades before end of support (Windows 10 consumer support ended Oct 14, 2025)."},
+  {d:1,o:"1.3",t:"Edition UI differences",def:"Desktop look is the same across editions; Windows 11 adds a centered Start menu, Snap layouts and widgets. Differences are features (BitLocker, RDP host, domain join, gpedit), not style."},
+  {d:1,o:"1.7",t:"Shared resources (workgroup vs. domain)",def:"Workgroup: each PC shares its own folders and printers with local accounts. Domain: shares on file and print servers, controlled by AD accounts and groups."},
+  {d:1,o:"1.8",t:"macOS system folders",def:"/Applications (installed apps), /Users (home folders), /Library (system-wide settings and support files), /System (core OS, protected), ~/Library = /Users/<name>/Library (per-user settings)."},
+  {d:1,o:"1.8",t:"iCloud services",def:"iCloud Drive (file sync), iMessage and FaceTime (messages and calls across Apple devices), photos, Keychain sync and device backups."},
+  {d:1,o:"1.10",t:"Downloadable package",def:"Installer downloaded from the vendor or a store (.exe, .msi, .dmg, .pkg). Verify the source and hash."},
+  {d:2,o:"2.11",t:"Browser feature management",def:"Enable or disable plug-ins, extensions and features (like autofill or location access) in browser settings, or centrally with Group Policy."},
+  {d:4,o:"4.1",t:"Custom software install procedure",def:"An SOP for installing a specific software package the same way every time: steps, settings, licensing and testing."},
+  {d:4,o:"4.3",t:"Restore: in-place vs. alternative location",def:"In-place (overwrite) restores to the original location, replacing current files. Alternative location restores to a different folder or drive so you can compare first."},
+  {d:4,o:"4.3",t:"Backup frequency",def:"How often you back up sets how much data you can lose. More critical data means more frequent backups."},
+  {d:4,o:"4.4",t:"Cable management",def:"Route, label and secure cables so no one trips and airflow stays clear."},
+  {d:4,o:"4.4",t:"Electrical fire safety",def:"Cut power if it's safe, use a Class C (CO2) extinguisher, never water. Evacuate if it spreads."},
+  {d:4,o:"4.5",t:"Disposal of other devices",def:"Monitors, phones and circuit boards are e-waste. Recycle through certified e-waste vendors per local rules and the SDS."},
+  {d:4,o:"4.5",t:"Equipment placement",def:"Keep equipment off the floor, away from heat, water and direct sun, with room for airflow."},
+  {d:4,o:"4.6",t:"Mutual NDA (MNDA)",def:"Non-disclosure agreement where BOTH parties agree to protect each other's confidential information."},
+  {d:4,o:"4.6",t:"Regulatory and business compliance",def:"Following laws (HIPAA, PCI DSS, GDPR) and internal policies. Non-compliance can mean fines or lost business."},
+  {d:4,o:"4.7",t:"Avoid interrupting / judging",def:"Let the customer finish, don't judge how the problem happened, and don't dismiss their concern."},
+  {d:4,o:"4.7",t:"Offer repair or replacement options",def:"Explain the choices, costs and timelines so the customer can decide."},
+  {d:4,o:"4.7",t:"Document and follow up",def:"Give the customer documentation of the work done, and follow up later to confirm the fix held."},
+  {d:4,o:"4.7",t:"Professional appearance",def:"Dress for the environment, use proper language, and avoid personal interruptions while working."},
   {d:2,o:"2.6",t:"Malware removal step 1",def:"Investigate and verify malware symptoms. Confirm it's really malware before acting."},
   {d:2,o:"2.6",t:"Malware removal step 2",def:"Quarantine the infected system: disconnect it from the network so it can't spread."},
   {d:2,o:"2.6",t:"Malware removal step 3",def:"Disable System Restore (Windows) so infected restore points are deleted and can't reinfect the PC."},
@@ -1590,6 +1614,17 @@ EXAM.push(
   {d:4,o:"4.9",q:"A company's RDP port is open to the internet and logs show thousands of failed logins. What's the BEST fix?",c:["Close the port and require a VPN with MFA for remote access","Change RDP to a different port only","Disable the firewall","Use VNC without a password"],a:0,why:"Don't expose RDP directly. Put it behind a VPN (or gateway) with MFA. Changing the port alone is only obscurity.",key:"Remove internet exposure; require VPN + MFA.",kw:[["vpn"]]},
   {d:4,o:"4.10",q:"An employee pastes a customer list with phone numbers into a free public AI chatbot. What's the main concern?",c:["Data privacy: the public AI may store or train on the PII","The AI might be slow","Plagiarism of the phone numbers","Hallucinated phone numbers"],a:0,why:"Public AI tools may keep prompts. Confidential data and PII belong only in approved private AI tools under the appropriate-use policy.",key:"Data privacy / PII exposure; use only approved private AI per policy.",kw:[["privacy","pii","data"]]},
   {d:4,o:"4.10",q:"Which document tells employees which AI tools they're allowed to use and what data they can enter?",c:["An AI appropriate-use policy","An SLA","A EULA","An incident report"],a:0,why:"Appropriate-use policies govern AI tools and the data put into them.",key:"An AI appropriate-use (acceptable use) policy.",kw:[["policy","use"]]}
+);
+
+/* audit pass 3 questions (appended so existing question numbers never shift) */
+EXAM.push(
+  {d:1,o:"1.8",q:"A Mac user wants an app's settings reset for their account only, not for everyone on the Mac. Which folder holds per-user app settings?",c:["/System","~/Library (/Users/<name>/Library)","/Applications","/Library"],a:1,why:"Per-user preferences and support files live in the user's Library folder. /Library is system-wide, /System is the protected OS, and /Applications holds the apps.",key:"~/Library, i.e. /Users/<name>/Library.",kw:[["library"]]},
+  {d:1,o:"1.2",q:"A developer wants Windows and Ubuntu on one laptop and to choose which OS starts at power-on. What is this setup called?",c:["Multiboot","Image deployment","Zero-touch deployment","Repair installation"],a:0,why:"Multiboot installs multiple OSs on separate partitions with a boot menu (often GRUB) to pick one.",key:"Multiboot (dual boot).",kw:[["boot"]]},
+  {d:4,o:"4.3",q:"A user deleted a report yesterday and has edited a newer copy since. You want to recover yesterday's version without overwriting today's file. Which restore option fits?",c:["Restore to an alternative location","In-place restore (overwrite)","Full backup","Synthetic full backup"],a:0,why:"Restoring to an alternative location keeps the current file and lets the user compare. In-place would overwrite today's work.",key:"Restore to an alternative location.",kw:[["alternat","different"]]},
+  {d:4,o:"4.4",q:"A UPS in the server room is smoking and small flames appear. After cutting power if it's safe, which extinguisher should be used?",c:["Water","Class C (CO2 or other nonconductive agent)","Foam","Class A only"],a:1,why:"Electrical fires need a nonconductive agent: Class C, usually CO2. Water conducts electricity.",key:"Class C (CO2).",kw:[["class c","co2"]]},
+  {d:4,o:"4.6",q:"Two companies will share confidential product plans with each other during a partnership. Which agreement fits?",c:["Mutual NDA (MNDA)","EULA","SLA","AUP"],a:0,why:"An MNDA binds both parties to protect each other's information. A one-way NDA protects only one side.",key:"A mutual non-disclosure agreement (MNDA).",kw:[["mutual","mnda"]]},
+  {d:4,o:"4.7",q:"After replacing a laptop's keyboard, what should the technician do to close out professionally? (Choose two.)",c:["Provide documentation of the work done","Follow up later to confirm the fix held","Post about the repair on social media","Skip the ticket notes since it's fixed","Tell the user how they broke it"],a:[0,1],why:"Professional close-out: document the service and follow up with the customer.",key:"Provide service documentation and follow up with the customer.",kw:[["document"],["follow"]]},
+  {d:2,o:"2.11",q:"An admin needs to stop users from installing any browser extensions on company PCs. What's the BEST approach?",c:["Use Group Policy browser feature management to block extensions","Ask users nicely","Clear the cache daily","Enable private browsing"],a:0,why:"Browser feature management (via Group Policy or MDM) enables or disables plug-ins, extensions and features centrally.",key:"Centrally disable extensions with Group Policy / browser management.",kw:[["policy","manage"]]}
 );
 
 /* spread the correct answers across A–E with a fixed (deterministic) reorder, so positions never give the answer away.
