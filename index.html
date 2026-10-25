@@ -413,13 +413,13 @@ main{padding-bottom:70px}
 .topctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:relative}
 .musicslot{position:static}
 .musicbtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 14px;font:700 .82rem var(--f-mono);cursor:pointer;color:var(--muted)}
-.musicbtn .mi{font-size:.95rem;line-height:1}
+.musicbtn .mico{font-size:.95rem;line-height:1}
 .musicbtn .eq{display:none;gap:2px;align-items:flex-end;height:16px}
 .musicbtn .eq i{display:block;width:3px;background:var(--accent);border-radius:1px;animation:eqb 1s ease-in-out infinite}
 .musicbtn .eq i:nth-child(2){animation-delay:-.4s}.musicbtn .eq i:nth-child(3){animation-delay:-.7s}
 @keyframes eqb{0%,100%{height:4px}50%{height:16px}}
 .musicbtn.playing{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
-.musicbtn.playing .mi{display:none}.musicbtn.playing .eq{display:flex}
+.musicbtn.playing .mico{display:none}.musicbtn.playing .eq{display:flex}
 .musicbtn .eq{height:14px}
 @media (prefers-reduced-motion:reduce){.musicbtn .eq i{animation:none;height:10px}}
 .musicpanel{position:absolute;left:0;top:calc(100% + 8px);z-index:45;width:min(330px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.25);padding:14px 16px}
@@ -431,6 +431,25 @@ main{padding-bottom:70px}
 .mpvol{display:flex;align-items:center;gap:6px;flex:1;min-width:140px}.mpvol input{flex:1;min-width:0}
 .mpnow{display:grid;gap:2px;margin-top:12px;font-size:.8rem}
 #mnow .on{color:var(--accent);font-weight:700}
+.mpvibe{display:grid;grid-template-columns:1fr 1fr;width:100%}
+.mpvibe button+button{border-left:0}.mpvibe button:nth-child(even){border-left:1.5px solid var(--line)}.mpvibe button:nth-child(n+3){border-top:1.5px solid var(--line)}
+.mprain{margin:0 0 10px;font-size:.85rem;gap:8px}
+/* ---------- pomodoro ---------- */
+.pomobtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 14px;font:700 .82rem var(--f-mono);cursor:pointer;color:var(--muted)}
+.pomobtn.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.pomobtn.on.brk{border-color:var(--good);color:var(--good);background:color-mix(in srgb,var(--good) 10%,transparent)}
+.poface{text-align:center;margin:4px 0 12px}
+.poring{--p:0;width:150px;height:150px;border-radius:50%;margin:6px auto 4px;display:grid;place-items:center;position:relative;background:conic-gradient(var(--accent) calc(var(--p) * 360deg),var(--line) 0)}
+.poring.brk{background:conic-gradient(var(--good) calc(var(--p) * 360deg),var(--line) 0)}
+.poring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--card)}
+.poring>div{position:relative}
+.potime{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.podots{display:flex;gap:9px;justify-content:center;margin:10px 0 4px}
+.podots i{width:11px;height:11px;border-radius:50%;border:2px solid var(--accent)}
+.podots i.done{background:var(--accent)}.podots i.cur{box-shadow:0 0 0 3px var(--accent-soft)}
+.poset{margin-top:12px;font-size:.88rem}.poset summary{cursor:pointer;color:var(--muted);font-weight:600}
+.posetg{display:grid;gap:6px;margin-top:8px}
+.posetg label{display:flex;align-items:center;gap:8px}.posetg label input{width:72px;padding:6px 8px;margin-left:auto}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -3534,12 +3553,14 @@ window.__c2test = {
 const arcadeRoll0 = arcadeRoll;
 
 /* ================= STUDY MUSIC: generative lo-fi, composed live with Web Audio (no audio files, nothing to license) ================= */
-const MU = Object.assign({ on: false, vol: 45, vibe: "chill" }, store.get("music", {}));
+const MU = Object.assign({ on: false, vol: 45, vibe: "chill", rain: 0 }, store.get("music", {}));
 MU.on = false; // never autoplay; browsers need a tap first anyway
-const saveMu = () => store.set("music", { vol: MU.vol, vibe: MU.vibe });
+const saveMu = () => store.set("music", { vol: MU.vol, vibe: MU.vibe, rain: MU.rain });
 const VIBES = {
-  chill: { name: "Chill beats", bpm: 74, drums: true, melody: 0.28, rain: 0, swing: 0.62 },
-  focus: { name: "Deep focus", bpm: 60, drums: false, melody: 0.12, rain: 0.06, swing: 0.5 }
+  chill: { name: "Chill beats", bpm: 74, drums: true, melody: 0.28, rain: 0, swing: 0.62, music: true },
+  focus: { name: "Deep focus", bpm: 60, drums: false, melody: 0.12, rain: 20, swing: 0.5, music: true },
+  rainy: { name: "Rainy night", bpm: 54, drums: false, melody: 0.08, rain: 60, swing: 0.5, music: true },
+  rainonly: { name: "Rain only", bpm: 60, drums: false, melody: 0, rain: 85, swing: 0.5, music: false }
 };
 /* jazzy diatonic progressions in C: [chord name, bass root (MIDI), voicing intervals above root+12] */
 const CH = {
@@ -3572,9 +3593,12 @@ function muBuild() {
   for (let i = 0; i < cd.length; i++) { cd[i] = (Math.random() * 2 - 1) * 0.012; if (Math.random() < 0.0004) { const a = (Math.random() * 0.5 + 0.2) * (Math.random() < .5 ? -1 : 1); for (let k = 0; k < 30 && i + k < cd.length; k++) cd[i + k] += a * Math.exp(-k / 5); } }
   mu.crack = c.createBufferSource(); mu.crack.buffer = cb; mu.crack.loop = true; const cf = c.createBiquadFilter(); cf.type = "bandpass"; cf.frequency.value = 2400; cf.Q.value = 0.6;
   const cgain = c.createGain(); cgain.gain.value = 0.9; mu.crack.connect(cf).connect(cgain).connect(mu.bus); mu.crack.start();
-  // rain bed for Deep focus
-  mu.rain = c.createGain(); mu.rain.gain.value = 0; const rs = c.createBufferSource(); rs.buffer = nb; rs.loop = true;
-  const rf = c.createBiquadFilter(); rf.type = "bandpass"; rf.frequency.value = 1100; rf.Q.value = 0.3; rs.connect(rf).connect(mu.rain).connect(mu.bus); rs.start();
+  // rain: a low steady bed + bright hiss (droplets and thunder are scheduled in muStep)
+  mu.rain = c.createGain(); mu.rain.gain.value = 0; mu.rain.connect(mu.out);
+  const bed = c.createBufferSource(); bed.buffer = nb; bed.loop = true; const bf = c.createBiquadFilter(); bf.type = "lowpass"; bf.frequency.value = 850; const bg = c.createGain(); bg.gain.value = 0.55; bed.connect(bf).connect(bg).connect(mu.rain); bed.start();
+  const his = c.createBufferSource(); his.buffer = nb; his.loop = true; his.playbackRate.value = 0.93; const hf = c.createBiquadFilter(); hf.type = "bandpass"; hf.frequency.value = 3200; hf.Q.value = 0.5; const hg = c.createGain(); hg.gain.value = 0.16; his.connect(hf).connect(hg).connect(mu.rain); his.start(0, 0.7);
+  // slow swell so the rain breathes
+  const lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 0.07; lg.gain.value = 0.12; lfo.connect(lg).connect(bg.gain); lfo.start();
 }
 const env = (g, t, a, peak, dec) => { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec); };
 function muKeys(notes, t, dur, vel) {
@@ -3613,9 +3637,23 @@ function muKick(t) {
   o.type = "sine"; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
   o.connect(g).connect(mu.bus); env(g, t, 0.004, 0.55, 0.32); o.start(t); o.stop(t + 0.4);
 }
+function muDrop(t) {
+  const c = mu.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = mu.noise; f.type = "bandpass"; f.frequency.value = 1800 + Math.random() * 4200; f.Q.value = 6 + Math.random() * 10;
+  s.connect(f).connect(g).connect(mu.rain); env(g, t, 0.002, 0.08 + Math.random() * 0.22, 0.03 + Math.random() * 0.05); s.start(t, Math.random() * 1.5); s.stop(t + 0.12);
+}
+function muThunder(t) {
+  const c = mu.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), d = 3 + Math.random() * 3;
+  s.buffer = mu.noise; s.loop = true; f.type = "lowpass"; f.frequency.value = 110 + Math.random() * 80;
+  s.connect(f).connect(g).connect(mu.rain); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9, t + 0.4 + Math.random()); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  s.start(t); s.stop(t + d + 0.1);
+}
 function muStep() {
   const V = VIBES[MU.vibe], spb = 60 / V.bpm, s = mu.step % 8, beat = Math.floor(s / 2), off = s % 2;
   const t = mu.next + (off ? spb * (V.swing - 0.5) : 0);
+  const rl = MU.rain / 100;
+  if (rl > 0) { for (let k = 0; k < 4; k++) if (Math.random() < rl * 0.9) muDrop(mu.next + Math.random() * spb / 2); if (s === 0 && rl > 0.35 && Math.random() < 0.035) muThunder(t + Math.random() * spb); }
+  if (!V.music || (!mu.cur && s !== 0)) { mu.next += spb / 2; mu.step++; if (mu.step % 8 === 0) mu.bar++; return; }
   if (s === 0) {
     if (mu.bar % 4 === 0) mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
     const name = mu.prog[mu.bar % 4], [root, iv] = CH[name];
@@ -3637,13 +3675,14 @@ function muStep() {
 }
 function muTick() { if (!mu.ctx) return; while (mu.next < mu.ctx.currentTime + 0.3) muStep(); }
 const muLevel = () => Math.pow(MU.vol / 100, 1.6) * 0.9;
+const rainLevel = () => Math.pow(MU.rain / 100, 1.3) * 0.9;
 function muPlay() {
   try {
     if (!mu.ctx) muBuild();
     mu.ctx.resume();
     MU.on = true; mu.next = mu.ctx.currentTime + 0.08; mu.step = 0;
     mu.out.gain.cancelScheduledValues(mu.ctx.currentTime); mu.out.gain.setTargetAtTime(muLevel(), mu.ctx.currentTime, 0.4);
-    mu.rain.gain.setTargetAtTime(VIBES[MU.vibe].rain, mu.ctx.currentTime, 0.5);
+    mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.5);
     clearInterval(mu.timer); mu.timer = setInterval(muTick, 50); muTick();
   } catch (e) { MU.on = false; toast("Music isn't supported in this browser.", "bad"); }
   paintMu();
@@ -3670,16 +3709,17 @@ function paintMu() {
   b.classList.toggle("playing", MU.on); b.setAttribute("aria-label", MU.on ? "Study music playing. Open music controls" : "Study music. Open music controls");
   const p = $("#mplay"); if (p) { p.textContent = MU.on ? "❚❚ Pause" : "▶ Play"; p.setAttribute("aria-pressed", MU.on); }
   document.querySelectorAll("[data-vibe]").forEach(x => x.setAttribute("aria-pressed", x.dataset.vibe === MU.vibe));
-  const n = $("#mnow"); if (n && !MU.on) n.textContent = "Paused";
+  const n = $("#mnow"); if (n && !MU.on) n.textContent = "Paused"; else if (n && !VIBES[MU.vibe].music) n.textContent = "Rain on the window 🌧️";
 }
 function buildMusicUI() {
   if ($("#musicbtn")) return;
   const b = document.createElement("button"); b.id = "musicbtn"; b.type = "button"; b.className = "musicbtn"; b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "musicpanel");
-  b.innerHTML = `<span class="mi">🎧</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="ml">Study music</span>`;
+  b.innerHTML = `<span class="mico">🎧</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="ml">Study music</span>`;
   const p = document.createElement("div"); p.id = "musicpanel"; p.className = "musicpanel"; p.hidden = true; p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "Study music");
   p.innerHTML = `<div class="mphead"><b>Study music</b><button type="button" class="mpx" id="mclose" aria-label="Close music controls">✕</button></div>
     <p class="note" style="margin:0 0 10px">Lo-fi composed live in your browser. It's original and royalty-free, with no downloads, and it never loops the same way twice.</p>
     <div class="seg mpvibe" role="group" aria-label="Vibe">${Object.entries(VIBES).map(([k, v]) => `<button type="button" data-vibe="${k}">${v.name}</button>`).join("")}</div>
+    <label class="mpvol mprain">🌧️ Rain<input type="range" id="mrain" min="0" max="100" step="1" value="${MU.rain}" aria-label="Rain level"></label>
     <div class="mprow"><button class="btn" id="mplay" type="button">▶ Play</button><label class="mpvol">🔈<input type="range" id="mvol" min="0" max="100" step="1" value="${MU.vol}" aria-label="Music volume">🔊</label></div>
     <div class="mpnow"><span class="lbl">Now playing</span><span id="mnow" class="mono">Paused</span></div>`;
   const slot = $("#musicslot") || document.body; slot.appendChild(b); slot.appendChild(p);
@@ -3689,16 +3729,110 @@ function buildMusicUI() {
   p.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); b.focus(); } });
   document.addEventListener("click", e => { if (!p.hidden && !p.contains(e.target) && !b.contains(e.target)) open(false); });
   $("#mplay").onclick = () => MU.on ? muStop() : muPlay();
+  $("#mrain").oninput = e => { MU.rain = +e.target.value; saveMu(); if (MU.on && mu.ctx) mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.15); };
   $("#mvol").oninput = e => { MU.vol = +e.target.value; saveMu(); if (MU.on && mu.ctx) mu.out.gain.setTargetAtTime(muLevel(), mu.ctx.currentTime, 0.1); };
   p.querySelectorAll("[data-vibe]").forEach(x => x.onclick = () => {
-    MU.vibe = x.dataset.vibe; saveMu(); mu.bar = 0; mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
-    if (MU.on && mu.ctx) mu.rain.gain.setTargetAtTime(VIBES[MU.vibe].rain, mu.ctx.currentTime, 0.6);
+    MU.vibe = x.dataset.vibe; saveMu(); mu.bar = 0; mu.step = 0; mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
+    MU.rain = VIBES[MU.vibe].rain; saveMu(); const r = $("#mrain"); if (r) r.value = MU.rain;
+    if (MU.on && mu.ctx) mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.6);
     paintMu();
   });
   paintMu();
 }
 buildMusicUI();
 window.__c2music = { mu, state: () => ({ on: MU.on, vol: MU.vol, vibe: MU.vibe, ctx: mu.ctx ? mu.ctx.state : null, step: mu.step, chord: mu.cur ? mu.cur.name : null, gain: mu.out ? mu.out.gain.value : null }) };
+
+/* ================= POMODORO: 4 focus blocks, short breaks between, a long break after the 4th ================= */
+const PO = Object.assign({ focus: 20, short: 5, long: 20, phase: "focus", cycle: 1, running: false, endAt: 0, left: 20 * 60 * 1000, done: 0, day: 0 }, store.get("pomo", {}));
+const savePo = () => store.set("pomo", PO);
+const poLen = ph => (ph === "focus" ? PO.focus : ph === "short" ? PO.short : PO.long) * 60000;
+const poLeft = () => PO.running ? Math.max(0, PO.endAt - Date.now()) : PO.left;
+const poFmt = ms => { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+const PO_LABEL = { focus: "Focus", short: "Short break", long: "Long break" };
+let poTimer = null, poCtx = null;
+function poChime(kind) { // gentle bell, plays even with Hype sounds off
+  try {
+    poCtx = poCtx || new (window.AudioContext || window.webkitAudioContext)(); poCtx.resume();
+    const notes = kind === "focus" ? [660, 880] : [880, 660, 523];
+    notes.forEach((f, i) => { const o = poCtx.createOscillator(), g = poCtx.createGain(), t = poCtx.currentTime + i * 0.35; o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6); o.connect(g).connect(poCtx.destination); o.start(t); o.stop(t + 1.7); });
+  } catch { }
+}
+function poAdvance(auto) {
+  // finished the current phase: work out the next one
+  const prev = PO.phase;
+  const today = sod(Date.now()); if (PO.day !== today) { PO.day = today; PO.done = 0; }
+  let next;
+  if (PO.phase === "focus") { if (auto !== "skip") PO.done++; next = PO.cycle >= 4 ? "long" : (PO.short > 0 ? "short" : "focus"); if (next === "focus") PO.cycle++; }
+  else if (PO.phase === "short") { next = "focus"; PO.cycle++; }
+  else { next = "focus"; PO.cycle = 1; }
+  PO.phase = next; PO.left = poLen(next);
+  if (auto === true) {
+    poChime(next === "focus" ? "focus" : "break");
+    const msg = next === "long" ? "🎉 4 focus blocks done. Take a real break: stretch, water, step away." : next === "short" ? `☕ Block ${PO.cycle} of 4 done. Short break.` : `🎯 Break's over. Focus block ${PO.cycle} of 4.`;
+    if (typeof toast === "function") toast(msg, "good");
+    if (next === "long" && typeof hype !== "undefined" && hype.on && typeof addXp === "function") { addXp(100); saveHype(); paintHud(true); }
+    if (prev === "long") PO.running = false; // after the long break, wait for you to start a new set
+    else { PO.running = true; PO.endAt = Date.now() + PO.left; } // otherwise roll straight into the next phase
+  } else PO.running = false;
+  savePo(); paintPo();
+}
+function poTick() {
+  if (PO.running && Date.now() >= PO.endAt) poAdvance(true);
+  paintPo();
+}
+function poStart() { PO.running = true; PO.endAt = Date.now() + PO.left; savePo(); clearInterval(poTimer); poTimer = setInterval(poTick, 1000); paintPo(); }
+function poPause() { PO.left = poLeft(); PO.running = false; savePo(); paintPo(); }
+function poReset() { PO.running = false; PO.phase = "focus"; PO.cycle = 1; PO.left = poLen("focus"); savePo(); paintPo(); }
+function poSkip() { const was = PO.running; PO.running = false; poAdvance("skip"); PO.running = false; if (was) poStart(); else { savePo(); paintPo(); } }
+const baseTitle = document.title;
+function paintPo() {
+  const b = $("#pomobtn"); if (!b) return;
+  const left = poLeft(), active = PO.running || PO.left !== poLen(PO.phase) || PO.cycle > 1 || PO.phase !== "focus";
+  b.classList.toggle("on", PO.running); b.classList.toggle("brk", PO.phase !== "focus");
+  b.querySelector(".pt").textContent = active ? `${poFmt(left)}${PO.phase === "focus" ? ` · ${PO.cycle}/4` : " ☕"}` : "Pomodoro";
+  b.setAttribute("aria-label", `Pomodoro timer: ${PO_LABEL[PO.phase]}, ${poFmt(left)} left, block ${PO.cycle} of 4${PO.running ? ", running" : ", paused"}. Open timer.`);
+  document.title = PO.running ? `${poFmt(left)} ${PO.phase === "focus" ? "🎯" : "☕"} · ${baseTitle}` : baseTitle;
+  const p = $("#pomopanel"); if (!p || p.hidden) return;
+  $("#potime").textContent = poFmt(left);
+  $("#pophase").textContent = PO_LABEL[PO.phase];
+  $("#podots").innerHTML = [1, 2, 3, 4].map(i => `<i class="${i < PO.cycle || (i === PO.cycle && PO.phase !== "focus") ? "done" : i === PO.cycle ? "cur" : ""}"></i>`).join("");
+  const ring = $("#poring"); if (ring) { ring.style.setProperty("--p", (1 - left / Math.max(1, poLen(PO.phase))).toFixed(4)); ring.classList.toggle("brk", PO.phase !== "focus"); }
+  $("#pogo").textContent = PO.running ? "❚❚ Pause" : left < poLen(PO.phase) ? "▶ Resume" : "▶ Start";
+  const today = sod(Date.now()); $("#podone").textContent = `${PO.day === today ? PO.done : 0} focus block${PO.day === today && PO.done === 1 ? "" : "s"} today`;
+}
+function buildPomoUI() {
+  const slot = $("#musicslot"); if (!slot || $("#pomobtn")) return;
+  const b = document.createElement("button"); b.id = "pomobtn"; b.type = "button"; b.className = "pomobtn"; b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "pomopanel");
+  b.innerHTML = `<span aria-hidden="true">⏱</span><span class="pt mono">Pomodoro</span>`;
+  const p = document.createElement("div"); p.id = "pomopanel"; p.className = "musicpanel pomopanel"; p.hidden = true; p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "Pomodoro timer");
+  p.innerHTML = `<div class="mphead"><b>Pomodoro</b><button type="button" class="mpx" id="poclose" aria-label="Close timer">✕</button></div>
+    <div class="poface"><div class="poring" id="poring"><div><div class="potime mono" id="potime" aria-live="off">20:00</div><div class="note" id="pophase">Focus</div></div></div>
+      <div class="podots" id="podots" aria-hidden="true"></div><div class="note" id="podone"></div></div>
+    <div class="mprow" style="justify-content:center"><button class="btn" id="pogo" type="button">▶ Start</button><button class="btn ghost sm" id="poskip" type="button">Skip</button><button class="btn ghost sm" id="poreset" type="button">Reset</button></div>
+    <details class="poset"><summary>Lengths</summary><div class="posetg">
+      ${[["focus", "Focus", 5, 60], ["short", "Short break", 0, 15], ["long", "Long break", 5, 45]].map(([k, l, mn, mx]) => `<label>${l}<input class="txt" type="number" id="pol-${k}" min="${mn}" max="${mx}" value="${PO[k]}" inputmode="numeric"> min</label>`).join("")}
+    </div><p class="note" style="margin:6px 0 0">4 focus blocks, a short break after each of the first three, then a long break.</p></details>`;
+  slot.appendChild(b); slot.appendChild(p);
+  const open = v => { p.hidden = !v; b.setAttribute("aria-expanded", v); if (v) { const m = $("#musicpanel"); if (m && !m.hidden) { m.hidden = true; $("#musicbtn").setAttribute("aria-expanded", "false"); } paintPo(); $("#pogo").focus(); } };
+  b.onclick = () => open(p.hidden);
+  $("#poclose").onclick = () => { open(false); b.focus(); };
+  p.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); b.focus(); } });
+  document.addEventListener("click", e => { if (!p.hidden && !p.contains(e.target) && !b.contains(e.target)) open(false); });
+  $("#pogo").onclick = () => PO.running ? poPause() : poStart();
+  $("#poskip").onclick = poSkip; $("#poreset").onclick = poReset;
+  ["focus", "short", "long"].forEach(k => { $("#pol-" + k).onchange = e => {
+    const el = e.target, v = Math.max(+el.min, Math.min(+el.max, Math.round(+el.value || 0))); el.value = v; PO[k] = v;
+    if (PO.phase === k && !PO.running) PO.left = poLen(k);
+    savePo(); paintPo();
+  }; });
+  // opening one popover closes the other
+  const mb = $("#musicbtn"); if (mb) mb.addEventListener("click", () => { if (!p.hidden) open(false); });
+  if (PO.running) { if (Date.now() >= PO.endAt) { PO.left = 0; poAdvance(false); } else { clearInterval(poTimer); poTimer = setInterval(poTick, 1000); } }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) poTick(); });
+  paintPo();
+}
+buildPomoUI();
+window.__c2pomo = { state: () => JSON.parse(JSON.stringify(PO)), left: poLeft, end: () => { if (PO.running) { PO.endAt = Date.now() - 1; poTick(); } } };
 
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
