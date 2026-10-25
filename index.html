@@ -100,6 +100,8 @@ section{display:grid;gap:12px;min-width:0}
 .fb b.v{font-family:var(--f-display);font-stretch:85%;font-size:1.05rem;display:block}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
 input.txt,textarea.txt{width:100%;border:1.5px solid var(--line);background:var(--paper);border-radius:8px;padding:10px 12px}
+select.txt{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:9px 34px 9px 12px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 55%,calc(100% - 12px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;max-width:100%;cursor:pointer}
+select.txt:focus,input.txt:focus{border-color:var(--accent);outline:none}
 input.txt:focus,textarea.txt:focus{border-color:var(--accent);outline:none}
 textarea.txt{min-height:110px;resize:vertical}
 
@@ -407,11 +409,23 @@ main.shake{animation:shake .45s}
 main{padding-bottom:70px}
 .empty{color:var(--muted);text-align:center;padding:30px 10px}
 .confirm{display:inline-flex;gap:8px;align-items:center}
+/* ---------- UI cleanup ---------- */
+.labsw{margin:0 0 14px}
+.teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.teaser .ts{display:flex;flex-direction:column;gap:1px;min-width:0}
+.teaser .ts b{font:800 1.25rem/1.1 var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
+.teaser .ts span{font:600 .68rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.teaser .tgo{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.howto{margin-top:10px}.howto summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:600}
+.howto p{margin:6px 0 0}
+.arcintro{text-align:center;padding:30px 16px}
+.arcintro p{max-width:46ch;margin:8px auto 16px}
+.tab-arcade{color:var(--t5)}
 </style>
 
 <header class="mast">
   <div class="wrap">
-    <h1>Core 2 Drill Room<small>CompTIA A+ 220-1202 · built from Professor Messer course notes v1.40 · plus TIA (Ramdayal) notes · checked against objectives v3.0</small></h1>
+    <h1>Core 2 Drill Room<small>CompTIA A+ 220-1202</small></h1>
     <div id="hypeslot" class="hypeslot"></div>
     <div class="facts"><span>Max <b>90</b> questions</span><span><b>90</b> minutes</span><span>Pass <b>700</b> / 900</span><span>MC, drag-and-drop, PBQs</span></div>
     <div class="wbar" role="img" aria-label="Domain weights: Operating systems 28%, Security 28%, Software troubleshooting 23%, Operational procedures 21%">
@@ -422,14 +436,16 @@ main{padding-bottom:70px}
 <nav class="tabs" aria-label="Sections"><div class="wrap" role="tablist">
   <button class="tab" role="tab" data-tab="today" id="tab-today">Today <span class="n" id="duecount" hidden></span></button>
   <button class="tab" role="tab" data-tab="cards" id="tab-cards">Flashcards</button>
-  <button class="tab" role="tab" data-tab="code" id="tab-code">Command practice</button>
-  <button class="tab" role="tab" data-tab="pbq" id="tab-pbq">PBQ lab</button>
-  <button class="tab" role="tab" data-tab="scen" id="tab-scen">Troubleshoot</button>
+  <button class="tab" role="tab" data-tab="code" id="tab-code">Commands</button>
+  <button class="tab" role="tab" data-tab="pbq" id="tab-pbq">Labs</button>
+  <button class="tab" role="tab" data-tab="scen" id="tab-scen" hidden>Troubleshoot</button>
   <button class="tab" role="tab" data-tab="exam" id="tab-exam">Mock exam</button>
   <button class="tab" role="tab" data-tab="missed" id="tab-missed">Missed <span class="n" id="misscount" hidden></span></button>
   <button class="tab" role="tab" data-tab="stats" id="tab-stats">Progress</button>
+  <button class="tab tab-arcade" role="tab" data-tab="arcade" id="tab-arcade" hidden>🕹️ Arcade</button>
 </div></nav>
 <main><div class="wrap">
+  <div class="seg labsw" id="labsw" role="group" aria-label="Lab type" hidden><button type="button" id="labsw-pbq">PBQ lab</button><button type="button" id="labsw-scen">Troubleshoot tickets</button></div>
   <div class="bar" id="domainbar"><span class="lbl">Domains</span></div>
   <section id="view-today" hidden></section>
   <section id="view-cards" hidden></section>
@@ -439,6 +455,7 @@ main{padding-bottom:70px}
   <section id="view-exam" hidden></section>
   <section id="view-missed" hidden></section>
   <section id="view-stats" hidden></section>
+  <section id="view-arcade" hidden></section>
 </div></main>
 <script>
 /* ===== DATA: every item tagged with domain (d) and objective (o) per CompTIA 220-1202 v3.0 ===== */
@@ -1757,14 +1774,16 @@ function paintAi(el) {
 }
 
 /* ---------- tabs ---------- */
-const TABS = ["today", "cards", "code", "pbq", "scen", "exam", "missed", "stats"];
+const TABS = ["today", "cards", "code", "pbq", "scen", "exam", "missed", "stats", "arcade"];
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : store.get("tab", "today");
 if (!TABS.includes(tab)) tab = "today";
 function setTab(t) {
   tab = t; store.set("tab", t);
-  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  if (t === "arcade" && !hype.on) t = tab = "today";
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t || (t === "scen" && b.dataset.tab === "pbq")));
   TABS.forEach(x => { $("#view-" + x).hidden = x !== t; });
-  $("#domainbar").hidden = t === "missed" || t === "today";
+  $("#domainbar").hidden = t === "missed" || t === "today" || t === "arcade";
+  $("#labsw").hidden = !(t === "pbq" || t === "scen"); $("#labsw-pbq").setAttribute("aria-pressed", t === "pbq"); $("#labsw-scen").setAttribute("aria-pressed", t === "scen");
   render();
 }
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => { rv.on = false; setTab(b.dataset.tab); });
@@ -2325,17 +2344,22 @@ function wirePbqForm(q, vals, root, prefix, rerender) {
     }
   });
 }
+/* Labs tab: PBQs and Troubleshoot tickets share one tab with a switch */
+const labSwitch = () => "";
+function wireLabSwitch() { }
+(() => { const a = $("#labsw-pbq"), b = $("#labsw-scen"); a.textContent = `PBQ lab · ${PBQS.length}`; b.textContent = `Troubleshoot tickets · ${SCENS.length}`; a.onclick = () => setTab("pbq"); b.onclick = () => setTab("scen"); })();
 function renderPBQ() {
   const v = $("#view-pbq"), list = pbqList(), best = store.get("pbqbest", {});
-  if (!list.length) { v.innerHTML = `<div class="panel empty">No PBQs in the selected domains.</div>`; return; }
+  if (!list.length) { v.innerHTML = labSwitch("pbq") + `<div class="panel empty">No PBQs in the selected domains.</div>`; wireLabSwitch(); return; }
   let q = list.find(x => x.id === pq.id);
   if (!q) { q = list[0]; pbqInit(q); }
-  v.innerHTML = `<select class="txt pickm" id="pbqsel" aria-label="Choose a lab">${list.map(x => `<option value="${x.id}"${x.id === q.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] != null ? " (" + best[x.id] + "%)" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="pbq-${x.id}" aria-pressed="${x.id === q.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] != null ? ` <span class="mono note">${best[x.id]}%</span>` : ""}</button>`).join("")}</div>
+  v.innerHTML = labSwitch("pbq") + `<select class="txt pickm" id="pbqsel" aria-label="Choose a lab">${list.map(x => `<option value="${x.id}"${x.id === q.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] != null ? " (" + best[x.id] + "%)" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="pbq-${x.id}" aria-pressed="${x.id === q.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] != null ? ` <span class="mono note">${best[x.id]}%</span>` : ""}</button>`).join("")}</div>
     <div class="panel"><div class="bar">${tagHTML(q)}<span class="tag">· Performance-based${q.fields.some(f => f.type === "dnd") ? " · drag and drop" : ""}</span></div>
       <h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p>
       <div class="win${q.sim ? " sim" : ""}"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="pbqbody"></div></div>
       <div class="row"><button class="btn" id="pbqsub" ${pq.graded ? "disabled" : ""}>Submit</button><button class="btn ghost" id="pbqreset">Reset</button>${pq.graded ? `<button class="btn ghost" id="pbqnext">Next PBQ →</button>` : ""}</div>
       <div id="pbqres"></div></div>`;
+  wireLabSwitch();
   list.forEach(x => { $("#pbq-" + x.id).onclick = () => { pbqInit(x); renderPBQ(); }; });
   $("#pbqsel").onchange = e => { pbqInit(list.find(x => x.id === e.target.value)); renderPBQ(); };
   const body = $("#pbqbody"), prefix = `pf-${q.id}`;
@@ -2394,11 +2418,11 @@ function scFinish(s) {
 }
 function renderScen() {
   const v = $("#view-scen"), list = scList(), best = store.get("scbest", {});
-  if (!list.length) { v.innerHTML = `<div class="panel empty">No troubleshooting tickets in the selected domains. They cover 1.0 and 2.0.</div>`; return; }
+  if (!list.length) { v.innerHTML = labSwitch("scen") + `<div class="panel empty">No troubleshooting tickets in the selected domains. They cover 1.0 and 2.0.</div>`; wireLabSwitch(); return; }
   let s = list.find(x => x.id === sc.id);
   if (!s) { s = list[0]; scInit(s); }
   const st = sc.st;
-  v.innerHTML = `<select class="txt pickm" id="scsel" aria-label="Choose a ticket">${list.map(x => `<option value="${x.id}"${x.id === s.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] ? " ✓" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="sc-${x.id}" aria-pressed="${x.id === s.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] ? ` <span class="mono note">✓</span>` : ""}</button>`).join("")}</div>
+  v.innerHTML = labSwitch("scen") + `<select class="txt pickm" id="scsel" aria-label="Choose a ticket">${list.map(x => `<option value="${x.id}"${x.id === s.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] ? " ✓" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="sc-${x.id}" aria-pressed="${x.id === s.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] ? ` <span class="mono note">✓</span>` : ""}</button>`).join("")}</div>
     <div class="panel"><div class="bar">${tagHTML(s)}<span class="tag">· ${s.sh === "cmd" ? "Windows Command Prompt" : "Linux bash"} on ${esc(s.host)}</span><span class="score">${st.n} command${st.n === 1 ? "" : "s"} · par ${s.par}</span></div>
       <div class="ticket"><span class="lbl">Ticket</span><p>${esc(s.ticket)}</p></div>
       <div class="term tall" id="scterm" aria-live="polite">${st.lines.length ? "" : `<div class="dim">${s.sh === "cmd" ? "Microsoft Windows [Version 10.0.26100.2033]\n(c) Microsoft Corporation. All rights reserved." : "Ubuntu 24.04.1 LTS " + esc(s.host) + " tty1"}</div>`}${st.lines.map(l => l.o != null ? `<pre>${esc(l.o)}</pre>` : `<pre><span class="ps">${esc(l.p)}</span> ${esc(l.c)}</pre>`).join("")}
@@ -2406,6 +2430,7 @@ function renderScen() {
       <div class="row"><button class="btn ghost" id="schint" ${st.hints >= s.hints.length ? "disabled" : ""}>Hint (${s.hints.length - st.hints} left)</button>${st.stage === "explore" ? `<button class="btn" id="scdiag">Diagnose &amp; fix →</button>` : ""}<button class="btn ghost" id="screset">Restart ticket</button></div>
       <div id="schints">${s.hints.slice(0, st.hints).map((h, i) => `<div class="fb"><b class="v">Hint ${i + 1}</b><span class="mono">${esc(h)}</span></div>`).join("")}</div>
       <div id="scflow"></div></div>`;
+  wireLabSwitch();
   const term = $("#scterm"); term.scrollTop = term.scrollHeight;
   list.forEach(x => { $("#sc-" + x.id).onclick = () => { scInit(x); renderScen(); }; });
   $("#scsel").onchange = e => { scInit(list.find(x => x.id === e.target.value)); renderScen(); };
@@ -2615,7 +2640,6 @@ function readiness() {
 function renderToday() {
   const v = $("#view-today");
   if (rv.on && rv.from === "today") return renderDeck(v);
-  if (boss.on) return renderBoss(v);
   const due = dueKeys(), dueMiss = due.filter(k => srs[k].miss).length;
   const unseen = CARDS.filter(c => !srs["c:" + c.t]);
   const R = readiness(), pct = x => x === null ? "–" : Math.round(x * 100) + "%";
@@ -2654,21 +2678,20 @@ function renderToday() {
   const ready = checks.filter(c => c[0]).length;
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
       <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
-    ${hallHTML()}
-    ${typeof arcadeHTML === "function" ? arcadeHTML() : ""}
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
-      <p class="note" style="margin:4px 0 10px">Weighted by the official domain weights. Built from flashcards retained after a gap, exam-question accuracy and lab completion, so it's an estimate, not a score prediction.</p>
+      <p class="note" style="margin:4px 0 10px">An estimate from cards retained, exam accuracy and labs, weighted by domain.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
       ${[1, 2, 3, 4].map(d => `<tr><td><span class="tag"><span class="dd d${d}">${d}.0</span></span> ${esc(DOMAINS[d].short)} <span class="note">${DOMAINS[d].w}%</span></td><td class="num">${R[d].ret}/${R[d].total}</td><td class="num rdcol">${pct(R[d].exam)}${R[d].examN ? ` <span class="note">(${R[d].examN})</span>` : ""}</td><td class="num rdcol">${pct(R[d].labs)}</td><td><div class="bar rdbar" style="gap:8px;flex-wrap:nowrap"><div class="meter" style="flex:1"><i style="width:${Math.round(R[d].score * 100)}%;background:var(--d${d})"></i></div><span class="num mono" style="font-size:.8rem">${Math.round(R[d].score * 100)}%</span></div></td></tr>`).join("")}
       </tbody></table></div>
       <h3 style="margin:16px 0 6px">Ready to book? ${ready}/${checks.length}</h3>
       <ul class="checks-list">${checks.map(c => `<li class="${c[0] ? "y" : ""}"><span class="ck">${c[0] ? "✓" : "○"}</span><span>${esc(c[1])}</span><span class="note mono">${esc(c[2])}</span></li>`).join("")}</ul>
       <div class="bench" id="bench"><h3 style="margin:18px 0 4px">Outside practice exams</h3>
-        <p class="note" style="margin:0 0 10px">This site's readiness score is built from its own questions, so check it against someone else's. Take a full practice exam from another source near the end and log the score. If you're at 85%+ there too, book it.</p>
+        <p class="note" style="margin:0 0 10px">Check this site's score against someone else's questions. Log a full outside practice exam; 85%+ there too means book it.</p>
         <div class="bar benchform"><select class="txt" id="bsrc" aria-label="Practice exam source">${BENCH_SRC.map(x => `<option>${esc(x)}</option>`).join("")}</select><input class="txt" id="bpct" type="number" min="0" max="100" inputmode="numeric" placeholder="Score %" aria-label="Score percent"><button class="btn sm" id="bgo" type="button">Log score</button></div>
         <span class="note" id="bmsg"></span>
         ${bench.length ? `<ul class="benchlist">${bench.map((b, i) => `<li><b class="mono${b.pct >= 85 ? " good" : ""}">${b.pct}%</b><span>${esc(b.src)}</span><span class="note">${new Date(b.t).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span><button class="btn ghost sm" type="button" data-bdel="${i}" aria-label="Delete this score">✕</button></li>`).join("")}</ul>` : ""}
       </div></div>
+    ${teaserHTML()}
     <details class="panel strat"><summary><h3 style="display:inline">Exam-day strategy</h3></summary>
       <ul>
         <li><b>PBQs usually come first.</b> If one is eating your time, flag it, move on and come back at the end. Don't burn 15 minutes on question 2.</li>
@@ -2683,19 +2706,20 @@ function renderToday() {
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
   go("pdue", () => startDeck(due, "Today", "review", "today"));
   go("pdaily", startDaily);
-  go("bossgo", startBoss);
+  go("tsarc", () => setTab("arcade"));
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); });
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); });
   go("ppbq", () => { pbqInit(nextPbq); setTab("pbq"); });
   go("ptkt", () => { scInit(nextTicket); setTab("scen"); });
+  go("tsboss", startBoss);
   go("pbak", () => { setTab("stats"); setTimeout(() => { const p = $("#syncpanel"); if (p) p.scrollIntoView({ block: "start", behavior: "smooth" }); }, 60); });
   go("bgo", () => {
     const pct = Math.round(+$("#bpct").value);
     if (!$("#bpct").value || !(pct >= 0 && pct <= 100)) { $("#bmsg").textContent = "Enter a score from 0 to 100."; return; }
     const b = store.get("bench", []) || []; b.push({ src: $("#bsrc").value, pct, t: nowMs() }); store.set("bench", b);
-    const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+    stay();
   });
-  document.querySelectorAll("[data-bdel]").forEach(x => x.onclick = () => { const b = store.get("bench", []) || []; b.splice(+x.dataset.bdel, 1); store.set("bench", b); const y = window.scrollY; renderToday(); window.scrollTo({ top: y }); });
+  document.querySelectorAll("[data-bdel]").forEach(x => x.onclick = () => { const b = store.get("bench", []) || []; b.splice(+x.dataset.bdel, 1); store.set("bench", b); stay(); });
   go("pmock", () => { ex.phase = "setup"; ex.mode = "mc"; ex.len = 30; store.set("exmode", "mc"); store.set("exlen", 30); setTab("exam"); });
 }
 
@@ -2839,9 +2863,10 @@ function hypeRevert() { if (!hypeUndo) return; hype = Object.assign(hype, hypeUn
 
 /* ---------- HUD ---------- */
 function paintHud(bump) {
+  const at = $("#tab-arcade"); if (at) at.hidden = !hype.on;
   let hud = $("#hud");
   if (!hype.on) { if (hud) hud.hidden = true; return; }
-  if (!hud) { hud = document.createElement("button"); hud.id = "hud"; hud.type = "button"; hud.className = "hud"; document.body.appendChild(hud); hud.onclick = () => { setTab("today"); setTimeout(() => { const h = $("#hof"); if (h) h.scrollIntoView({ block: "start", behavior: "smooth" }); }, 50); }; }
+  if (!hud) { hud = document.createElement("button"); hud.id = "hud"; hud.type = "button"; hud.className = "hud"; document.body.appendChild(hud); hud.onclick = () => { rv.on = false; setTab("arcade"); window.scrollTo({ top: 0 }); }; }
   hud.hidden = false;
   const t = tierOf(hype.streak), lv = levelOf(hype.xp), next = TIERS.find(x => x.at > hype.streak);
   hud.className = "hud " + (t >= 0 ? TIERS[t].cls : "t0") + ((hype.equip || {}).skin && hype.equip.skin !== "default" ? " skin-" + hype.equip.skin : "");
@@ -2907,7 +2932,7 @@ function sfx(kind) {
 function hypeToggleHTML() { return `<button type="button" class="hypebtn${hype.on ? " on" : ""}" id="hypetoggle" aria-pressed="${hype.on}">🔥 Hype mode ${hype.on ? "on" : "off"}</button>`; }
 function wireHypeToggle() {
   const b = $("#hypetoggle"); if (!b) return;
-  b.onclick = () => { hype.on = !hype.on; saveHype(); b.outerHTML = hypeToggleHTML(); wireHypeToggle(); paintHud(); if (hype.on) toast("🔥 Hype mode on. Five in a row gets you SAVAGE.", "good"); if (tab === "today") renderToday(); };
+  b.onclick = () => { hype.on = !hype.on; saveHype(); b.outerHTML = hypeToggleHTML(); wireHypeToggle(); paintHud(); if (hype.on) toast("🔥 Hype mode on. Five in a row gets you SAVAGE. Your Arcade tab is unlocked.", "good"); if (!hype.on) $("#view-arcade").innerHTML = ""; if (!hype.on && tab === "arcade") setTab("today"); else stay(); };
 }
 function dailyStreak() {
   const set = new Set(hype.days); let n = 0, d = sod(nowMs());
@@ -2928,10 +2953,32 @@ function hallHTML() {
     ${bossHTML()}
     <div class="tierlad">${TIERS.map((T, i) => `<span class="tl ${T.cls}${hype.bestTier >= i ? " got" : ""}" title="${T.at} in a row">${T.icon} ${T.name} <small>${T.at}</small></span>`).join("")}</div>
     <div class="bar" style="margin-top:10px;gap:6px"><span class="lbl">Best by domain</span>${[1, 2, 3, 4].map(d => `<span class="chip" style="cursor:default"><i style="background:var(--d${d})"></i>${d}.0 · ${hype.bestDom[d] || 0}</span>`).join("")}</div>
-    <p class="note" style="margin:10px 0 0">Streaks build from auto-graded answers: flashcards, commands (×2), PBQ labs and tickets (+5), and typed exam drills. Timed mock exams and self-graded flip reviews don't count. A miss resets the streak unless you have a shield (earn one every ${SHIELD_EVERY} in a row).</p></div>`;
+    <details class="howto"><summary>How streaks work</summary><p class="note">Streaks build from auto-graded answers: flashcards, commands (×2), PBQ labs and tickets (+5), and typed exam drills. Timed mock exams and self-graded flip reviews don't count. A miss resets the streak unless you have a shield (earn one every ${SHIELD_EVERY} in a row).</p></details></div>`;
+}
+/* re-render the current tab without jumping the scroll position */
+function stay() { const y = window.scrollY; render(); window.scrollTo({ top: y }); }
+/* ---------- Arcade tab ---------- */
+function renderArcade() {
+  const v = $("#view-arcade");
+  if (!hype.on) { v.innerHTML = `<div class="panel arcintro"><h2>🕹️ Arcade</h2><p>Turn on Hype mode to unlock streak tiers, XP, the weekly boss and the Byte Bandit slot machine. Everything in here is earned by answering correctly. The Hype mode switch is at the top of the page.</p></div>`; return; }
+  if (boss.on) return renderBoss(v);
+  v.innerHTML = hallHTML() + (typeof arcadeHTML === "function" ? arcadeHTML() : "");
+  wireHall();
+  const g = $("#bossgo"); if (g) g.onclick = startBoss;
+}
+/* compact Hype summary for the Today tab */
+function teaserHTML() {
+  if (!hype.on) return "";
+  const t = tierOf(hype.streak), b = bossNow(), free = typeof freeSpinReady === "function" && freeSpinReady();
+  return `<div class="panel teaser" id="teaser">
+    <div class="ts"><span>Streak</span><b>${hype.streak ? "🔥" : ""}${hype.streak}${t >= 0 ? ` <small style="font-size:.7rem">${TIERS[t].name}</small>` : ""}</b></div>
+    <div class="ts"><span>Level</span><b>${levelOf(hype.xp)}</b></div>
+    <div class="ts"><span>Tokens</span><b>🪙 ${hype.tokens || 0}</b></div>
+    <div class="ts"><span>Boss</span><b style="font-size:1rem">${b.beaten ? "✓ Defeated" : `${b.icon} ${esc(b.name)}`}</b></div>
+    <div class="tgo">${free ? `<span class="freeb" style="align-self:center">Free spin ready</span>` : ""}<button class="btn sm" id="tsarc" type="button">Open Arcade →</button></div></div>`;
 }
 function wireHall() {
-  const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); const y = window.scrollY; renderToday(); window.scrollTo({ top: y }); };
+  const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); stay(); };
   const v = $("#hvol"); if (v) { v.oninput = () => { hype.vol = +v.value; saveHype(); }; v.onchange = () => sfx("coin"); }
   if (typeof wireArcade === "function") wireArcade();
 }
@@ -3035,7 +3082,7 @@ function startBoss() {
   store.set("bosstries", (store.get("bosstries", 0) || 0) + 1);
   const single = EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q));
   Object.assign(boss, { on: true, qs: seededPick(single, 20, r), i: 0, state: "fight", miss: null, loot: null, reward: false });
-  rv.on = false; setTab("today"); window.scrollTo({ top: 0 });
+  rv.on = false; setTab("arcade"); window.scrollTo({ top: 0 });
 }
 function renderBoss(v) {
   const b = bossNow(), n = boss.qs.length, hp = n - boss.i;
@@ -3043,11 +3090,11 @@ function renderBoss(v) {
   if (boss.state === "lost") {
     const q = boss.miss;
     v.innerHTML = `<div class="panel bosspanel lost">${head}<h2>💀 ${esc(b.name)} wins</h2><p>You made it to question ${boss.i + 1} of ${n}.</p><div class="fb bad"><b class="v">${esc(q.q)}</b>Correct: <b>${esc(keyText(q))}</b><br><span class="note">${esc(q.why)}</span></div>${explainBtn("e:" + q.k)}<div class="row"><button class="btn" id="bossre" type="button">Try again →</button><button class="btn ghost" id="bossx" type="button">Back to Today</button></div></div>`;
-    $("#bossre").onclick = startBoss; $("#bossx").onclick = () => { boss.on = false; renderToday(); }; wireExplain(v); return;
+    $("#bossre").onclick = startBoss; $("#bossx").onclick = () => { boss.on = false; renderArcade(); }; wireExplain(v); return;
   }
   if (boss.state === "won") {
     v.innerHTML = `<div class="panel bosspanel won">${head}<h2>🗡️ ${esc(b.name)} defeated!</h2><p>20 for 20. ${boss.reward ? `+1,000 XP, +50 tokens${boss.loot ? `, a rare ${esc(boss.loot.cat.toLowerCase())} (<b>${esc(boss.loot.name)}</b>)` : ""} and this week's boss badge.` : "Rematch won. The weekly reward was already claimed."}</p><div class="row"><button class="btn" id="bossx" type="button">Back to Today</button></div></div>`;
-    $("#bossx").onclick = () => { boss.on = false; renderToday(); }; return;
+    $("#bossx").onclick = () => { boss.on = false; renderArcade(); }; return;
   }
   const q = boss.qs[boss.i];
   v.innerHTML = `<div class="panel bosspanel">${head}${tagHTML(q)}<div class="prompt">${esc(q.q)}</div><div class="opts">${q.c.map((o, i) => `<button class="opt" type="button" data-i="${i}"><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
@@ -3063,7 +3110,7 @@ function renderBoss(v) {
     }
     renderBoss(v);
   });
-  $("#bossx").onclick = () => { boss.on = false; renderToday(); };
+  $("#bossx").onclick = () => { boss.on = false; renderArcade(); };
 }
 
 /* ---------------- Achievements ---------------- */
@@ -3359,7 +3406,7 @@ function wireArcade() {
     const [key, ...rest] = b.dataset.eq.split(":"); const val = rest.join(":");
     hype.equip = hype.equip || {}; hype.equip[key] = val === "default" ? (key === "reel" ? "classic" : "default") : val;
     if (key === "title" && val === "default") hype.equip.title = "";
-    saveHype(); paintHud(); const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+    saveHype(); paintHud(); stay();
     const c = $("#arcade details.collect"); if (c) c.open = true;
   });
 }
@@ -3372,7 +3419,7 @@ function doSpin() {
   s.n++; saveHype();
   const o = arcadeRoll(), res = reelsFor(o), cols = colsFor(res), reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   ar.spinning = true; ar.last = "";
-  const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+  stay();
   const lever = $("#lever"); if (lever && !reduce) lever.classList.add("pulled");
   const N = 18;
   res.forEach((sym, i) => {
@@ -3401,7 +3448,7 @@ function finishSpin(o, res, cols) {
   else { addXp(10); msg = "No match: +10 XP for the pull"; }
   ar.last = `<div class="fb ${o.id === "none" ? "" : "good"} spinmsg"><b class="v">${msg}</b>${extra}</div>`;
   saveHype(); paintHud(true);
-  const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+  stay();
   if (o.id !== "none") { sfx(big ? "jackpot" : "coin"); coinRain(big ? 40 : 14); }
   if (o.id === "jackpot") animeFX("jackpot");
   achSoon();
@@ -3438,6 +3485,7 @@ function render() {
   else if (tab === "pbq") renderPBQ();
   else if (tab === "scen") renderScen();
   else if (tab === "missed") renderMissed();
+  else if (tab === "arcade") renderArcade();
   else renderStats();
 }
 document.addEventListener("keydown", e => { if (fc.keyHandler) fc.keyHandler(e); });
