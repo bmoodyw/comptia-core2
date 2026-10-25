@@ -289,6 +289,77 @@ details.strat summary{cursor:pointer}details.strat ul{margin:10px 0 0;padding-le
 main.shake{animation:shake .45s}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @media (prefers-reduced-motion:reduce){main.shake,.hud.bump{animation:none}}
+/* ---------- anime cut-ins ---------- */
+.animefx{position:fixed;inset:0;z-index:70;overflow:hidden;cursor:pointer;background:var(--ad);animation:fxin .12s}
+.animefx.out{opacity:0;transition:opacity .25s}
+.animefx canvas{position:absolute;inset:0;width:100%;height:100%}
+.animefx .flash{position:absolute;inset:0;background:#fff;opacity:0;animation:aflash .5s .26s}
+@keyframes aflash{0%{opacity:.9}100%{opacity:0}}
+.animefx .cutin{position:absolute;left:0;right:0;top:50%;height:min(46vh,340px);transform:translateY(-50%) skewY(-7deg);display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,32px);padding:0 16px;animation:cutin .5s .28s cubic-bezier(.2,1.4,.4,1) both}
+.animefx .band{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.85) 12%,rgba(0,0,0,.85) 88%,transparent);border-top:4px solid var(--ac);border-bottom:4px solid var(--ac);box-shadow:0 0 40px var(--ac)}
+.animefx .who{position:relative;height:118%;align-self:flex-end;animation:whoin .55s .3s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 0 14px var(--ac))}
+.animefx .sysop{height:100%;width:auto;display:block}
+.animefx .words{position:relative;transform:skewY(7deg);min-width:0;max-width:62vw}
+.animefx .kana{font:900 clamp(.9rem,3.2vw,1.5rem) var(--f-display);color:var(--ac);letter-spacing:.2em;opacity:.9}
+.animefx .atitle{font:900 clamp(2.1rem,10vw,6rem)/.9 var(--f-display);font-stretch:75%;font-style:italic;color:#fff;letter-spacing:.02em;text-shadow:4px 4px 0 var(--ac),-2px -2px 0 #000,0 0 30px var(--ac);overflow-wrap:anywhere;animation:slam .45s .38s cubic-bezier(.2,1.6,.4,1) both}
+.animefx .asub{font:700 clamp(.75rem,2.6vw,1.05rem) var(--f-mono);color:#fff;margin-top:8px;background:var(--ac);color:#000;display:inline-block;padding:3px 10px}
+.animefx .askip{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font:600 .75rem var(--f-mono);color:rgba(255,255,255,.7);letter-spacing:.1em}
+@keyframes cutin{from{transform:translateY(-50%) skewY(-7deg) translateX(-110%)}to{transform:translateY(-50%) skewY(-7deg) translateX(0)}}
+@keyframes whoin{from{transform:translateX(-60vw) scale(1.4)}to{transform:none}}
+@keyframes slam{from{transform:scale(3);opacity:0}to{transform:none;opacity:1}}
+.animefx.still,.animefx.still *{animation:none!important}
+@media (max-width:520px){.animefx .cutin{flex-direction:column;justify-content:center;height:62vh}.animefx .who{height:42%;align-self:center}.animefx .words{max-width:92vw;text-align:center}}
+/* ---------- arcade ---------- */
+.arcade{position:relative;overflow:hidden;--cell:64px}
+.arcade .marquee{display:flex;align-items:center;justify-content:center;gap:12px;font:900 1.5rem var(--f-display);font-stretch:75%;letter-spacing:.14em;color:var(--t5);text-shadow:0 0 12px color-mix(in srgb,var(--t5) 60%,transparent)}
+.arcade .lights{flex:1;max-width:120px;height:8px;background:radial-gradient(circle,var(--t5) 2.5px,transparent 3px) 0 0/14px 8px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.arcade .cab{display:flex;gap:14px;align-items:center;justify-content:center;margin:12px auto 8px;max-width:420px}
+.arcade .reels3{position:relative;display:flex;gap:8px;padding:10px;border-radius:14px;background:#0b0d12;border:3px solid var(--t5);box-shadow:inset 0 0 20px rgba(0,0,0,.8),0 0 18px color-mix(in srgb,var(--t5) 30%,transparent)}
+.arcade .rwin{width:var(--cell);height:calc(var(--cell) * 3);overflow:hidden;border-radius:8px;background:linear-gradient(#ddd,#fff 30%,#fff 70%,#ddd);-webkit-mask:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.arcade .rstrip{display:flex;flex-direction:column}
+.arcade .rstrip span{height:var(--cell);display:grid;place-items:center;font-size:calc(var(--cell) * .58);line-height:1}
+.arcade .payline{position:absolute;left:4px;right:4px;top:50%;height:2px;background:var(--bad);opacity:.7;pointer-events:none}
+.arcade .theme-cyber .reels3{border-color:#ff2bd6;box-shadow:0 0 22px #ff2bd6aa,inset 0 0 20px #000}
+.arcade .theme-cyber .rwin{background:linear-gradient(#1a0730,#2a0b4a 50%,#1a0730)}
+.arcade .theme-8bit .reels3{border-radius:0;border:4px solid #4ade80;box-shadow:6px 6px 0 #166534}
+.arcade .theme-8bit .rwin{border-radius:0;background:#0f2a17;image-rendering:pixelated}
+.arcade .theme-8bit .rstrip span{filter:contrast(1.4) saturate(1.3)}
+.arcade .lever{width:34px;height:150px;border:0;background:none;position:relative;cursor:pointer;padding:0;flex:none}
+.arcade .lever::before{content:"";position:absolute;left:14px;top:22px;width:6px;height:110px;border-radius:3px;background:linear-gradient(90deg,#888,#eee,#888);transform-origin:50% 100%;transition:transform .2s}
+.arcade .lever i{position:absolute;left:4px;top:0;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a8a,var(--bad) 60%,#7f1d1d);box-shadow:0 2px 6px rgba(0,0,0,.4);transition:transform .2s}
+.arcade .lever::after{content:"";position:absolute;left:6px;bottom:0;width:22px;height:22px;border-radius:6px;background:#333}
+.arcade .lever.pulled i{animation:pull .6s}.arcade .lever.pulled::before{animation:pullbar .6s}
+@keyframes pull{40%{transform:translateY(96px)}}@keyframes pullbar{40%{transform:scaleY(.15)}}
+.arcade .lever:disabled{opacity:.45;cursor:not-allowed}
+.arcade .arcbar{justify-content:center;gap:10px}
+.arcade .tok{font:800 1.1rem var(--f-mono)}
+.arcade .freeb{font:800 .72rem var(--f-mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;background:var(--t5);color:#000;animation:blink 1.2s steps(2) infinite}
+.arcade #spinbtn{min-width:150px;font-weight:800;letter-spacing:.04em}
+.arcade .boosts{text-align:center;font-weight:600;margin:8px 0 0}
+.arcade .spinmsg{margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;text-align:center}
+.arcade details{margin-top:12px}
+.arcade .ccat{margin-top:10px}
+.arcade .citems{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.arcade .citem{font:600 .8rem var(--f-body);padding:5px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.arcade .citem.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+.arcade .citem.rare{border-color:var(--t5)}
+.arcade .citem.locked{cursor:default;color:transparent;text-shadow:0 0 0 var(--muted);background:var(--line);opacity:.6;min-width:70px;text-align:center}
+.arcade .coin{position:absolute;top:-30px;font-size:22px;pointer-events:none;animation:coinfall 1.6s ease-in forwards}
+@keyframes coinfall{to{transform:translateY(520px) rotate(540deg);opacity:0}}
+@media (max-width:420px){.arcade{--cell:52px}.arcade .lever{height:124px}.arcade .lever::before{height:86px}}
+@media (prefers-reduced-motion:reduce){.arcade .lights,.arcade .freeb{animation:none}.arcade .rstrip{transition:none!important}}
+.htitle{font:700 .72rem var(--f-mono);letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:var(--t5);color:#000;vertical-align:middle}
+.sndl.vol input{width:90px;vertical-align:middle}
+.hud .htok{font-size:.7rem;border-left:1px solid var(--line);padding-left:8px}
+.hud.skin-neon{border-color:#ff2bd6;color:#ff2bd6;box-shadow:0 0 14px #ff2bd6,inset 0 0 8px #ff2bd655;background:#12031a}
+.hud.skin-terminal{border-color:#35ff7a;color:#35ff7a;background:#020a04;border-radius:4px;font-family:var(--f-mono)}
+.hud.skin-gold{border-color:#facc15;color:#1a1200;background:linear-gradient(135deg,#fde68a,#facc15 45%,#b45309);box-shadow:0 0 18px #facc1588}
+.hud.skin-gold .hl,.hud.skin-gold .htok{color:#3b2a00}
+.hud.skin-glitch{border-color:#22d3ee;color:#fff;background:#0b0d12;text-shadow:2px 0 #f0f,-2px 0 #0ff;animation:glitch 2.4s infinite steps(1)}
+@keyframes glitch{0%,92%{transform:none}93%{transform:translate(2px,-1px) skewX(-6deg)}96%{transform:translate(-2px,1px)}}
+@media (prefers-reduced-motion:reduce){.hud.skin-glitch{animation:none}}
+
 .hof .hofgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:10px}
 .hof .hofgrid>div{display:grid;gap:3px;align-content:start}
 .hof .big2{font:800 2rem/1 var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
@@ -2088,6 +2159,12 @@ function renderToday() {
   const due = dueKeys(), dueMiss = due.filter(k => srs[k].miss).length;
   const unseen = CARDS.filter(c => !srs["c:" + c.t]);
   const R = readiness(), pct = x => x === null ? "–" : Math.round(x * 100) + "%";
+  if (hype.on) {
+    const td = sod(nowMs());
+    if (due.length) { if (hype.dueSeen !== td) { hype.dueSeen = td; saveHype(); } }
+    else if (hype.dueSeen === td && hype.dueClaim !== td) { hype.dueClaim = td; addTokens(15, "today's reviews cleared"); saveHype(); paintHud(true); }
+    if (R.all >= 0.85 && !hype.readyShown) { hype.readyShown = true; saveHype(); animeFX("ready", `Readiness ${Math.round(R.all * 100)}% · go book the exam`); }
+  }
   const weakDom = [1, 2, 3, 4].sort((a, b) => R[a].score - R[b].score)[0];
   const byObj = {}; Object.values(stats.items).forEach(x => { const o = byObj[x.o] || (byObj[x.o] = { o: x.o, d: x.d, r: 0, n: 0 }); o.r += x.r; o.n += x.r + x.w; });
   const weakObj = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n)[0];
@@ -2114,6 +2191,7 @@ function renderToday() {
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
       <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
     ${hallHTML()}
+    ${typeof arcadeHTML === "function" ? arcadeHTML() : ""}
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
       <p class="note" style="margin:4px 0 10px">Weighted by the official domain weights. Built from flashcards retained after a gap, exam-question accuracy and lab completion, so it's an estimate, not a score prediction.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
@@ -2185,13 +2263,24 @@ const TIERS = [
 ];
 const SHIELD_EVERY = 25, SHIELD_MAX = 3;
 const REEL_SYMS = ["🔥", "👹", "😈", "⚔️", "👑", "⚡", "💻", "💀", "💎", "⭐"];
-const H0 = () => ({ on: false, sound: false, streak: 0, best: 0, bestTier: -1, shields: 0, xp: 0, jackpots: 0, dom: { 1: 0, 2: 0, 3: 0, 4: 0 }, bestDom: { 1: 0, 2: 0, 3: 0, 4: 0 }, days: [], dayN: 0, day: 0 });
+const H0 = () => ({ on: false, sound: false, streak: 0, best: 0, bestTier: -1, shields: 0, xp: 0, jackpots: 0, dom: { 1: 0, 2: 0, 3: 0, 4: 0 }, bestDom: { 1: 0, 2: 0, 3: 0, 4: 0 }, days: [], dayN: 0, day: 0, tokens: 0, boost: {}, owned: [], equip: {}, spins: null, readyShown: false, vol: 70, tokDay: 0, dueSeen: 0, dueClaim: 0 });
 let hype = Object.assign(H0(), store.get("hype", {}));
 let hypeMute = false, hypeUndo = null;
 const tierOf = s => { let t = -1; TIERS.forEach((x, i) => { if (s >= x.at) t = i; }); return t; };
 const levelOf = xp => Math.min(50, Math.floor(Math.sqrt(xp / 60)) + 1);
 const levelXp = l => 60 * (l - 1) * (l - 1);
 const saveHype = () => store.set("hype", hype);
+const LV_CUTINS = [10, 25, 50];
+function addXp(n) {
+  const a = levelOf(hype.xp); hype.xp += n; const b = levelOf(hype.xp);
+  if (b > a && hype.on) {
+    sfx("levelup"); toast(`⬆️ Level ${b}!`, "good");
+    const big = LV_CUTINS.filter(l => l > a && l <= b).pop();
+    if (big) animeFX("level", `Level ${big} reached · ${big === 50 ? "max level" : hype.xp.toLocaleString() + " XP"}`);
+  }
+  return b > a;
+}
+function addTokens(n, why) { if (!hype.on || !n) return; hype.tokens = (hype.tokens || 0) + n; if (why) toast(`🪙 +${n} tokens · ${why}`, "good"); }
 
 function hypeEvent(key, d, ok) {
   if (!hype.on || hypeMute) return;
@@ -2205,7 +2294,14 @@ function hypeEvent(key, d, ok) {
   const w = p === "p" || p === "t" ? 5 : p === "k" ? 2 : 1;
   if (ok) {
     const before = hype.streak, beforeT = tierOf(before);
-    hype.streak += w; hype.xp += 10 * w;
+    hype.streak += w;
+    // XP, with arcade boosts
+    hype.boost = hype.boost || {}; let mul = 1;
+    if (hype.boost.dbl > 0) { mul *= 2; hype.boost.dbl--; }
+    if (p === "k" && hype.boost.linux > 0 && (CMDS[+key.split(":")[1]] || {}).sh === "bash") { mul *= 2; hype.boost.linux--; }
+    addXp(10 * w * mul);
+    // tokens: only for correct answers
+    hype.tokens = (hype.tokens || 0) + ({ c: 1, a: 1, s: 1, e: 1, g: 1, k: 2, p: 10, t: 10 }[p] || 0);
     if (d) { hype.dom[d] = (hype.dom[d] || 0) + w; hype.bestDom[d] = Math.max(hype.bestDom[d] || 0, hype.dom[d]); }
     hype.best = Math.max(hype.best, hype.streak);
     const earned = Math.floor(hype.streak / SHIELD_EVERY) - Math.floor(before / SHIELD_EVERY);
@@ -2215,9 +2311,12 @@ function hypeEvent(key, d, ok) {
     if (t > beforeT) {
       const mult = 1 + Math.floor(Math.random() * 3); // jackpot reel: x1, x2 or x3
       const bonus = 50 * (t + 1) * mult;
-      hype.xp += bonus; if (mult === 3) hype.jackpots++;
+      addXp(bonus); if (mult === 3) hype.jackpots++;
       hype.bestTier = Math.max(hype.bestTier, t);
-      saveHype(); paintHud(true); showTier(TIERS[t], mult, bonus, gotShield);
+      saveHype(); paintHud(true);
+      const ak = { 2: "demon", 4: "overlord", 6: "root" }[t];
+      if (ak) animeFX(ak, `${TIERS[t].at} in a row · +${bonus} XP${mult > 1 ? ` · ×${mult} ${mult === 3 ? "JACKPOT" : "BONUS"}` : ""}${gotShield ? " · 🛡️ shield" : ""}`);
+      else showTier(TIERS[t], mult, bonus, gotShield);
       return;
     }
     saveHype(); paintHud(true);
@@ -2238,9 +2337,9 @@ function paintHud(bump) {
   if (!hud) { hud = document.createElement("button"); hud.id = "hud"; hud.type = "button"; hud.className = "hud"; document.body.appendChild(hud); hud.onclick = () => { setTab("today"); setTimeout(() => { const h = $("#hof"); if (h) h.scrollIntoView({ block: "start", behavior: "smooth" }); }, 50); }; }
   hud.hidden = false;
   const t = tierOf(hype.streak), lv = levelOf(hype.xp), next = TIERS.find(x => x.at > hype.streak);
-  hud.className = "hud " + (t >= 0 ? TIERS[t].cls : "t0");
+  hud.className = "hud " + (t >= 0 ? TIERS[t].cls : "t0") + ((hype.equip || {}).skin && hype.equip.skin !== "default" ? " skin-" + hype.equip.skin : "");
   hud.setAttribute("aria-label", `Streak ${hype.streak}, ${t >= 0 ? TIERS[t].name : "no tier yet"}, level ${lv}. Open Hall of Fame.`);
-  hud.innerHTML = `<span class="hfire">${hype.streak ? "🔥" : "·"}</span><span class="hn">${hype.streak}</span><span class="ht">${t >= 0 ? TIERS[t].name : next ? `${next.at - hype.streak} to ${next.name}` : ""}</span>${hype.shields ? `<span class="hs" title="Shields">🛡️${hype.shields > 1 ? hype.shields : ""}</span>` : ""}<span class="hl">Lv ${lv}</span>`;
+  hud.innerHTML = `<span class="hfire">${hype.streak ? "🔥" : "·"}</span><span class="hn">${hype.streak}</span><span class="ht">${t >= 0 ? TIERS[t].name : next ? `${next.at - hype.streak} to ${next.name}` : ""}</span>${hype.shields ? `<span class="hs" title="Shields">🛡️${hype.shields > 1 ? hype.shields : ""}</span>` : ""}<span class="hl">Lv ${lv}</span><span class="htok">🪙${hype.tokens || 0}</span>`;
   if (bump && !matchMedia("(prefers-reduced-motion: reduce)").matches) { hud.classList.remove("bump"); void hud.offsetWidth; hud.classList.add("bump"); }
 }
 function toast(msg, kind) {
@@ -2250,7 +2349,8 @@ function toast(msg, kind) {
 }
 
 /* ---------- slot-reel tier banner ---------- */
-function showTier(T, mult, bonus, gotShield) {
+function showTier(T, mult, bonus, gotShield) { if (!hype.on) return; fxEnqueue(done => showTierNow(T, mult, bonus, gotShield, done)); }
+function showTierNow(T, mult, bonus, gotShield, done) {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let o = $("#tierfx"); if (o) o.remove();
   o = document.createElement("div"); o.id = "tierfx"; o.className = "tierfx " + T.cls + (T.full ? " full" : ""); o.setAttribute("role", "alert");
@@ -2261,7 +2361,8 @@ function showTier(T, mult, bonus, gotShield) {
   if (reduce) o.classList.add("still");
   sfx("spin"); setTimeout(() => sfx(mult === 3 ? "jackpot" : "tier"), reduce ? 0 : 900);
   if (T.shake && !reduce) { const m = $("main"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); }
-  const close = () => { o.classList.add("out"); setTimeout(() => o.remove(), 250); };
+  let closed = false;
+  const close = () => { if (closed) return; closed = true; o.classList.add("out"); setTimeout(() => { o.remove(); done(); }, 250); };
   o.onclick = close; setTimeout(close, T.full ? 2600 : 1900);
 }
 
@@ -2271,12 +2372,27 @@ function sfx(kind) {
   if (!hype.on || !hype.sound) return;
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    const tone = (f, t0, dur, type = "square", vol = .06) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, actx.currentTime + t0); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + t0 + dur); o.connect(g).connect(actx.destination); o.start(actx.currentTime + t0); o.stop(actx.currentTime + t0 + dur + .02); };
+    if (actx.state === "suspended") actx.resume();
+    const V = Math.max(0, Math.min(100, hype.vol == null ? 70 : hype.vol)) / 70;
+    if (!V) return;
+    const tone = (f, t0, dur, type = "square", vol = .06, f2) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f, actx.currentTime + t0); if (f2) o.frequency.exponentialRampToValueAtTime(f2, actx.currentTime + t0 + dur); g.gain.setValueAtTime(vol * V, actx.currentTime + t0); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + t0 + dur); o.connect(g).connect(actx.destination); o.start(actx.currentTime + t0); o.stop(actx.currentTime + t0 + dur + .02); };
     if (kind === "spin") for (let i = 0; i < 10; i++) tone(500 + i * 40, i * .07, .04, "square", .03);
     if (kind === "tier") [523, 659, 784].forEach((f, i) => tone(f, i * .09, .18, "triangle", .08));
     if (kind === "jackpot") [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i * .08, .22, "square", .07));
     if (kind === "break") tone(140, 0, .35, "sawtooth", .07);
     if (kind === "shield") tone(880, 0, .15, "sine", .08);
+    const noise = (t0, dur, vol, lp) => { const n = actx.sampleRate * dur, b = actx.createBuffer(1, n, actx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n); const s = actx.createBufferSource(), g = actx.createGain(), f = actx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = lp; s.buffer = b; g.gain.value = vol * V; s.connect(f).connect(g).connect(actx.destination); s.start(actx.currentTime + t0); };
+    if (kind === "whoosh") { noise(0, .35, .25, 2400); tone(200, 0, .3, "sawtooth", .03, 1200); }
+    if (kind === "boom") { tone(110, 0, .5, "sine", .25, 35); noise(0, .4, .3, 600); }
+    if (kind === "power") [392, 523, 659, 784, 1047].forEach((f, i) => { tone(f, i * .07, .5 - i * .05, "sawtooth", .04); tone(f * 2, i * .07, .3, "triangle", .03); });
+    if (kind === "levelup") [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .06, .14, "square", .05));
+    if (kind === "ach") [784, 1175].forEach((f, i) => tone(f, i * .1, .3, "triangle", .08));
+    if (kind === "gameover") [392, 330, 262, 196].forEach((f, i) => tone(f, i * .18, .3, "square", .05));
+    if (kind === "chime") [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, i * .09, .45, "sine", .06));
+    if (kind === "pass") [523, 523, 784, 1047].forEach((f, i) => tone(f, i * .14, i === 3 ? .7 : .15, "square", .06));
+    if (kind === "fail") [330, 311, 294].forEach((f, i) => tone(f, i * .3, .35, "triangle", .07));
+    if (kind === "coin") [988, 1319].forEach((f, i) => tone(f, i * .07, .18, "square", .05));
+    if (kind === "tick") tone(1800, 0, .02, "square", .015);
   } catch { }
 }
 
@@ -2295,7 +2411,7 @@ function dailyStreak() {
 function hallHTML() {
   if (!hype.on) return "";
   const lv = levelOf(hype.xp), into = hype.xp - levelXp(lv), need = levelXp(lv + 1) - levelXp(lv), bt = hype.bestTier >= 0 ? TIERS[hype.bestTier] : null;
-  return `<div class="panel hof" id="hof"><div class="bar"><h3 style="margin-right:auto">🏆 Hall of Fame</h3><label class="sndl"><input type="checkbox" id="hsound" ${hype.sound ? "checked" : ""}> Sound effects</label></div>
+  return `<div class="panel hof" id="hof"><div class="bar"><h3 style="margin-right:auto">🏆 Hall of Fame${(hype.equip || {}).title ? ` <span class="htitle">${esc(hype.equip.title)}</span>` : ""}</h3><label class="sndl"><input type="checkbox" id="hsound" ${hype.sound ? "checked" : ""}> Sound effects</label>${hype.sound ? `<label class="sndl vol">🔊 <input type="range" id="hvol" min="0" max="100" step="5" value="${hype.vol == null ? 70 : hype.vol}" aria-label="Sound volume"></label>` : ""}</div>
     <div class="hofgrid">
       <div><span class="lbl">Level</span><b class="big2">${lv}</b><div class="meter"><i style="width:${lv >= 50 ? 100 : Math.round(100 * into / need)}%"></i></div><span class="note">${hype.xp.toLocaleString()} XP${lv < 50 ? ` · ${(levelXp(lv + 1) - hype.xp).toLocaleString()} to Lv ${lv + 1}` : " · max level"}</span></div>
       <div><span class="lbl">Current streak</span><b class="big2">${hype.streak}</b><span class="note">${tierOf(hype.streak) >= 0 ? TIERS[tierOf(hype.streak)].icon + " " + TIERS[tierOf(hype.streak)].name : "no tier yet"}${hype.shields ? ` · 🛡️×${hype.shields}` : ""}</span></div>
@@ -2307,7 +2423,11 @@ function hallHTML() {
     <div class="bar" style="margin-top:10px;gap:6px"><span class="lbl">Best by domain</span>${[1, 2, 3, 4].map(d => `<span class="chip" style="cursor:default"><i style="background:var(--d${d})"></i>${d}.0 · ${hype.bestDom[d] || 0}</span>`).join("")}</div>
     <p class="note" style="margin:10px 0 0">Streaks build from auto-graded answers: flashcards, commands (×2), PBQ labs and tickets (+5), and typed exam drills. Timed mock exams and self-graded flip reviews don't count. A miss resets the streak unless you have a shield (earn one every ${SHIELD_EVERY} in a row).</p></div>`;
 }
-function wireHall() { const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); }; }
+function wireHall() {
+  const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); const y = window.scrollY; renderToday(); window.scrollTo({ top: y }); };
+  const v = $("#hvol"); if (v) { v.oninput = () => { hype.vol = +v.value; saveHype(); }; v.onchange = () => sfx("coin"); }
+  if (typeof wireArcade === "function") wireArcade();
+}
 
 /* ================= EXTRAS: acronyms, daily, boss, achievements, AI ================= */
 const OBJ_TITLES = {"1.1":"OS types, purposes and file systems","1.2":"OS installations and upgrades","1.3":"Windows editions and features","1.4":"Windows features and tools","1.5":"Windows command-line tools","1.6":"Windows settings (Control Panel / Settings)","1.7":"Windows networking on a client","1.8":"macOS features and tools","1.9":"Linux features and commands","1.10":"Installing applications","1.11":"Cloud productivity tools","2.1":"Physical and logical security measures","2.2":"Windows security settings","2.3":"Wireless security protocols and authentication","2.4":"Malware types and tools","2.5":"Social engineering, threats and vulnerabilities","2.6":"Malware removal procedure","2.7":"Workstation security and hardening","2.8":"Mobile device security","2.9":"Data destruction and disposal","2.10":"SOHO network security","2.11":"Browser security","3.1":"Troubleshooting Windows OS issues","3.2":"Troubleshooting mobile OS and app issues","3.3":"Troubleshooting mobile OS and app security issues","3.4":"Troubleshooting PC security issues","4.1":"Documentation and support systems","4.2":"Change management","4.3":"Backup and recovery","4.4":"Safety procedures","4.5":"Environmental impacts and controls","4.6":"Prohibited content, privacy, licensing and policy","4.7":"Communication and professionalism","4.8":"Scripting basics","4.9":"Remote access technologies","4.10":"Basic AI concepts"};
@@ -2382,9 +2502,14 @@ function dailyPlanItem() {
 function afterExam(pct, right) {
   if (ex.tag === "daily") {
     const d = store.get("daily", {}); const first = d[ex.dkey] == null; d[ex.dkey] = Math.max(d[ex.dkey] || 0, pct); store.set("daily", d);
-    if (hype.on) { const t = sod(nowMs()); if (!hype.days.includes(t)) hype.days.push(t); if (pct === 1 && first) { hype.xp += 200; toast("🔥 Perfect daily challenge! +200 XP", "good"); } saveHype(); paintHud(true); }
+    if (hype.on) { const t = sod(nowMs()); if (!hype.days.includes(t)) hype.days.push(t); if (pct === 1 && first) { addXp(200); addTokens(20); toast("🔥 Perfect daily challenge! +200 XP · +20 🪙", "good"); sfx("chime"); } saveHype(); paintHud(true); }
   }
-  if (ex.mode === "sim") store.set("simdone", (store.get("simdone", 0) || 0) + 1);
+  if (ex.mode === "sim") { store.set("simdone", (store.get("simdone", 0) || 0) + 1); sfx(pct >= 0.75 ? "pass" : "fail"); }
+  if (hype.on && ex.mode !== "typed") {
+    let xp = 0, tok = right;
+    if (ex.tag === "lightning") { xp = right * 30; toast(`⚡ Lightning round: ${right}/${ex.qs.length} · +${xp} XP (×3)`, right ? "good" : ""); }
+    if (xp) addXp(xp); hype.tokens = (hype.tokens || 0) + tok; saveHype(); paintHud(true);
+  }
   if (ex.tag === "gen") store.set("gendone", (store.get("gendone", 0) || 0) + 1);
   achSoon();
 }
@@ -2402,7 +2527,7 @@ function startBoss() {
   const b = bossNow(), r = rng(b.w * 7919 + (store.get("bosstries", 0) || 0));
   store.set("bosstries", (store.get("bosstries", 0) || 0) + 1);
   const single = EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q));
-  Object.assign(boss, { on: true, qs: seededPick(single, 20, r), i: 0, state: "fight", miss: null });
+  Object.assign(boss, { on: true, qs: seededPick(single, 20, r), i: 0, state: "fight", miss: null, loot: null, reward: false });
   rv.on = false; setTab("today"); window.scrollTo({ top: 0 });
 }
 function renderBoss(v) {
@@ -2414,7 +2539,7 @@ function renderBoss(v) {
     $("#bossre").onclick = startBoss; $("#bossx").onclick = () => { boss.on = false; renderToday(); }; wireExplain(v); return;
   }
   if (boss.state === "won") {
-    v.innerHTML = `<div class="panel bosspanel won">${head}<h2>🗡️ ${esc(b.name)} defeated!</h2><p>20 for 20. ${boss.reward ? "+1,000 XP and this week's boss badge." : "Rematch won. The weekly reward was already claimed."}</p><div class="row"><button class="btn" id="bossx" type="button">Back to Today</button></div></div>`;
+    v.innerHTML = `<div class="panel bosspanel won">${head}<h2>🗡️ ${esc(b.name)} defeated!</h2><p>20 for 20. ${boss.reward ? `+1,000 XP, +50 tokens${boss.loot ? `, a rare ${esc(boss.loot.cat.toLowerCase())} (<b>${esc(boss.loot.name)}</b>)` : ""} and this week's boss badge.` : "Rematch won. The weekly reward was already claimed."}</p><div class="row"><button class="btn" id="bossx" type="button">Back to Today</button></div></div>`;
     $("#bossx").onclick = () => { boss.on = false; renderToday(); }; return;
   }
   const q = boss.qs[boss.i];
@@ -2422,12 +2547,12 @@ function renderBoss(v) {
     <div class="row"><button class="btn ghost" id="bossx" type="button">Run away</button></div></div>`;
   v.querySelectorAll(".opt").forEach(btn => btn.onclick = () => {
     const ok = +btn.dataset.i === q.a; record("e:" + q.k, q.d, q.o, ok, "exam");
-    if (!ok) { boss.state = "lost"; boss.miss = q; renderBoss(v); return; }
+    if (!ok) { boss.state = "lost"; boss.miss = q; sfx("gameover"); renderBoss(v); return; }
     boss.i++;
     if (boss.i >= n) {
       boss.state = "won"; const wins = store.get("bosswins", {}); boss.reward = !wins[b.w];
-      if (boss.reward) { wins[b.w] = nowMs(); store.set("bosswins", wins); hype.xp += 1000; saveHype(); paintHud(true); }
-      showTier({ name: "BOSS SLAIN", icon: "🗡️", cls: "t7", at: 20, full: true, shake: true }, 1, boss.reward ? 1000 : 0, false); achSoon();
+      if (boss.reward) { wins[b.w] = nowMs(); store.set("bosswins", wins); addXp(1000); addTokens(50); boss.loot = typeof lootDrop === "function" ? lootDrop(true) : null; saveHype(); paintHud(true); }
+      animeFX("boss", boss.reward ? `20 for 20 · +1,000 XP · +50 🪙${boss.loot ? " · " + boss.loot.name : ""}` : "20 for 20 · rematch won"); achSoon();
     }
     renderBoss(v);
   });
@@ -2463,7 +2588,7 @@ function checkAch() {
   const got = store.get("ach", {}), fresh = [];
   ACH.forEach(([id, icon, name, , test]) => { try { if (!got[id] && test()) { got[id] = nowMs(); fresh.push(icon + " " + name); } } catch { } });
   if (!fresh.length) return;
-  store.set("ach", got);
+  store.set("ach", got); sfx("ach");
   toast(fresh.length === 1 ? `🏅 Achievement unlocked: ${fresh[0]}` : `🏅 ${fresh.length} achievements unlocked: ${fresh.join(", ")}`, "good");
 }
 function achHTML() {
@@ -2564,6 +2689,236 @@ Explain in plain English for someone new to IT, under 130 words, in exactly thre
     }
   });
 }
+
+/* ================= ANIME CUT-INS (original art, drawn live) ================= */
+const AURAS = { crimson: ["#ff3b3b", "#2a0505"], gold: ["#ffcf3d", "#2a1e02"], cyan: ["#33e1ff", "#021d26"], violet: ["#b46bff", "#170629"], terminal: ["#35ff7a", "#021a0b"], ember: ["#ff8a2b", "#2a1003"] };
+const CUTINS = {
+  demon: { title: "DEMON", kana: "デーモン", sub: "20 in a row · power awakened", aura: "crimson", pose: "power" },
+  overlord: { title: "OVERLORD", kana: "オーバーロード", sub: "50 in a row · unstoppable", aura: "gold", pose: "power" },
+  root: { title: "ROOT ACCESS", kana: "ルートアクセス", sub: "100 in a row · full system control", aura: "terminal", pose: "power", long: true },
+  boss: { title: "BOSS SLAIN", kana: "ボス撃破", sub: "20 for 20 · weekly boss defeated", aura: "ember", pose: "victory" },
+  level: { title: "LEVEL UP", kana: "レベルアップ", sub: "", aura: "cyan", pose: "power" },
+  ready: { title: "READY FOR BATTLE", kana: "準備完了", sub: "Exam readiness 85%+ · go book it", aura: "violet", pose: "victory", long: true },
+  jackpot: { title: "JACKPOT", kana: "ジャックポット", sub: "👑 👑 👑", aura: "gold", pose: "victory" }
+};
+/* original character: "SysOp", a hooded tech with a glowing visor and headset */
+const sysopSVG = (c, pose) => `<svg viewBox="0 0 220 280" class="sysop" aria-hidden="true">
+  <defs><radialGradient id="sg" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="${c}" stop-opacity=".55"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>
+  <ellipse cx="110" cy="130" rx="105" ry="125" fill="url(#sg)"/>
+  ${pose === "victory" ? `<path d="M150 150 L196 70 L210 76 L170 160 Z" fill="#0b0d12" stroke="${c}" stroke-width="2"/><circle cx="203" cy="66" r="13" fill="#0b0d12" stroke="${c}" stroke-width="3"/>` : `<path d="M40 165 L10 120 L22 112 L60 152 Z M180 165 L210 120 L198 112 L160 152 Z" fill="#0b0d12" stroke="${c}" stroke-width="2"/>`}
+  <path d="M110 22 C70 22 50 58 52 98 C54 122 64 138 72 146 L38 178 C26 190 20 218 18 280 L202 280 C200 218 194 190 182 178 L148 146 C156 138 166 122 168 98 C170 58 150 22 110 22 Z" fill="#0b0d12" stroke="${c}" stroke-width="2.5"/>
+  <ellipse cx="110" cy="102" rx="36" ry="42" fill="#000"/>
+  <rect x="78" y="90" width="64" height="13" rx="6.5" fill="${c}"><animate attributeName="opacity" values="1;.55;1" dur=".6s" repeatCount="indefinite"/></rect>
+  <path d="M66 96 C66 52 154 52 154 96" fill="none" stroke="${c}" stroke-width="5"/>
+  <rect x="58" y="88" width="12" height="24" rx="5" fill="${c}"/><rect x="150" y="88" width="12" height="24" rx="5" fill="${c}"/>
+  <path d="M64 112 C70 128 82 134 96 134" fill="none" stroke="${c}" stroke-width="3"/>
+  <path d="M86 200 L110 176 L134 200 L110 224 Z" fill="none" stroke="${c}" stroke-width="3"/><text x="110" y="206" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="${c}">$</text>
+</svg>`;
+
+/* one effect at a time: tier reels and cut-ins share a queue */
+const fxQ = []; let fxBusy = false;
+function fxEnqueue(fn) { fxQ.push(fn); if (!fxBusy) fxNext(); }
+function fxNext() { const fn = fxQ.shift(); if (!fn) { fxBusy = false; return; } fxBusy = true; fn(() => setTimeout(fxNext, 120)); }
+
+function animeFX(kind, extraSub) {
+  if (!hype.on) return;
+  const C = Object.assign({}, CUTINS[kind]); if (extraSub) C.sub = extraSub;
+  const eq = (hype.equip || {}).aura; const [col, dark] = AURAS[eq && eq !== "default" ? eq : C.aura];
+  fxEnqueue(done => {
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const o = document.createElement("div"); o.id = "animefx"; o.className = "animefx" + (reduce ? " still" : ""); o.setAttribute("role", "alert");
+    o.style.setProperty("--ac", col); o.style.setProperty("--ad", dark);
+    o.innerHTML = `<canvas class="lines"></canvas><div class="flash"></div>
+      <div class="cutin"><div class="band"></div><div class="who">${sysopSVG(col, C.pose)}</div>
+        <div class="words"><div class="kana">${C.kana}</div><div class="atitle">${esc(C.title)}</div>${C.sub ? `<div class="asub">${esc(C.sub)}</div>` : ""}</div></div>
+      <div class="askip">tap to continue</div>`;
+    document.body.appendChild(o);
+    const cv = o.querySelector("canvas"), ctx = cv.getContext("2d"); let raf = 0, t0 = performance.now(), parts = [];
+    const fit = () => { cv.width = innerWidth * (devicePixelRatio || 1); cv.height = innerHeight * (devicePixelRatio || 1); };
+    fit();
+    const draw = now => {
+      const t = (now - t0) / 1000, W = cv.width, H = cv.height, cx = W / 2, cy = H * .48, R = Math.hypot(W, H);
+      ctx.fillStyle = t < .28 && !reduce ? (t < .12 ? "#fff" : "#000") : dark; ctx.fillRect(0, 0, W, H);
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .55); g.addColorStop(0, col + "aa"); g.addColorStop(1, "transparent"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      const n = reduce ? 60 : 140;
+      ctx.strokeStyle = t < .28 && !reduce ? (t < .12 ? "#000" : "#fff") : "rgba(255,255,255,.85)";
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + (reduce ? 0 : Math.sin(i * 12.9898 + Math.floor(t * 24)) * .03);
+        const r0 = R * (.16 + .1 * Math.abs(Math.sin(i * 78.233 + Math.floor(t * 18))));
+        ctx.lineWidth = (1 + (i % 5)) * (devicePixelRatio || 1) * .9;
+        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke();
+      }
+      if (!reduce) {
+        if (parts.length < 90) parts.push({ x: Math.random() * W, y: H + 10, v: (2 + Math.random() * 6) * (devicePixelRatio || 1), s: 1 + Math.random() * 3 });
+        ctx.fillStyle = col; parts.forEach(p => { p.y -= p.v; ctx.globalAlpha = .8; ctx.fillRect(p.x, p.y, p.s * 2, p.s * 6); }); ctx.globalAlpha = 1; parts = parts.filter(p => p.y > -20);
+        raf = requestAnimationFrame(draw);
+      }
+    };
+    raf = requestAnimationFrame(draw);
+    sfx("whoosh"); setTimeout(() => sfx("boom"), reduce ? 0 : 280); setTimeout(() => sfx("power"), reduce ? 0 : 420);
+    if (!reduce) { const m = $("main"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); }
+    let closed = false;
+    const close = () => { if (closed) return; closed = true; o.classList.add("out"); setTimeout(() => { cancelAnimationFrame(raf); o.remove(); done(); }, 260); };
+    o.onclick = close; setTimeout(close, C.long ? 3800 : 3000);
+  });
+}
+
+/* ================= ARCADE: Byte Bandit slot machine ================= */
+const SPIN_COST = 10, SPIN_CAP = 20;
+const SYMS = ["💾", "🐧", "🔥", "💻", "🛡️", "⚡", "👑"];
+const OUTCOMES = [
+  { id: "jackpot", p: 1, sym: "👑", line: "👑 👑 👑", name: "JACKPOT", reward: "2,000 XP + a rare cosmetic + anime cut-in" },
+  { id: "lightning", p: 4, sym: "⚡", line: "⚡ ⚡ ⚡", name: "Lightning round", reward: "5 rapid exam questions at ×3 XP" },
+  { id: "shield", p: 4, sym: "🛡️", line: "🛡️ 🛡️ 🛡️", name: "Shield", reward: "+1 streak shield (or +100 XP if you're at 3)" },
+  { id: "double", p: 5, sym: "🔥", line: "🔥 🔥 🔥", name: "Double XP", reward: "×2 XP on your next 15 correct answers" },
+  { id: "surge", p: 5, sym: "💻", line: "💻 💻 💻", name: "XP surge", reward: "+500 XP" },
+  { id: "linux", p: 4, sym: "🐧", line: "🐧 🐧 🐧", name: "Linux bonus", reward: "×2 XP on your next 10 Linux commands" },
+  { id: "loot", p: 7, sym: "💾", line: "💾 💾 💾", name: "Loot drop", reward: "A cosmetic: skin, reel theme, title or aura" },
+  { id: "pair", p: 30, sym: null, line: "Any two matching", name: "Pair", reward: "50–150 XP" },
+  { id: "none", p: 40, sym: null, line: "No match", name: "No match", reward: "10 XP" }
+];
+const COSMETICS = [
+  { id: "skin:neon", cat: "Streak skin", name: "Neon", rare: false }, { id: "skin:terminal", cat: "Streak skin", name: "Terminal", rare: false },
+  { id: "skin:gold", cat: "Streak skin", name: "Gold", rare: true }, { id: "skin:glitch", cat: "Streak skin", name: "Glitch", rare: true },
+  { id: "reel:cyber", cat: "Reel theme", name: "Cyberpunk", rare: false }, { id: "reel:8bit", cat: "Reel theme", name: "8-bit", rare: false },
+  { id: "aura:violet", cat: "Cut-in aura", name: "Violet", rare: false }, { id: "aura:cyan", cat: "Cut-in aura", name: "Cyan", rare: false }, { id: "aura:crimson", cat: "Cut-in aura", name: "Crimson", rare: false }, { id: "aura:gold", cat: "Cut-in aura", name: "Gold", rare: true },
+  ...["Packet Sniffer", "Ping Lord", "Sudo Sensei", "Subnet Sorcerer", "Patch Tuesday Survivor", "Blue Screen Survivor", "Ticket Slayer", "Cable Whisperer"].map(n => ({ id: "title:" + n, cat: "Title", name: n, rare: false })),
+  ...["Root Wizard", "Kernel Whisperer", "The Sysadmin"].map(n => ({ id: "title:" + n, cat: "Title", name: n, rare: true }))
+];
+const today0 = () => sod(nowMs());
+function spinsToday() { if (!hype.spins || hype.spins.day !== today0()) hype.spins = { day: today0(), n: 0, free: false }; return hype.spins; }
+const freeSpinReady = () => { const s = spinsToday(); return !s.free && hype.day === today0() && hype.dayN >= 10; };
+function arcadeRoll(r = Math.random()) { // fixed, published odds
+  let x = r * 100; for (const o of OUTCOMES) { if (x < o.p) return o; x -= o.p; } return OUTCOMES[OUTCOMES.length - 1];
+}
+function reelsFor(o) {
+  const pick = ex => { const opts = SYMS.filter(s => !ex.includes(s)); return opts[Math.floor(Math.random() * opts.length)]; };
+  if (o.sym) return [o.sym, o.sym, o.sym];
+  if (o.id === "pair") { const s = SYMS[Math.floor(Math.random() * SYMS.length)], other = pick([s]); const r = [s, s, other]; const k = Math.floor(Math.random() * 3); [r[k], r[2]] = [r[2], r[k]]; return r; }
+  const a = pick([]), b = pick([a]), c = pick([a, b]); return [a, b, c];
+}
+function lootDrop(rare) {
+  hype.owned = hype.owned || [];
+  let pool = COSMETICS.filter(c => !hype.owned.includes(c.id) && (rare ? c.rare : !c.rare));
+  if (!pool.length) pool = COSMETICS.filter(c => !hype.owned.includes(c.id));
+  if (!pool.length) { addXp(300); return null; }
+  const it = pool[Math.floor(Math.random() * pool.length)]; hype.owned.push(it.id); return it;
+}
+const ar = { spinning: false, last: null, reels: null, cols: null };
+// off-payline symbols are random, and never line up three-in-a-row (so nothing looks like a win it isn't)
+function colsFor(res) {
+  const other = c => { const o = SYMS.filter(s => s !== c); return o[Math.floor(Math.random() * o.length)]; };
+  for (let k = 0; k < 50; k++) {
+    const cols = res.map(c => [other(c), c, other(c)]);
+    if (new Set(cols.map(c => c[0])).size > 1 && new Set(cols.map(c => c[2])).size > 1) return cols;
+  }
+  return res.map((c, i) => [SYMS[(SYMS.indexOf(c) + 1 + i) % 7], c, SYMS[(SYMS.indexOf(c) + 4 + i) % 7]]);
+}
+function arcadeHTML() {
+  if (!hype.on) return "";
+  const s = spinsToday(), free = freeSpinReady(), can = !ar.spinning && s.n < SPIN_CAP && (free || hype.tokens >= SPIN_COST);
+  const theme = (hype.equip || {}).reel || "classic";
+  const cell = sym => `<span>${sym}</span>`;
+  const cols = ar.cols || (ar.cols = colsFor(["💾", "🐧", "🔥"]));
+  const b = hype.boost || {};
+  return `<div class="panel arcade" id="arcade">
+    <div class="marquee"><span class="lights"></span><b>BYTE BANDIT</b><span class="lights"></span></div>
+    <div class="cab theme-${theme}"><div class="reels3">${cols.map((c, i) => `<div class="rwin"><div class="rstrip" id="rs${i}">${c.map(cell).join("")}</div></div>`).join("")}<div class="payline"></div></div>
+      <button type="button" class="lever" id="lever" aria-label="Pull the lever to spin" ${can ? "" : "disabled"}><i></i></button></div>
+    <div class="bar arcbar"><span class="tok" title="Tokens">🪙 <b id="tokn">${hype.tokens || 0}</b></span><span class="note">Spins today ${s.n}/${SPIN_CAP}</span>${free ? `<span class="freeb">1 free spin</span>` : ""}
+      <button class="btn" id="spinbtn" type="button" ${can ? "" : "disabled"}>${ar.spinning ? "Spinning…" : free ? "FREE SPIN" : `SPIN · ${SPIN_COST} 🪙`}</button></div>
+    ${s.n >= SPIN_CAP ? `<p class="note">That's 20 spins for today. The machine resets tomorrow, so back to studying 💪</p>` : !free && (hype.tokens || 0) < SPIN_COST ? `<p class="note">Earn tokens by answering correctly: flashcards +1, commands +2, PBQs and tickets +10, a clean due-review day +15, a perfect daily +20.${hype.dayN < 10 ? ` Your free spin unlocks after ${10 - (hype.dayN || 0)} more answers today.` : ""}</p>` : ""}
+    ${hype.pendingLightning && !(ar.last || "").includes("lightgo") ? `<p class="boosts">⚡ Lightning round waiting <button class="btn sm" id="lightgo" type="button">Start →</button></p>` : ""}
+    ${(b.dbl || b.linux) ? `<p class="boosts">${b.dbl ? `🔥 Double XP: ${b.dbl} answers left` : ""}${b.dbl && b.linux ? " · " : ""}${b.linux ? `🐧 Linux ×2: ${b.linux} commands left <button class="btn ghost sm" id="golinux" type="button">Drill now →</button>` : ""}</p>` : ""}
+    <div id="spinres" aria-live="polite">${ar.last ? ar.last : ""}</div>
+    <details class="paytab"><summary><b>Pay table and odds</b></summary><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Line</th><th>Reward</th><th>Chance</th></tr></thead><tbody>${OUTCOMES.map(o => `<tr><td>${o.line}</td><td>${esc(o.reward)}</td><td class="num">${o.p}%</td></tr>`).join("")}</tbody></table></div><p class="note">Fixed odds on every spin. Nothing is weighted toward near-misses, and spins can only be earned by studying.</p></details>
+    <details class="collect"><summary><b>Collection</b> <span class="note">${(hype.owned || []).length}/${COSMETICS.length}</span></summary>${collectionHTML()}</details></div>`;
+}
+function collectionHTML() {
+  const eq = hype.equip || {}, owned = hype.owned || [];
+  const cats = [["Streak skin", "skin"], ["Reel theme", "reel"], ["Cut-in aura", "aura"], ["Title", "title"]];
+  return cats.map(([cat, key]) => `<div class="ccat"><span class="lbl">${cat}</span><div class="citems">
+    <button type="button" class="citem${!eq[key] || eq[key] === "default" || eq[key] === "classic" || eq[key] === "" ? " on" : ""}" data-eq="${key}:default">Default</button>
+    ${COSMETICS.filter(c => c.cat === cat).map(c => { const has = owned.includes(c.id), val = c.id.split(":").slice(1).join(":"); return has ? `<button type="button" class="citem${eq[key] === val ? " on" : ""}${c.rare ? " rare" : ""}" data-eq="${c.id}">${esc(c.name)}${c.rare ? " ★" : ""}</button>` : `<span class="citem locked" title="Win it from 💾💾💾${c.rare ? " or the jackpot" : ""}">???</span>`; }).join("")}</div></div>`).join("");
+}
+function wireArcade() {
+  const go = () => doSpin();
+  if ($("#spinbtn")) $("#spinbtn").onclick = go;
+  if ($("#lever")) $("#lever").onclick = go;
+  if ($("#golinux")) $("#golinux").onclick = () => { cp.sh = "bash"; store.set("cpsh", "bash"); cpList(); setTab("code"); };
+  if ($("#lightgo")) $("#lightgo").onclick = startLightning;
+  if ($("#golinux2")) $("#golinux2").onclick = () => { cp.sh = "bash"; store.set("cpsh", "bash"); cpList(); setTab("code"); };
+  document.querySelectorAll("[data-eq]").forEach(b => b.onclick = () => {
+    const [key, ...rest] = b.dataset.eq.split(":"); const val = rest.join(":");
+    hype.equip = hype.equip || {}; hype.equip[key] = val === "default" ? (key === "reel" ? "classic" : "default") : val;
+    if (key === "title" && val === "default") hype.equip.title = "";
+    saveHype(); paintHud(); const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+    const c = $("#arcade details.collect"); if (c) c.open = true;
+  });
+}
+function doSpin() {
+  if (ar.spinning || !hype.on) return;
+  const s = spinsToday(); if (s.n >= SPIN_CAP) return;
+  const free = freeSpinReady();
+  if (!free && (hype.tokens || 0) < SPIN_COST) return;
+  if (free) s.free = true; else hype.tokens -= SPIN_COST;
+  s.n++; saveHype();
+  const o = arcadeRoll(), res = reelsFor(o), cols = colsFor(res), reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  ar.spinning = true; ar.last = "";
+  const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+  const lever = $("#lever"); if (lever && !reduce) lever.classList.add("pulled");
+  const N = 18;
+  res.forEach((sym, i) => {
+    const st = $("#rs" + i); if (!st) return;
+    const seq = []; for (let k = 0; k < N; k++) seq.push(SYMS[Math.floor(Math.random() * 7)]);
+    seq.push(...cols[i]);
+    st.innerHTML = seq.map(x => `<span>${x}</span>`).join("");
+    st.style.transition = "none"; st.style.transform = "translateY(0)"; void st.offsetHeight;
+    st.style.transition = reduce ? "none" : `transform ${0.9 + i * 0.35}s cubic-bezier(.12,.75,.25,1.03)`;
+    st.style.transform = `translateY(calc(-${N} * var(--cell)))`;
+  });
+  if (!reduce) for (let k = 0; k < 14; k++) setTimeout(() => sfx("tick"), k * 95);
+  setTimeout(() => finishSpin(o, res, cols), reduce ? 50 : 1700);
+}
+function finishSpin(o, res, cols) {
+  ar.spinning = false; ar.reels = res; ar.cols = cols;
+  let msg = "", big = false, extra = "";
+  if (o.id === "jackpot") { addXp(2000); hype.jackpots = (hype.jackpots || 0) + 1; const it = lootDrop(true); msg = `👑 JACKPOT! +2,000 XP${it ? ` · rare ${it.cat.toLowerCase()}: <b>${esc(it.name)}</b>` : ""}`; big = true; }
+  else if (o.id === "lightning") { msg = "⚡ LIGHTNING ROUND unlocked: 5 rapid questions at ×3 XP"; extra = `<button class="btn" id="lightgo" type="button">Start lightning round →</button>`; big = true; hype.pendingLightning = true; }
+  else if (o.id === "shield") { if ((hype.shields || 0) < SHIELD_MAX) { hype.shields++; msg = "🛡️ +1 streak shield"; } else { addXp(100); msg = "🛡️ Shields full, so +100 XP instead"; } }
+  else if (o.id === "double") { hype.boost = hype.boost || {}; hype.boost.dbl = (hype.boost.dbl || 0) + 15; msg = "🔥 Double XP on your next 15 correct answers"; }
+  else if (o.id === "surge") { addXp(500); msg = "💻 XP surge: +500 XP"; }
+  else if (o.id === "linux") { hype.boost = hype.boost || {}; hype.boost.linux = (hype.boost.linux || 0) + 10; msg = "🐧 Linux bonus: ×2 XP on your next 10 Linux commands"; extra = `<button class="btn" id="golinux2" type="button">Drill Linux now →</button>`; }
+  else if (o.id === "loot") { const it = lootDrop(false); msg = it ? `💾 Loot drop: ${it.cat.toLowerCase()} <b>${esc(it.name)}</b>. Equip it in Collection.` : "💾 Collection complete, so +300 XP instead"; }
+  else if (o.id === "pair") { const xp = [50, 100, 150][Math.floor(Math.random() * 3)]; addXp(xp); msg = `Two of a kind: +${xp} XP`; }
+  else { addXp(10); msg = "No match: +10 XP for the pull"; }
+  ar.last = `<div class="fb ${o.id === "none" ? "" : "good"} spinmsg"><b class="v">${msg}</b>${extra}</div>`;
+  saveHype(); paintHud(true);
+  const y = window.scrollY; renderToday(); window.scrollTo({ top: y });
+  if (o.id !== "none") { sfx(big ? "jackpot" : "coin"); coinRain(big ? 40 : 14); }
+  if (o.id === "jackpot") animeFX("jackpot");
+  achSoon();
+}
+function coinRain(n) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const a = $("#arcade"); if (!a) return;
+  for (let i = 0; i < n; i++) { const c = document.createElement("span"); c.className = "coin"; c.textContent = "🪙"; c.style.left = Math.random() * 100 + "%"; c.style.animationDelay = Math.random() * .5 + "s"; a.appendChild(c); setTimeout(() => c.remove(), 1900); }
+}
+function startLightning() {
+  if (!hype.pendingLightning) return; hype.pendingLightning = false; saveHype();
+  const qs = shuffle(EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q))).slice(0, 5);
+  Object.assign(ex, { qs, ans: qs.map(() => null), graded: qs.map(() => null), flags: new Set(), cur: 0, mode: "mc", phase: "run", confirm: false, end: nowMs() + 75000, tag: "lightning" });
+  ar.last = ""; setTab("exam");
+}
+
+/* test hooks: let the headless tests verify odds and force outcomes */
+window.__c2test = {
+  roll: r => arcadeRoll(r), reelsFor: id => reelsFor(OUTCOMES.find(o => o.id === id)), OUTCOMES, COSMETICS,
+  force: id => { arcadeRoll = id ? () => OUTCOMES.find(o => o.id === id) : arcadeRoll0; },
+  setReadiness: f => { readiness = f; }, animeFX: (k, s) => animeFX(k, s), showTier: i => showTier(TIERS[i], 1, 50, false),
+  sfx: k => sfx(k), hype: () => hype, ex: () => ex, clearDue: () => { srs = {}; }, sod: () => sod(nowMs())
+};
+const arcadeRoll0 = arcadeRoll;
 
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
