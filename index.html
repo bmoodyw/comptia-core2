@@ -409,6 +409,28 @@ main.shake{animation:shake .45s}
 main{padding-bottom:70px}
 .empty{color:var(--muted);text-align:center;padding:30px 10px}
 .confirm{display:inline-flex;gap:8px;align-items:center}
+/* ---------- study music ---------- */
+.topctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:relative}
+.musicslot{position:static}
+.musicbtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 14px;font:700 .82rem var(--f-mono);cursor:pointer;color:var(--muted)}
+.musicbtn .mi{font-size:.95rem;line-height:1}
+.musicbtn .eq{display:none;gap:2px;align-items:flex-end;height:16px}
+.musicbtn .eq i{display:block;width:3px;background:var(--accent);border-radius:1px;animation:eqb 1s ease-in-out infinite}
+.musicbtn .eq i:nth-child(2){animation-delay:-.4s}.musicbtn .eq i:nth-child(3){animation-delay:-.7s}
+@keyframes eqb{0%,100%{height:4px}50%{height:16px}}
+.musicbtn.playing{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.musicbtn.playing .mi{display:none}.musicbtn.playing .eq{display:flex}
+.musicbtn .eq{height:14px}
+@media (prefers-reduced-motion:reduce){.musicbtn .eq i{animation:none;height:10px}}
+.musicpanel{position:absolute;left:0;top:calc(100% + 8px);z-index:45;width:min(330px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.25);padding:14px 16px}
+.mphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.mpx{border:0;background:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px 6px}
+.mpvibe{margin-bottom:10px}
+.mprow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mprow #mplay{min-width:104px}
+.mpvol{display:flex;align-items:center;gap:6px;flex:1;min-width:140px}.mpvol input{flex:1;min-width:0}
+.mpnow{display:grid;gap:2px;margin-top:12px;font-size:.8rem}
+#mnow .on{color:var(--accent);font-weight:700}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -426,7 +448,7 @@ main{padding-bottom:70px}
 <header class="mast">
   <div class="wrap">
     <h1>Core 2 Drill Room<small>CompTIA A+ 220-1202</small></h1>
-    <div id="hypeslot" class="hypeslot"></div>
+    <div class="topctl"><div id="hypeslot" class="hypeslot"></div><div id="musicslot" class="musicslot"></div></div>
     <div class="facts"><span>Max <b>90</b> questions</span><span><b>90</b> minutes</span><span>Pass <b>700</b> / 900</span><span>MC, drag-and-drop, PBQs</span></div>
     <div class="wbar" role="img" aria-label="Domain weights: Operating systems 28%, Security 28%, Software troubleshooting 23%, Operational procedures 21%">
       <span class="w1" style="width:28%">1.0 · 28%</span><span class="w2" style="width:28%">2.0 · 28%</span><span class="w3" style="width:23%">3.0 · 23%</span><span class="w4" style="width:21%">4.0 · 21%</span>
@@ -2926,6 +2948,7 @@ function showTierNow(T, mult, bonus, gotShield, done) {
     <div class="tname">${T.name}</div><div class="tsub">${T.at} in a row${mult > 1 ? ` · <b class="jack">×${mult} ${mult === 3 ? "JACKPOT" : "BONUS"}</b>` : ""} · +${bonus} XP${gotShield ? " · 🛡️ shield earned" : ""}</div><div class="tskip">tap to continue</div></div>`;
   document.body.appendChild(o);
   if (reduce) o.classList.add("still");
+  if (typeof musicDuck === "function") musicDuck(T.full ? 2700 : 2000);
   sfx("spin"); setTimeout(() => sfx(mult === 3 ? "jackpot" : "tier"), reduce ? 0 : 900);
   if (T.shake && !reduce) { const m = $("main"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); }
   let closed = false;
@@ -3344,6 +3367,7 @@ function animeFX(kind, extraSub) {
       }
     };
     raf = requestAnimationFrame(draw);
+    if (typeof musicDuck === "function") musicDuck(C.long ? 4000 : 3200);
     sfx("whoosh"); setTimeout(() => sfx("boom"), reduce ? 0 : 280); setTimeout(() => sfx("power"), reduce ? 0 : 420);
     if (!reduce) { const m = $("main"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); }
     let closed = false;
@@ -3508,6 +3532,173 @@ window.__c2test = {
   sfx: k => sfx(k), hype: () => hype, ex: () => ex, clearDue: () => { srs = {}; }, sod: () => sod(nowMs())
 };
 const arcadeRoll0 = arcadeRoll;
+
+/* ================= STUDY MUSIC: generative lo-fi, composed live with Web Audio (no audio files, nothing to license) ================= */
+const MU = Object.assign({ on: false, vol: 45, vibe: "chill" }, store.get("music", {}));
+MU.on = false; // never autoplay; browsers need a tap first anyway
+const saveMu = () => store.set("music", { vol: MU.vol, vibe: MU.vibe });
+const VIBES = {
+  chill: { name: "Chill beats", bpm: 74, drums: true, melody: 0.28, rain: 0, swing: 0.62 },
+  focus: { name: "Deep focus", bpm: 60, drums: false, melody: 0.12, rain: 0.06, swing: 0.5 }
+};
+/* jazzy diatonic progressions in C: [chord name, bass root (MIDI), voicing intervals above root+12] */
+const CH = {
+  Cmaj9: [36, [4, 7, 11, 14]], Dm9: [38, [3, 7, 10, 14]], Em7: [40, [3, 7, 10, 15]], Fmaj9: [41, [4, 7, 11, 14]],
+  G9: [43, [4, 10, 14, 16]], Am9: [45, [3, 7, 10, 14]], Fm9: [41, [3, 7, 10, 14]], Bb9: [46, [4, 10, 14]]
+};
+const PROGS = [["Fmaj9", "Em7", "Dm9", "Cmaj9"], ["Dm9", "G9", "Cmaj9", "Am9"], ["Am9", "Fmaj9", "Cmaj9", "G9"], ["Cmaj9", "Am9", "Dm9", "G9"], ["Fmaj9", "Fm9", "Cmaj9", "Am9"], ["Dm9", "Em7", "Fmaj9", "G9"]];
+const PENTA = [72, 74, 76, 79, 81, 84];
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+const mu = { ctx: null, out: null, bus: null, rev: null, dly: null, crack: null, rain: null, timer: null, next: 0, step: 0, bar: 0, prog: PROGS[0], noise: null, duckT: 0 };
+
+function muBuild() {
+  const c = mu.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4; comp.connect(c.destination);
+  mu.out = c.createGain(); mu.out.gain.value = 0; mu.out.connect(comp);
+  const warm = c.createBiquadFilter(); warm.type = "lowpass"; warm.frequency.value = 3200; warm.Q.value = 0.4; warm.connect(mu.out);
+  mu.bus = c.createGain(); mu.bus.connect(warm);
+  // reverb: generated impulse response
+  mu.rev = c.createConvolver(); const len = c.sampleRate * 2.6, ir = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+  mu.rev.buffer = ir; const rg = c.createGain(); rg.gain.value = 0.32; mu.rev.connect(rg).connect(warm);
+  // tape-style delay
+  mu.dly = c.createDelay(2); const fb = c.createGain(), dl = c.createBiquadFilter(), dg = c.createGain();
+  fb.gain.value = 0.32; dl.type = "lowpass"; dl.frequency.value = 1800; dg.gain.value = 0.28;
+  mu.dly.connect(dl).connect(fb).connect(mu.dly); dl.connect(dg).connect(warm);
+  // shared noise buffer
+  const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1; mu.noise = nb;
+  // vinyl crackle: soft hiss plus sparse pops, looped
+  const cb = c.createBuffer(1, c.sampleRate * 4, c.sampleRate), cd = cb.getChannelData(0);
+  for (let i = 0; i < cd.length; i++) { cd[i] = (Math.random() * 2 - 1) * 0.012; if (Math.random() < 0.0004) { const a = (Math.random() * 0.5 + 0.2) * (Math.random() < .5 ? -1 : 1); for (let k = 0; k < 30 && i + k < cd.length; k++) cd[i + k] += a * Math.exp(-k / 5); } }
+  mu.crack = c.createBufferSource(); mu.crack.buffer = cb; mu.crack.loop = true; const cf = c.createBiquadFilter(); cf.type = "bandpass"; cf.frequency.value = 2400; cf.Q.value = 0.6;
+  const cgain = c.createGain(); cgain.gain.value = 0.9; mu.crack.connect(cf).connect(cgain).connect(mu.bus); mu.crack.start();
+  // rain bed for Deep focus
+  mu.rain = c.createGain(); mu.rain.gain.value = 0; const rs = c.createBufferSource(); rs.buffer = nb; rs.loop = true;
+  const rf = c.createBiquadFilter(); rf.type = "bandpass"; rf.frequency.value = 1100; rf.Q.value = 0.3; rs.connect(rf).connect(mu.rain).connect(mu.bus); rs.start();
+}
+const env = (g, t, a, peak, dec) => { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec); };
+function muKeys(notes, t, dur, vel) {
+  const c = mu.ctx;
+  notes.forEach((m, i) => {
+    const f = hz(m), g = c.createGain(), lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1500 + vel * 900;
+    const o1 = c.createOscillator(), o2 = c.createOscillator(), t2 = c.createGain();
+    o1.type = "sine"; o1.frequency.value = f; o1.detune.value = (Math.random() - .5) * 8;
+    o2.type = "sine"; o2.frequency.value = f * 2; t2.gain.value = 0.18; // soft "tine"
+    o1.connect(lp); o2.connect(t2).connect(lp); lp.connect(g); g.connect(mu.bus); g.connect(mu.rev);
+    const tt = t + i * 0.012 * (Math.random() * 1.5); // slight strum
+    env(g, tt, 0.012, 0.055 * vel, dur);
+    [o1, o2].forEach(o => { o.start(tt); o.stop(tt + dur + 0.1); });
+  });
+}
+function muBass(m, t, dur) {
+  const c = mu.ctx, o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(), lp = c.createBiquadFilter();
+  o.type = "sine"; o.frequency.value = hz(m); o2.type = "triangle"; o2.frequency.value = hz(m); lp.type = "lowpass"; lp.frequency.value = 420;
+  o.connect(g); o2.connect(lp).connect(g); g.connect(mu.bus);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.03); g.gain.setTargetAtTime(0.0001, t + dur * 0.7, 0.12);
+  o.start(t); o2.start(t); o.stop(t + dur + 0.5); o2.stop(t + dur + 0.5);
+}
+function muLead(m, t) {
+  const c = mu.ctx, o = c.createOscillator(), g = c.createGain(), lp = c.createBiquadFilter();
+  o.type = "triangle"; o.frequency.value = hz(m); lp.type = "lowpass"; lp.frequency.value = 2200;
+  o.connect(lp).connect(g); g.connect(mu.bus); g.connect(mu.dly); g.connect(mu.rev);
+  env(g, t, 0.02, 0.045, 0.9); o.start(t); o.stop(t + 1.1);
+}
+function muNoise(t, type, freq, q, peak, dec) {
+  const c = mu.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = mu.noise; f.type = type; f.frequency.value = freq; f.Q.value = q; s.connect(f).connect(g).connect(mu.bus);
+  env(g, t, 0.003, peak, dec); s.start(t, Math.random()); s.stop(t + dec + 0.05);
+}
+function muKick(t) {
+  const c = mu.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+  o.connect(g).connect(mu.bus); env(g, t, 0.004, 0.55, 0.32); o.start(t); o.stop(t + 0.4);
+}
+function muStep() {
+  const V = VIBES[MU.vibe], spb = 60 / V.bpm, s = mu.step % 8, beat = Math.floor(s / 2), off = s % 2;
+  const t = mu.next + (off ? spb * (V.swing - 0.5) : 0);
+  if (s === 0) {
+    if (mu.bar % 4 === 0) mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
+    const name = mu.prog[mu.bar % 4], [root, iv] = CH[name];
+    let notes = iv.map(x => root + 12 + x); while (Math.min(...notes) < 53) notes = notes.map(n => n + 12); while (Math.max(...notes) > 77) notes = notes.map(n => n - 12);
+    mu.cur = { name, notes, root };
+    muKeys(notes, t, spb * (V.drums ? 2.6 : 4.2), V.drums ? 0.9 : 0.75);
+    muBass(root, t, spb * 1.8);
+    paintMuNow();
+  }
+  if (V.drums && s === 5 && Math.random() < 0.7) muKeys(mu.cur.notes.slice(1), t, spb * 1.2, 0.55); // little comp hit
+  if (s === 4) muBass(mu.cur.root + (Math.random() < .3 ? 7 : 0), t, spb * 1.4);
+  if (V.drums) {
+    if (s === 0 || (s === 5 && Math.random() < 0.35) || (s === 3 && Math.random() < 0.15)) muKick(t);
+    if (s === 2 || s === 6) { muNoise(t, "bandpass", 1900, 0.9, 0.16, 0.16); }
+    muNoise(t, "highpass", 7500, 0.7, off ? 0.035 : 0.055, 0.045);
+  } else if (s === 0 && mu.bar % 2 === 0) muKick(t);
+  if (Math.random() < V.melody && mu.cur) { const pool = PENTA.filter(p => !mu.cur.notes.concat(mu.cur.root).some(n => [1, 11].includes(((p - n) % 12 + 12) % 12))); muLead(pool[Math.floor(Math.random() * pool.length)] || 76, t); }
+  mu.next += spb / 2; mu.step++; if (mu.step % 8 === 0) mu.bar++;
+}
+function muTick() { if (!mu.ctx) return; while (mu.next < mu.ctx.currentTime + 0.3) muStep(); }
+const muLevel = () => Math.pow(MU.vol / 100, 1.6) * 0.9;
+function muPlay() {
+  try {
+    if (!mu.ctx) muBuild();
+    mu.ctx.resume();
+    MU.on = true; mu.next = mu.ctx.currentTime + 0.08; mu.step = 0;
+    mu.out.gain.cancelScheduledValues(mu.ctx.currentTime); mu.out.gain.setTargetAtTime(muLevel(), mu.ctx.currentTime, 0.4);
+    mu.rain.gain.setTargetAtTime(VIBES[MU.vibe].rain, mu.ctx.currentTime, 0.5);
+    clearInterval(mu.timer); mu.timer = setInterval(muTick, 50); muTick();
+  } catch (e) { MU.on = false; toast("Music isn't supported in this browser.", "bad"); }
+  paintMu();
+}
+function muStop() {
+  MU.on = false; clearInterval(mu.timer);
+  if (mu.ctx) { mu.out.gain.cancelScheduledValues(mu.ctx.currentTime); mu.out.gain.setTargetAtTime(0, mu.ctx.currentTime, 0.25); setTimeout(() => { if (!MU.on && mu.ctx) mu.ctx.suspend(); }, 900); }
+  paintMu();
+}
+/* quiet the music while a cut-in or tier banner plays */
+function musicDuck(ms) {
+  if (!MU.on || !mu.ctx) return; const t = mu.ctx.currentTime;
+  mu.out.gain.cancelScheduledValues(t); mu.out.gain.setTargetAtTime(muLevel() * 0.15, t, 0.08); mu.out.gain.setTargetAtTime(muLevel(), t + ms / 1000, 0.6);
+}
+document.addEventListener("visibilitychange", () => {
+  if (!mu.ctx || !MU.on) return;
+  if (document.hidden) { clearInterval(mu.timer); mu.ctx.suspend(); }
+  else { mu.ctx.resume().then(() => { mu.next = mu.ctx.currentTime + 0.08; clearInterval(mu.timer); mu.timer = setInterval(muTick, 50); }); }
+});
+/* ---------- UI: floating headphones button + small panel ---------- */
+function paintMuNow() { const n = $("#mnow"); if (n && mu.prog) n.innerHTML = mu.prog.map((c, i) => `<span class="${mu.cur && c === mu.cur.name && i === mu.bar % 4 ? "on" : ""}">${c}</span>`).join(" → "); }
+function paintMu() {
+  const b = $("#musicbtn"); if (!b) return;
+  b.classList.toggle("playing", MU.on); b.setAttribute("aria-label", MU.on ? "Study music playing. Open music controls" : "Study music. Open music controls");
+  const p = $("#mplay"); if (p) { p.textContent = MU.on ? "❚❚ Pause" : "▶ Play"; p.setAttribute("aria-pressed", MU.on); }
+  document.querySelectorAll("[data-vibe]").forEach(x => x.setAttribute("aria-pressed", x.dataset.vibe === MU.vibe));
+  const n = $("#mnow"); if (n && !MU.on) n.textContent = "Paused";
+}
+function buildMusicUI() {
+  if ($("#musicbtn")) return;
+  const b = document.createElement("button"); b.id = "musicbtn"; b.type = "button"; b.className = "musicbtn"; b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "musicpanel");
+  b.innerHTML = `<span class="mi">🎧</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="ml">Study music</span>`;
+  const p = document.createElement("div"); p.id = "musicpanel"; p.className = "musicpanel"; p.hidden = true; p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "Study music");
+  p.innerHTML = `<div class="mphead"><b>Study music</b><button type="button" class="mpx" id="mclose" aria-label="Close music controls">✕</button></div>
+    <p class="note" style="margin:0 0 10px">Lo-fi composed live in your browser. It's original and royalty-free, with no downloads, and it never loops the same way twice.</p>
+    <div class="seg mpvibe" role="group" aria-label="Vibe">${Object.entries(VIBES).map(([k, v]) => `<button type="button" data-vibe="${k}">${v.name}</button>`).join("")}</div>
+    <div class="mprow"><button class="btn" id="mplay" type="button">▶ Play</button><label class="mpvol">🔈<input type="range" id="mvol" min="0" max="100" step="1" value="${MU.vol}" aria-label="Music volume">🔊</label></div>
+    <div class="mpnow"><span class="lbl">Now playing</span><span id="mnow" class="mono">Paused</span></div>`;
+  const slot = $("#musicslot") || document.body; slot.appendChild(b); slot.appendChild(p);
+  const open = v => { p.hidden = !v; b.setAttribute("aria-expanded", v); if (v) $("#mplay").focus(); };
+  b.onclick = () => open(p.hidden);
+  $("#mclose").onclick = () => { open(false); b.focus(); };
+  p.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); b.focus(); } });
+  document.addEventListener("click", e => { if (!p.hidden && !p.contains(e.target) && !b.contains(e.target)) open(false); });
+  $("#mplay").onclick = () => MU.on ? muStop() : muPlay();
+  $("#mvol").oninput = e => { MU.vol = +e.target.value; saveMu(); if (MU.on && mu.ctx) mu.out.gain.setTargetAtTime(muLevel(), mu.ctx.currentTime, 0.1); };
+  p.querySelectorAll("[data-vibe]").forEach(x => x.onclick = () => {
+    MU.vibe = x.dataset.vibe; saveMu(); mu.bar = 0; mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
+    if (MU.on && mu.ctx) mu.rain.gain.setTargetAtTime(VIBES[MU.vibe].rain, mu.ctx.currentTime, 0.6);
+    paintMu();
+  });
+  paintMu();
+}
+buildMusicUI();
+window.__c2music = { mu, state: () => ({ on: MU.on, vol: MU.vol, vibe: MU.vibe, ctx: mu.ctx ? mu.ctx.state : null, step: mu.step, chord: mu.cur ? mu.cur.name : null, gain: mu.out ? mu.out.gain.value : null }) };
 
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
