@@ -3557,10 +3557,10 @@ const MU = Object.assign({ on: false, vol: 45, vibe: "chill", rain: 0 }, store.g
 MU.on = false; // never autoplay; browsers need a tap first anyway
 const saveMu = () => store.set("music", { vol: MU.vol, vibe: MU.vibe, rain: MU.rain });
 const VIBES = {
-  chill: { name: "Chill beats", bpm: 74, drums: true, melody: 0.28, rain: 0, swing: 0.62, music: true, vinyl: 0.9 },
-  focus: { name: "Deep focus", bpm: 60, drums: false, melody: 0.12, rain: 20, swing: 0.5, music: true, vinyl: 0.35 },
-  rainy: { name: "Rainy night", bpm: 54, drums: false, melody: 0.08, rain: 60, swing: 0.5, music: true, vinyl: 0 },
-  rainonly: { name: "Rain only", bpm: 60, drums: false, melody: 0, rain: 85, swing: 0.5, music: false, vinyl: 0 }
+  chill: { name: "Chill beats", bpm: 74, drums: true, melody: 0.28, rain: 0, swing: 0.62, music: true },
+  focus: { name: "Deep focus", bpm: 60, drums: false, melody: 0.12, rain: 20, swing: 0.5, music: true },
+  rainy: { name: "Rainy night", bpm: 54, drums: false, melody: 0.08, rain: 60, swing: 0.5, music: true },
+  rainonly: { name: "Rain only", bpm: 60, drums: false, melody: 0, rain: 85, swing: 0.5, music: false }
 };
 /* jazzy diatonic progressions in C: [chord name, bass root (MIDI), voicing intervals above root+12] */
 const CH = {
@@ -3588,11 +3588,7 @@ function muBuild() {
   mu.dly.connect(dl).connect(fb).connect(mu.dly); dl.connect(dg).connect(warm);
   // shared noise buffer
   const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1; mu.noise = nb;
-  // vinyl crackle: soft hiss plus sparse pops, looped
-  const cb = c.createBuffer(1, c.sampleRate * 4, c.sampleRate), cd = cb.getChannelData(0);
-  for (let i = 0; i < cd.length; i++) { cd[i] = (Math.random() * 2 - 1) * 0.012; if (Math.random() < 0.0004) { const a = (Math.random() * 0.5 + 0.2) * (Math.random() < .5 ? -1 : 1); for (let k = 0; k < 30 && i + k < cd.length; k++) cd[i + k] += a * Math.exp(-k / 5); } }
-  mu.crack = c.createBufferSource(); mu.crack.buffer = cb; mu.crack.loop = true; const cf = c.createBiquadFilter(); cf.type = "bandpass"; cf.frequency.value = 2400; cf.Q.value = 0.6;
-  const cgain = mu.crackG = c.createGain(); cgain.gain.value = VIBES[MU.vibe].vinyl; mu.crack.connect(cf).connect(cgain).connect(mu.bus); mu.crack.start();
+  mu.crackG = c.createGain(); // vinyl crackle removed
   // rain: a low steady bed + bright hiss (droplets and thunder are scheduled in muStep)
   mu.rain = c.createGain(); mu.rain.gain.value = 0; mu.rain.connect(mu.out);
   const bed = c.createBufferSource(); bed.buffer = nb; bed.loop = true; const bf = c.createBiquadFilter(); bf.type = "lowpass"; bf.frequency.value = 850; const bg = c.createGain(); bg.gain.value = 0.55; bed.connect(bf).connect(bg).connect(mu.rain); bed.start();
@@ -3684,7 +3680,7 @@ function muPlay() {
     mu.ctx.resume();
     MU.on = true; mu.next = mu.ctx.currentTime + 0.08; mu.step = 0;
     mu.out.gain.cancelScheduledValues(mu.ctx.currentTime); mu.out.gain.setTargetAtTime(muLevel(), mu.ctx.currentTime, 0.4);
-    mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.5); mu.crackG.gain.setTargetAtTime(VIBES[MU.vibe].vinyl, mu.ctx.currentTime, 0.3);
+    mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.5);
     clearInterval(mu.timer); mu.timer = setInterval(muTick, 50); muTick();
   } catch (e) { MU.on = false; toast("Music isn't supported in this browser.", "bad"); }
   paintMu();
@@ -3736,7 +3732,7 @@ function buildMusicUI() {
   p.querySelectorAll("[data-vibe]").forEach(x => x.onclick = () => {
     MU.vibe = x.dataset.vibe; saveMu(); mu.bar = 0; mu.step = 0; mu.prog = PROGS[Math.floor(Math.random() * PROGS.length)];
     MU.rain = VIBES[MU.vibe].rain; saveMu(); const r = $("#mrain"); if (r) r.value = MU.rain;
-    if (MU.on && mu.ctx) { mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.6); mu.crackG.gain.setTargetAtTime(VIBES[MU.vibe].vinyl, mu.ctx.currentTime, 0.4); }
+    if (MU.on && mu.ctx) { mu.rain.gain.setTargetAtTime(rainLevel(), mu.ctx.currentTime, 0.6); }
     paintMu();
   });
   paintMu();
