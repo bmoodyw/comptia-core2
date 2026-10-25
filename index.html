@@ -1440,7 +1440,7 @@ CARDS.push(
   {d:2,o:"2.11",t:"Password manager",def:"Generates and stores unique strong passwords and autofills only on the matching site."},
   // 3.1
   {d:3,o:"3.1",t:"No OS found",def:"Check boot order and remove USB media, then repair boot records: bootrec /fixmbr, /fixboot, /rebuildbcd. Check the drive in UEFI."},
-  {d:3,o:"3.1",t:"USB controller resource warning",def:"Too many devices on one USB controller. Move some to a port on a different controller or a powered hub."},
+  {d:3,o:"3.1",t:"USB controller resource warning",def:"Too many devices on one USB controller. Move some devices to a port on a different controller, such as a USB 2.0 port."},
   {d:3,o:"3.1",t:"Slow profile load",def:"Large roaming profile or network delay. Clean up the profile or rebuild it."},
   {d:3,o:"3.1",t:"Services not starting",def:"Check services.msc: the startup type, the service's dependencies and its logon account. Event Viewer shows the error."},
   {d:3,o:"3.1",t:"Frequent shutdowns",def:"Often overheating or power problems. Check fans, dust, temperatures and the PSU."},
@@ -1783,6 +1783,37 @@ PBQS.push(
  ]}
 );
 
+/* ===== Round 5: independent audit fixes (applied after all content + answer reordering, so indices match what you see) ===== */
+(() => {
+  const setQ = (k, f) => Object.assign(EXAM[k], f);
+  // q148: xcopy/copy/move aren't 220-1202 commands; robocopy is
+  setQ(148, { q: "A technician needs to copy the folder D:\\Projects, including all subfolders and empty folders, to E:\\Backup. Which command does this?",
+    c: ["robocopy D:\\Projects E:\\Backup /e", "md E:\\Backup\\Projects", "rmdir D:\\Projects /s", "robocopy D:\\Projects E:\\Backup"], a: 0,
+    why: "robocopy /e copies all subdirectories, including empty ones. Without /s or /e, robocopy copies only the files in the top-level folder. md only creates a folder, and rmdir /s deletes one.",
+    key: "robocopy D:\\Projects E:\\Backup /e", kw: [["robocopy"], ["/e"]] });
+  // q115: DHCP reservations moved to Core 1; replaced with an in-scope 2.10 item
+  setQ(115, { q: "A home office router should pass traffic only from the office's known PCs and printer and drop everything from other internal addresses. Which SOHO router setting does this?",
+    c: ["UPnP", "Port forwarding", "A screened subnet", "IP filtering (allow list)"], a: 3,
+    why: "IP filtering lets the router allow or deny traffic by IP address. UPnP and port forwarding open inbound access, and a screened subnet isolates public-facing servers.",
+    key: "IP filtering with an allow list of the approved devices' addresses.", kw: [["filter"]] });
+  // q118: 220-1202 objective 3.1 lists symptoms, not a steps list
+  setQ(118, { why: "Restarting the Print Spooler service clears stuck jobs and is the least invasive first step. It matches the 3.1 symptom 'services not starting' (a hung or stopped service)." });
+  // duplicates of earlier questions: kept in place (so progress keys never shift) but no longer served
+  [223, 207, 217, 218, 222, 203, 213, 212, 184, 186, 170, 142].forEach(k => { EXAM[k].off = true; });
+
+  const card = (t, f) => { const c = CARDS.find(x => x.t === t); if (c) Object.assign(c, f); };
+  card("Administrative share", { def: "Default hidden share Windows creates automatically for remote admin (C$, ADMIN$, IPC$). The trailing $ only hides it from browsing; it is not a security control." });
+  card("TPM 2.0", { o: "1.3" });
+  card("EFS", { o: "2.2", d: 2 });
+  card("shutdown /r /t 0", { o: "4.8", d: 4, def: "Restarts immediately; commonly used in scripts for restarting machines. /s shuts down, /t sets a delay in seconds, /a aborts a pending shutdown." });
+  card("Apple ID (corporate)", { def: "Personal Apple account (Apple ID, renamed Apple Account in 2024) for the App Store and iCloud. Companies use Managed Apple Accounts (formerly Managed Apple IDs) and MDM to restrict personal accounts on work Macs." });
+  card("USB controller resource warning", { def: "Too many device endpoints on one USB controller (common on USB 3.x). Move some devices to a port on a different controller, such as a USB 2.0 port, or unplug ones you don't need. A powered hub doesn't help: it still uses the same controller." });
+  card("Change freeze", { def: "Period (e.g., peak season or year-end) when normal and standard changes are blocked; only emergency changes go through, with expedited approval." });
+  card(".sh", { def: "Unix/Linux shell script extension. It usually starts with a shebang (e.g., #!/bin/bash) that names the interpreter." });
+  // xcopy isn't on the 220-1202 command list
+  const xi = CARDS.findIndex(x => x.t === "xcopy"); if (xi >= 0) CARDS.splice(xi, 1);
+})();
+
 /* CompTIA 220-1202 acronyms (d = domain where they mostly appear) */
 const ACRONYMS = [
  ["APFS","Apple File System",1],["APIPA","Automatic Private IP Addressing",1],["BIOS","Basic Input/Output System",1],["CLI","Command-Line Interface",1],["DHCP","Dynamic Host Configuration Protocol",1],["DNS","Domain Name System",1],["EFS","Encrypting File System",1],["exFAT","Extensible File Allocation Table",1],["FAT32","File Allocation Table 32",1],["GPT","GUID Partition Table",1],["GUI","Graphical User Interface",1],["GPU","Graphics Processing Unit",1],["ISO","International Organization for Standardization",1],["MBR","Master Boot Record",1],["MMC","Microsoft Management Console",1],["NTFS","New Technology File System",1],["PXE","Preboot Execution Environment",1],["ReFS","Resilient File System",1],["RSR","Rapid Security Response",1],["SMB","Server Message Block",1],["SSID","Service Set Identifier",1],["TPM","Trusted Platform Module",1],["UEFI","Unified Extensible Firmware Interface",1],["UNC","Universal Naming Convention",1],["VPN","Virtual Private Network",1],["WWAN","Wireless Wide Area Network",1],["VRAM","Video Random-Access Memory",1],["SSD","Solid-State Drive",1],["HDD","Hard Disk Drive",1],["NIC","Network Interface Card",1],
@@ -2054,7 +2085,7 @@ const itemPts = (q, v) => q.pbq ? (() => { const r = pbqScore(q, v); return 3 * 
 function pickExam(N) {
   const doms = [...active], pools = {};
   const seenN = k => { const it = stats.items["e:" + k]; return it ? it.r + it.w : 0; };
-  doms.forEach(d => pools[d] = shuffle(EXAM.map((q, k) => ({ ...q, k })).filter(q => q.d === d)).sort((x, y) => seenN(x.k) - seenN(y.k)));
+  doms.forEach(d => pools[d] = shuffle(EXAM.map((q, k) => ({ ...q, k })).filter(q => q.d === d && !q.off)).sort((x, y) => seenN(x.k) - seenN(y.k)));
   const tot = doms.reduce((s, d) => s + DOMAINS[d].w, 0);
   const want = {}; let assigned = 0;
   doms.forEach(d => { want[d] = Math.min(pools[d].length, Math.floor(N * DOMAINS[d].w / tot)); assigned += want[d]; });
@@ -2071,7 +2102,7 @@ function renderExam() {
   return examResults(v);
 }
 function examSetup(v) {
-  const poolN = EXAM.filter(inDom).length;
+  const poolN = EXAM.filter(q => inDom(q) && !q.off).length;
   const lens = [10, 30, 60, 90].filter(n => n <= poolN || n === 10);
   if (!lens.includes(ex.len)) ex.len = lens[Math.min(1, lens.length - 1)];
   const sb = (k, val, l, cur) => `<button type="button" id="${k}-${val}" data-${k}="${val}" aria-pressed="${cur === val}">${l}</button>`;
@@ -3116,7 +3147,7 @@ document.addEventListener("keydown", e => { if (tab === "cards" && fc.mode === "
 /* ---------------- Daily challenge ---------------- */
 function dailyQs(key) {
   const r = rng(key), out = [];
-  [[1, 3], [2, 3], [3, 2], [4, 2]].forEach(([d, n]) => out.push(...seededPick(EXAM.map((q, k) => ({ ...q, k })).filter(q => q.d === d), n, r)));
+  [[1, 3], [2, 3], [3, 2], [4, 2]].forEach(([d, n]) => out.push(...seededPick(EXAM.map((q, k) => ({ ...q, k })).filter(q => q.d === d && !q.off), n, r)));
   return seededPick(out, out.length, r);
 }
 function startDaily() {
@@ -3157,7 +3188,7 @@ function bossHTML() {
 function startBoss() {
   const b = bossNow(), r = rng(b.w * 7919 + (store.get("bosstries", 0) || 0));
   store.set("bosstries", (store.get("bosstries", 0) || 0) + 1);
-  const single = EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q));
+  const single = EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q) && !q.off);
   Object.assign(boss, { on: true, qs: seededPick(single, 20, r), i: 0, state: "fight", miss: null, loot: null, reward: false });
   rv.on = false; setTab("arcade"); window.scrollTo({ top: 0 });
 }
@@ -3538,7 +3569,7 @@ function coinRain(n) {
 }
 function startLightning() {
   if (!hype.pendingLightning) return; hype.pendingLightning = false; saveHype();
-  const qs = shuffle(EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q))).slice(0, 5);
+  const qs = shuffle(EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q) && !q.off)).slice(0, 5);
   Object.assign(ex, { qs, ans: qs.map(() => null), graded: qs.map(() => null), flags: new Set(), cur: 0, mode: "mc", phase: "run", confirm: false, end: nowMs() + 75000, tag: "lightning" });
   ar.last = ""; setTab("exam");
 }
