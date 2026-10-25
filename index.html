@@ -224,12 +224,41 @@ ul.checks-list .ck{font:800 1rem var(--f-mono);color:var(--muted)}ul.checks-list
 @media (max-width:560px){.rdt th,.rdt td{padding:8px 8px}.rdcol{display:none}.rdbar .meter{display:none}ul.checks-list li{grid-template-columns:24px minmax(0,1fr)}ul.checks-list li .note{grid-column:2}}
 details.strat summary{cursor:pointer}details.strat ul{margin:10px 0 0;padding-left:20px;display:grid;gap:8px;max-width:75ch}
 
+/* drag and drop */
+.dnd .pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1.5px dashed var(--line);border-radius:8px;background:var(--card);min-height:52px;margin-bottom:12px}
+.dchip{border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:6px;padding:7px 12px;font:600 .88rem var(--f-mono);cursor:grab;touch-action:manipulation}
+.dchip.sel{background:var(--accent);color:var(--accent-ink);box-shadow:0 0 0 3px var(--accent-soft)}
+.dchip.dragging{opacity:.4}
+.dtargets{display:grid;gap:8px}
+.drow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;align-items:center;padding:6px 8px;border-radius:8px}
+.drow.y{background:var(--good-soft)}.drow.n{background:var(--bad-soft)}
+.dlabel{font-size:.92rem}
+.dzone{min-height:40px;border:1.5px dashed var(--muted);border-radius:6px;background:var(--paper);font:600 .86rem var(--f-mono);color:var(--muted);cursor:pointer;padding:6px 10px;text-align:center}
+.dzone.full{border-style:solid;border-color:var(--ink);color:var(--ink);background:var(--card)}
+.dzone.ready{border-color:var(--accent);color:var(--accent)}
+.dzone.over{background:var(--accent-soft);border-color:var(--accent)}
+.dans{grid-column:2;font:700 .8rem var(--f-mono);color:var(--bad)}
+@media (max-width:560px){.drow{grid-template-columns:1fr}.dans{grid-column:1}}
+/* extras */
+.abbar{height:8px;background:var(--wash);border-radius:4px;overflow:hidden}.abbar i{display:block;height:100%;background:var(--accent);transition:width .2s linear}
+.bossbox{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:2px solid var(--t3);border-radius:10px;padding:12px 14px;margin-top:14px;background:color-mix(in srgb,var(--t3) 8%,transparent)}
+.bossname{font:900 1.3rem var(--f-display);font-stretch:80%;letter-spacing:.02em}
+.big3{font-size:clamp(1.6rem,6vw,2.4rem)}
+.bosshead{display:grid;gap:6px;justify-items:start;margin-bottom:14px}
+.hp{display:flex;gap:3px;flex-wrap:wrap}.hp i{width:14px;height:10px;border-radius:2px;background:var(--wash);border:1px solid var(--line)}.hp i.on{background:var(--t3);border-color:var(--t3)}
+.bosspanel{border:2px solid var(--t3)}.bosspanel.won{border-color:var(--good)}
+.achgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-top:10px}
+@media (max-width:560px){.ach{padding:8px;font-size:.88rem}.ach .note{font-size:.76rem}}
+.ach{display:grid;gap:2px;padding:10px;border-radius:8px;border:1.5px dashed var(--line);opacity:.6}
+.ach.got{opacity:1;border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.ach .ai{font-size:1.4rem}
+.explainwrap{margin-top:10px}.explain{margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);font-size:.92rem;line-height:1.5}
 /* ===== Hype mode ===== */
 :root{--t1:#ea580c;--t2:#9333ea;--t3:#dc2626;--t4:#475569;--t5:#b8860b;--t6:#0891b2;--t7:#16a34a;--fx-bg:rgba(8,10,16,.82)}
 .hypeslot{display:flex}
 .hypebtn{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 14px;font:700 .82rem var(--f-mono);cursor:pointer;color:var(--muted)}
 .hypebtn.on{border-color:var(--t1);color:var(--t1);background:color-mix(in srgb,var(--t1) 12%,transparent)}
-.hud{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 .9rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);cursor:pointer}
+.hud{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 .9rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);cursor:pointer}
 .hud .hn{font:800 1.2rem var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
 .hud .ht{font-size:.7rem;letter-spacing:.08em}
 .hud .hl{font-size:.7rem;color:var(--muted);border-left:1px solid var(--line);padding-left:8px}
@@ -1124,6 +1153,43 @@ EXAM.push(
   {d:4,o:"4.10",q:"An employee pastes AI-generated text that closely paraphrases a published article into a client report, with no citation. What's the concern?",c:["Hallucination","Plagiarism","Bias","Data source"],a:1,why:"Presenting others' work, even paraphrased by AI, without attribution is plagiarism.",key:"Plagiarism: cite the source or rewrite it, and follow the company's AI-use policy.",kw:[["plagiar"]]}
 );
 
+/* ===== Round 4: drag-and-drop PBQs ===== */
+PBQS.push(
+  {id:"dnd-remote",d:4,o:"4.9",title:"Match the remote access technology",win:"Drag and drop · Remote access",
+   brief:"An MSP tech uses a different remote tool for each job. Match each task to the right technology.",
+   fields:[{id:"m",type:"dnd",label:"Remote access",items:["SSH","RDP","VNC","RMM","SPICE","WinRM","Telnet"],
+     targets:[{t:"Encrypted command line on a Linux server (TCP 22)",ans:"SSH"},{t:"Full Windows desktop session (TCP 3389)",ans:"RDP"},{t:"Cross-platform screen sharing using the RFB protocol",ans:"VNC"},{t:"Patch, monitor and inventory 300 client PCs from one console",ans:"RMM"},{t:"View the console of a KVM/Proxmox virtual machine",ans:"SPICE"},{t:"Run PowerShell commands on remote Windows servers",ans:"WinRM"}],
+     why:"Telnet (TCP 23) is unencrypted. SSH replaced it."}]},
+  {id:"dnd-malware",d:2,o:"2.4",title:"Match the malware to the symptom",win:"Drag and drop · Malware identification",
+   brief:"Each help desk ticket describes a different infection. Match the symptom to the malware type.",
+   fields:[{id:"m",type:"dnd",label:"Malware",items:["Ransomware","Cryptominer","Rootkit","Keylogger","Fileless malware","Stalkerware","Trojan"],
+     targets:[{t:"Files renamed with .locked and a note demands Bitcoin",ans:"Ransomware"},{t:"CPU at 100% while idle and a process talks to a mining pool",ans:"Cryptominer"},{t:"Hides from Task Manager and antivirus by modifying the kernel",ans:"Rootkit"},{t:"Every password typed is sent to an attacker",ans:"Keylogger"},{t:"Malicious PowerShell runs only in memory with no file on disk",ans:"Fileless malware"},{t:"An ex-partner is secretly tracking a user's location and messages",ans:"Stalkerware"}],
+     why:"A Trojan (disguised as legitimate software) describes how malware gets in, not a symptom, so it's the extra item here."}]},
+  {id:"dnd-social",d:2,o:"2.5",title:"Match the social engineering attack",win:"Drag and drop · Threat identification",
+   brief:"Security awareness training needs examples. Match each scenario to the attack.",
+   fields:[{id:"m",type:"dnd",label:"Attacks",items:["Vishing","Smishing","Whaling","Tailgating","Piggybacking","Shoulder surfing","Dumpster diving","Evil twin"],
+     targets:[{t:"A caller claiming to be the bank asks for your PIN",ans:"Vishing"},{t:"A text says your package is held, pay at this link",ans:"Smishing"},{t:"The CFO gets a personal email requesting an urgent wire",ans:"Whaling"},{t:"Someone slips through the badge door behind you without you noticing",ans:"Tailgating"},{t:"Someone watches you type your password at the airport",ans:"Shoulder surfing"},{t:"An attacker searches the recycling bin for printed org charts",ans:"Dumpster diving"},{t:"A fake 'CoffeeShop-WiFi' access point with a stronger signal",ans:"Evil twin"}],
+     why:"Piggybacking is when the person knowingly lets someone in. Tailgating is without their knowledge."}]},
+  {id:"dnd-backup",d:4,o:"4.3",title:"Match the backup concept",win:"Drag and drop · Backup and recovery",
+   brief:"Match each description to the backup concept.",
+   fields:[{id:"m",type:"dnd",label:"Backups",items:["Full","Incremental","Differential","Synthetic full","Grandfather-father-son","3-2-1 rule","RAID 1"],
+     targets:[{t:"Everything copied. Slowest to run, simplest to restore.",ans:"Full"},{t:"Changes since the last backup of any type. Restore needs the full plus every one of these.",ans:"Incremental"},{t:"Changes since the last full. Restore needs the full plus the latest one of these.",ans:"Differential"},{t:"A new full built from earlier backups without re-reading all the source data",ans:"Synthetic full"},{t:"Monthly, weekly and daily rotation sets",ans:"Grandfather-father-son"},{t:"Three copies on two kinds of media, with one offsite",ans:"3-2-1 rule"}],
+     why:"RAID 1 is mirroring for redundancy. It isn't a backup, because deletions and ransomware are mirrored too."}]},
+  {id:"dnd-linux",d:1,o:"1.9",title:"Match the Linux command to the task",win:"Drag and drop · tech@web01",
+   brief:"Match each admin task to the command you'd run.",
+   fields:[{id:"m",type:"dnd",label:"Commands",items:["df","grep","find","chmod","chown","fsck","ip","pwd"],
+     targets:[{t:"Show free space on each mounted file system",ans:"df"},{t:"Search inside log files for 'Failed password'",ans:"grep"},{t:"Locate every *.conf file under /etc",ans:"find"},{t:"Make deploy.sh executable",ans:"chmod"},{t:"Give alice ownership of app.conf",ans:"chown"},{t:"Repair the file system on an unmounted disk",ans:"fsck"},{t:"Show the server's IP addresses and routes",ans:"ip"}],
+     why:"pwd prints your current directory, so it's the extra item here. passwd is the command that changes passwords."}]}
+);
+
+/* CompTIA 220-1202 acronyms (d = domain where they mostly appear) */
+const ACRONYMS = [
+ ["APFS","Apple File System",1],["APIPA","Automatic Private IP Addressing",1],["BIOS","Basic Input/Output System",1],["CLI","Command-Line Interface",1],["DHCP","Dynamic Host Configuration Protocol",1],["DNS","Domain Name System",1],["EFS","Encrypting File System",1],["exFAT","Extensible File Allocation Table",1],["FAT32","File Allocation Table 32",1],["GPT","GUID Partition Table",1],["GUI","Graphical User Interface",1],["GPU","Graphics Processing Unit",1],["ISO","International Organization for Standardization",1],["MBR","Master Boot Record",1],["MMC","Microsoft Management Console",1],["NTFS","New Technology File System",1],["PXE","Preboot Execution Environment",1],["ReFS","Resilient File System",1],["RSR","Rapid Security Response",1],["SMB","Server Message Block",1],["SSID","Service Set Identifier",1],["TPM","Trusted Platform Module",1],["UEFI","Unified Extensible Firmware Interface",1],["UNC","Universal Naming Convention",1],["VPN","Virtual Private Network",1],["WWAN","Wireless Wide Area Network",1],["VRAM","Video Random-Access Memory",1],["SSD","Solid-State Drive",1],["HDD","Hard Disk Drive",1],["NIC","Network Interface Card",1],
+ ["AAA","Authentication, Authorization and Accounting",2],["ACL","Access Control List",2],["AES","Advanced Encryption Standard",2],["BEC","Business Email Compromise",2],["BYOD","Bring Your Own Device",2],["DDoS","Distributed Denial of Service",2],["DLP","Data Loss Prevention",2],["DoH","DNS over HTTPS",2],["DoS","Denial of Service",2],["EDR","Endpoint Detection and Response",2],["EOL","End of Life",2],["IAM","Identity and Access Management",2],["JIT","Just-in-Time (access)",2],["MDM","Mobile Device Management",2],["MDR","Managed Detection and Response",2],["MFA","Multifactor Authentication",2],["NAC","Network Access Control",2],["OTP","One-Time Password",2],["PAM","Privileged Access Management",2],["PUP","Potentially Unwanted Program",2],["RADIUS","Remote Authentication Dial-In User Service",2],["RFID","Radio-Frequency Identification",2],["SAE","Simultaneous Authentication of Equals",2],["SAML","Security Assertion Markup Language",2],["SMS","Short Message Service",2],["SQL","Structured Query Language",2],["SSO","Single Sign-On",2],["TACACS+","Terminal Access Controller Access-Control System Plus",2],["TKIP","Temporal Key Integrity Protocol",2],["TOTP","Time-based One-Time Password",2],["UAC","User Account Control",2],["UPnP","Universal Plug and Play",2],["WPA","Wi-Fi Protected Access",2],["XDR","Extended Detection and Response",2],["XSS","Cross-Site Scripting",2],["DMZ","Demilitarized Zone",2],["PIN","Personal Identification Number",2],
+ ["APK","Android Package Kit",3],["BCD","Boot Configuration Data",3],["BSOD","Blue Screen of Death",3],["NFC","Near-Field Communication",3],["SFC","System File Checker",3],["WinRE","Windows Recovery Environment",3],["WinPE","Windows Preinstallation Environment",3],
+ ["AI","Artificial Intelligence",4],["AUP","Acceptable Use Policy",4],["CAB","Change Advisory Board",4],["CMDB","Configuration Management Database",4],["DRM","Digital Rights Management",4],["ESD","Electrostatic Discharge",4],["EULA","End-User License Agreement",4],["FOSS","Free and Open-Source Software",4],["GDPR","General Data Protection Regulation",4],["GFS","Grandfather-Father-Son",4],["HIPAA","Health Insurance Portability and Accountability Act",4],["MSDS","Material Safety Data Sheet",4],["MSP","Managed Service Provider",4],["NDA","Non-Disclosure Agreement",4],["PCI DSS","Payment Card Industry Data Security Standard",4],["PHI","Protected Health Information",4],["PII","Personally Identifiable Information",4],["RDP","Remote Desktop Protocol",4],["RMM","Remote Monitoring and Management",4],["SDS","Safety Data Sheet",4],["SLA","Service-Level Agreement",4],["SOP","Standard Operating Procedure",4],["SPICE","Simple Protocol for Independent Computing Environments",4],["SSH","Secure Shell",4],["UPS","Uninterruptible Power Supply",4],["VNC","Virtual Network Computing",4],["WinRM","Windows Remote Management",4]
+].map(([a, x, d]) => ({ a, x, d }));
+
 </script>
 <script>
 (() => {
@@ -1145,6 +1211,7 @@ function record(key, d, o, ok, kind) {
   store.set("stats", stats);
   if (!key.startsWith("p:")) missUpdate(key, d, o, ok);
   hypeEvent(key, d, ok);
+  achSoon();
 }
 
 /* ---------- domains ---------- */
@@ -1212,10 +1279,11 @@ function renderCards() {
   const v = $("#view-cards");
   if (!fc.deck.length) fcDeck();
   const modeBtn = (m, l) => `<button type="button" id="fcm-${m}" aria-pressed="${fc.mode === m}" data-m="${m}">${l}</button>`;
-  v.innerHTML = `<div class="bar"><span class="lbl">Mode</span><span class="seg">${modeBtn("mc", "Multiple choice")}${modeBtn("type", "Type it")}${modeBtn("match", "Match")}</span>
+  v.innerHTML = `<div class="bar"><span class="lbl">Mode</span><span class="seg">${modeBtn("mc", "Multiple choice")}${modeBtn("type", "Type it")}${modeBtn("match", "Match")}${modeBtn("acro", "Acronyms")}</span>
     <span class="score" id="fcscore"></span></div><div class="panel" id="fcpanel" style="margin-top:12px"></div>`;
-  v.querySelectorAll(".seg button").forEach(b => b.onclick = () => { fc.mode = b.dataset.m; store.set("fcmode", fc.mode); fcDeck(); renderCards(); });
+  v.querySelectorAll(".seg button").forEach(b => b.onclick = () => { fc.mode = b.dataset.m; store.set("fcmode", fc.mode); ab.phase = "start"; clearInterval(ab.tick); fcDeck(); renderCards(); });
   if (fc.mode === "match") return renderMatch();
+  if (fc.mode === "acro") return renderAcro();
   if (fc.i >= fc.deck.length) {
     $("#fcpanel").innerHTML = `<div class="empty"><h2>Deck done: ${fc.r}/${fc.n}</h2><p>${fc.n ? Math.round(100 * fc.r / fc.n) : 0}% this round.</p><button class="btn" id="fcagain">Shuffle again</button></div>`;
     $("#fcagain").onclick = () => { fcDeck(); renderCards(); };
@@ -1374,10 +1442,12 @@ function renderRead(x, p) {
 /* ================= MOCK EXAM ================= */
 const ex = { phase: "setup", len: store.get("exlen", 30), mode: store.get("exmode", "mc"), timed: store.get("extimed", true), qs: [], ans: [], flags: new Set(), cur: 0, end: 0, tick: null, graded: [], busy: false, ctl: null };
 const isMulti = q => Array.isArray(q.a);
-const answered = (q, v) => isMulti(q) ? Array.isArray(v) && v.length === q.a.length : v !== null && v !== undefined;
-const isRight = (q, v) => isMulti(q) ? answered(q, v) && q.a.every(x => v.includes(x)) : v === q.a;
+const answered = (q, v) => q.pbq ? pbqFilled(q, v) : isMulti(q) ? Array.isArray(v) && v.length === q.a.length : v !== null && v !== undefined;
+const isRight = (q, v) => q.pbq ? (() => { const r = pbqScore(q, v); return r.pts === r.tot; })() : isMulti(q) ? answered(q, v) && q.a.every(x => v.includes(x)) : v === q.a;
 const ansText = (q, v) => (v === null || v === undefined || (Array.isArray(v) && !v.length)) ? "(blank)" : Array.isArray(v) ? v.map(i => q.c[i]).join(" + ") : q.c[v];
 const keyText = q => isMulti(q) ? q.a.map(i => q.c[i]).join(" + ") : q.c[q.a];
+const itemMax = q => q.pbq ? 3 : 1;
+const itemPts = (q, v) => q.pbq ? (() => { const r = pbqScore(q, v); return 3 * r.pts / r.tot; })() : (isRight(q, v) ? 1 : 0);
 function pickExam(N) {
   const doms = [...active], pools = {};
   const seenN = k => { const it = stats.items["e:" + k]; return it ? it.r + it.w : 0; };
@@ -1394,7 +1464,7 @@ function renderExam() {
   clearInterval(ex.tick);
   const v = $("#view-exam");
   if (ex.phase === "setup") return examSetup(v);
-  if (ex.phase === "run") return ex.mode === "mc" ? examMC(v) : examTyped(v);
+  if (ex.phase === "run") return ex.mode === "typed" ? examTyped(v) : examMC(v);
   return examResults(v);
 }
 function examSetup(v) {
@@ -1405,20 +1475,32 @@ function examSetup(v) {
   v.innerHTML = `<div class="panel setup">
     <h2>Mock exam</h2>
     <p class="note" style="margin:0">Questions are drawn to match the official domain weights (28 / 28 / 23 / 21) across the domains selected above. The bank has ${poolN} scenario questions for this selection.</p>
-    <div class="bar"><span class="lbl">Answer mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "typed", "Typed answers (AI graded)", ex.mode)}</span></div>
-    <div class="bar"><span class="lbl">Length</span><span class="seg">${lens.map(n => sb("len", String(n), n === 90 ? "90 (full)" : String(n), String(ex.len))).join("")}</span></div>
-    <div class="bar" ${ex.mode === "typed" ? "hidden" : ""}><span class="lbl">Timer</span><span class="seg">${sb("timed", "on", "1 min / question", ex.timed ? "on" : "off")}${sb("timed", "off", "Untimed", ex.timed ? "on" : "off")}</span></div>
-    <div class="bar" ${ex.mode === "mc" ? "hidden" : ""}><span data-ai></span><span class="note">Claude grades each typed answer against a reference answer. If it isn't available here, a keyword check is used instead.</span></div>
-    <div class="row"><button class="btn" id="exstart">Start ${ex.mode === "mc" ? "exam" : "typed drill"}</button></div></div>
-    ${stats.exams.length ? `<div class="note">Last attempt: ${esc(stats.exams[stats.exams.length - 1].label)}</div>` : ""}`;
+    <div class="bar"><span class="lbl">Mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "sim", "Full simulation", ex.mode)}${sb("mode", "typed", "Typed answers (AI graded)", ex.mode)}</span></div>
+    ${ex.mode === "sim" ? `<div class="fb"><b class="v">Real exam conditions</b>4 performance-based labs first, then 86 multiple-choice questions, all on a single 90-minute clock. Flag a PBQ and come back to it, just like the real test. Each PBQ is worth 3 points with partial credit.</div>` : ""}
+    <div class="bar" ${ex.mode === "sim" ? "hidden" : ""}><span class="lbl">Length</span><span class="seg">${lens.map(n => sb("len", String(n), n === 90 ? "90 (full)" : String(n), String(ex.len))).join("")}</span></div>
+    <div class="bar" ${ex.mode !== "mc" ? "hidden" : ""}><span class="lbl">Timer</span><span class="seg">${sb("timed", "on", "1 min / question", ex.timed ? "on" : "off")}${sb("timed", "off", "Untimed", ex.timed ? "on" : "off")}</span></div>
+    <div class="bar" ${ex.mode !== "typed" ? "hidden" : ""}><span data-ai></span><span class="note">Claude grades each typed answer against a reference answer. If it isn't available here, a keyword check is used instead.</span></div>
+    <div class="row"><button class="btn" id="exstart">Start ${ex.mode === "typed" ? "typed drill" : ex.mode === "sim" ? "simulation" : "exam"}</button></div></div>
+    ${stats.exams.length ? `<div class="note">Last attempt: ${esc(stats.exams[stats.exams.length - 1].label)}</div>` : ""}
+    ${genPanelHTML()}`;
+  wireGen(v);
   v.querySelectorAll("[data-ai]").forEach(paintAi);
   v.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { ex.mode = b.dataset.mode; store.set("exmode", ex.mode); renderExam(); });
   v.querySelectorAll("[data-len]").forEach(b => b.onclick = () => { ex.len = +b.dataset.len; store.set("exlen", ex.len); renderExam(); });
   v.querySelectorAll("[data-timed]").forEach(b => b.onclick = () => { ex.timed = b.dataset.timed === "on"; store.set("extimed", ex.timed); renderExam(); });
   $("#exstart").onclick = () => {
-    ex.qs = pickExam(ex.len); ex.ans = ex.qs.map(() => null); ex.graded = ex.qs.map(() => null);
+    ex.tag = null;
+    if (ex.mode === "sim") {
+      const pb = shuffle(PBQS.filter(inDom)).slice(0, 4).map(q => ({ ...q, pbq: true }));
+      ex.qs = [...pb, ...pickExam(90 - pb.length)];
+      ex.ans = ex.qs.map(q => q.pbq ? pbqBlank(q) : null);
+      ex.end = Date.now() + 90 * 60000;
+    } else {
+      ex.qs = pickExam(ex.len); ex.ans = ex.qs.map(() => null);
+      ex.end = ex.mode === "mc" && ex.timed ? Date.now() + ex.qs.length * 60000 : 0;
+    }
+    ex.graded = ex.qs.map(() => null);
     ex.flags = new Set(); ex.cur = 0; ex.phase = "run"; ex.confirm = false;
-    ex.end = ex.mode === "mc" && ex.timed ? Date.now() + ex.qs.length * 60000 : 0;
     renderExam();
   };
 }
@@ -1426,16 +1508,17 @@ const fmt = ms => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math
 function examMC(v) {
   const q = ex.qs[ex.cur], n = ex.qs.length;
   const answeredN = ex.qs.filter((qq, k) => answered(qq, ex.ans[k])).length;
-  v.innerHTML = `<div class="bar"><span class="lbl">Question ${ex.cur + 1} / ${n}</span><span class="note">${answeredN} answered</span>
+  v.innerHTML = `<div class="bar"><span class="lbl">${ex.tag === "daily" ? "Daily challenge · " : ex.tag === "gen" ? "AI questions · " : ex.mode === "sim" ? "Simulation · " : ""}Question ${ex.cur + 1} / ${n}</span><span class="note">${answeredN} answered</span>
       <span class="score">${ex.end ? `<span class="timer" id="timer">${fmt(ex.end - Date.now())}</span>` : "untimed"}</span></div>
-    <div class="panel">${tagHTML(q)}<div class="prompt">${esc(q.q)}</div>
-      ${isMulti(q) ? `<p class="note" style="margin:-6px 0 10px"><b>Choose ${q.a.length}.</b> ${(ex.ans[ex.cur] || []).length}/${q.a.length} selected</p>` : ""}<div class="opts">${q.c.map((o, i) => `<button class="opt${(isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i) ? " sel" : ""}${isMulti(q) ? " multi" : ""}" type="button" data-i="${i}" aria-pressed="${isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i}"><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+    <div class="panel">${q.pbq ? `<div class="bar">${tagHTML(q)}<span class="tag">· PBQ · 3 points</span></div><h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p><div class="win"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="xbody">${pbqFormHTML(q, ex.ans[ex.cur], false, "xf-" + ex.cur)}</div></div>` : `${tagHTML(q)}${q.gk ? ' <span class="tag">· ✨ AI-generated</span>' : ""}<div class="prompt">${esc(q.q)}</div>
+      ${isMulti(q) ? `<p class="note" style="margin:-6px 0 10px"><b>Choose ${q.a.length}.</b> ${(ex.ans[ex.cur] || []).length}/${q.a.length} selected</p>` : ""}<div class="opts">${q.c.map((o, i) => `<button class="opt${(isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i) ? " sel" : ""}${isMulti(q) ? " multi" : ""}" type="button" data-i="${i}" aria-pressed="${isMulti(q) ? (ex.ans[ex.cur] || []).includes(i) : ex.ans[ex.cur] === i}"><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>`}
       <div class="row"><button class="btn ghost" id="exprev" ${ex.cur === 0 ? "disabled" : ""}>← Back</button>
       <button class="btn ghost" id="exflag">${ex.flags.has(ex.cur) ? "Unflag" : "Flag for review"}</button>
       ${ex.cur < n - 1 ? `<button class="btn" id="exnext">Next →</button>` : ""}
       <span style="margin-left:auto" id="subwrap">${ex.confirm ? `<span class="confirm"><span class="note">${n - answeredN} unanswered. Submit?</span><button class="btn" id="exyes">Submit</button><button class="btn ghost" id="exno">Keep going</button></span>` : `<button class="btn ${ex.cur === n - 1 ? "" : "ghost"}" id="exsub">Submit exam</button>`}</span></div></div>
-    <div class="qnav" aria-label="Question navigator">${ex.qs.map((_, i) => `<button type="button" data-q="${i}" class="${answered(ex.qs[i], ex.ans[i]) ? "ans" : ""} ${i === ex.cur ? "cur" : ""} ${ex.flags.has(i) ? "flag" : ""}" aria-label="Question ${i + 1}">${i + 1}</button>`).join("")}</div>
+    <div class="qnav" aria-label="Question navigator">${ex.qs.map((_, i) => `<button type="button" data-q="${i}" class="${answered(ex.qs[i], ex.ans[i]) ? "ans" : ""} ${i === ex.cur ? "cur" : ""} ${ex.flags.has(i) ? "flag" : ""}" aria-label="Question ${i + 1}${ex.qs[i].pbq ? " (PBQ)" : ""}">${ex.qs[i].pbq ? "P" + (i + 1) : i + 1}</button>`).join("")}</div>
     <div class="row"><button class="btn ghost" id="exquit">Quit to setup</button></div>`;
+  if (q.pbq) wirePbqForm(q, ex.ans[ex.cur], $("#xbody"), "xf-" + ex.cur, () => { const y = window.scrollY; renderExam(); window.scrollTo({ top: y }); });
   v.querySelectorAll(".opt").forEach(b => b.onclick = () => {
     const i = +b.dataset.i;
     if (isMulti(q)) { let cur = Array.isArray(ex.ans[ex.cur]) ? ex.ans[ex.cur].slice() : []; cur = cur.includes(i) ? cur.filter(x => x !== i) : [...cur, i]; if (cur.length > q.a.length) cur.shift(); ex.ans[ex.cur] = cur; }
@@ -1457,11 +1540,17 @@ function examMC(v) {
 function finishMC() {
   clearInterval(ex.tick);
   hypeMute = true;
-  ex.qs.forEach((q, i) => record("e:" + q.k, q.d, q.o, isRight(q, ex.ans[i]), "exam"));
+  ex.qs.forEach((q, i) => {
+    if (q.pbq) { record("p:" + q.id, q.d, q.o, isRight(q, ex.ans[i]), "lab"); q.fields.forEach(f => missUpdate("pf:" + q.id + ":" + f.id, q.d, q.o, fieldOK(f, ex.ans[i][f.id]))); }
+    else record(q.gk ? "g:" + q.gk : "e:" + q.k, q.d, q.o, isRight(q, ex.ans[i]), "exam");
+  });
   hypeMute = false;
-  const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length, pct = right / ex.qs.length;
+  const got = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), max = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = got / max;
+  const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length;
   const scaled = Math.round(100 + 800 * pct);
-  stats.exams.push({ t: Date.now(), mode: "mc", n: ex.qs.length, pct, label: `${right}/${ex.qs.length} multiple choice (${Math.round(pct * 100)}%, ≈${scaled})` });
+  const kind = ex.mode === "sim" ? "full simulation" : ex.tag === "daily" ? "daily challenge" : ex.tag === "gen" ? "AI question set" : "multiple choice";
+  stats.exams.push({ t: Date.now(), mode: ex.mode === "sim" ? "sim" : "mc", tag: ex.tag || null, n: ex.qs.length, pct, label: `${right}/${ex.qs.length} ${kind} (${Math.round(pct * 100)}%, ≈${scaled})` });
+  if (typeof afterExam === "function") afterExam(pct, right);
   store.set("stats", stats);
   ex.phase = "results"; renderExam();
 }
@@ -1474,16 +1563,21 @@ function domainTable(rows) {
 function examResults(v) {
   const n = ex.qs.length, rows = {};
   let html;
-  if (ex.mode === "mc") {
-    ex.qs.forEach((q, i) => { const r = rows[q.d] || (rows[q.d] = { got: 0, tot: 0 }); r.tot++; if (isRight(q, ex.ans[i])) r.got++; });
-    Object.values(rows).forEach(r => r.label = `${r.got}/${r.tot}`);
-    const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length, pct = right / n, scaled = Math.round(100 + 800 * pct);
+  if (ex.mode !== "typed") {
+    ex.qs.forEach((q, i) => { const r = rows[q.d] || (rows[q.d] = { got: 0, tot: 0 }); r.tot += itemMax(q); r.got += itemPts(q, ex.ans[i]); });
+    Object.values(rows).forEach(r => r.label = Number.isInteger(r.got) ? `${r.got}/${r.tot}` : `${r.got.toFixed(1)}/${r.tot}`);
+    const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length;
+    const gotP = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), maxP = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = gotP / maxP, scaled = Math.round(100 + 800 * pct);
+    const pbqs = ex.qs.map((q, i) => ({ q, i })).filter(x => x.q.pbq);
     html = `<div class="panel"><span class="lbl">Result</span><div class="big ${scaled >= 700 ? "pass" : "fail"}">${scaled}<span style="font-size:.4em;color:var(--muted)"> / 900 est.</span></div>
-      <p style="margin:6px 0 0">${right} of ${n} correct (${Math.round(pct * 100)}%). ${scaled >= 700 ? "Above" : "Below"} the 700 passing line.</p>
+      <p style="margin:6px 0 0">${pbqs.length ? `${gotP.toFixed(1)} of ${maxP} points` : `${right} of ${n} correct`} (${Math.round(pct * 100)}%). ${scaled >= 700 ? "Above" : "Below"} the 700 passing line.</p>
+      ${pbqs.length ? `<p class="note" style="margin:6px 0 0">PBQs: ${pbqs.map(x => { const r = pbqScore(x.q, ex.ans[x.i]); return `${esc(x.q.title)} ${r.pts}/${r.tot}`; }).join(" · ")}</p>` : ""}
       <p class="note">CompTIA doesn't publish its scaling, so this is a straight-line estimate (100 + 800 × % correct). Treat roughly 80%+ on unseen questions as ready.</p></div>
       ${domainTable(rows)}
-      <div class="panel"><h3>Review</h3>${ex.qs.map((q, i) => { const ok = isRight(q, ex.ans[i]); return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : "✗"}</span><span>${i + 1}. ${esc(q.q)}</span></summary>
-        <div style="padding:8px 0 4px 32px">${tagHTML(q)}<p style="margin:6px 0">Your answer: <b>${esc(ansText(q, ex.ans[i]))}</b><br>Correct: <b>${esc(keyText(q))}</b></p><p class="note" style="margin:0">${esc(q.why)}</p></div></details>`; }).join("")}</div>`;
+      <div class="panel"><h3>Review</h3>${ex.qs.map((q, i) => { const ok = isRight(q, ex.ans[i]);
+        if (q.pbq) { const r = pbqScore(q, ex.ans[i]); return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : r.pts + "/" + r.tot}</span><span>${i + 1}. PBQ: ${esc(q.title)}</span></summary><div class="winbody" style="padding:8px 0 4px 0">${pbqFormHTML(q, ex.ans[i], true, "xr-" + i)}</div></details>`; }
+        return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : "✗"}</span><span>${i + 1}. ${esc(q.q)}</span></summary>
+        <div style="padding:8px 0 4px 32px">${tagHTML(q)}<p style="margin:6px 0">Your answer: <b>${esc(ansText(q, ex.ans[i]))}</b><br>Correct: <b>${esc(keyText(q))}</b></p><p class="note" style="margin:0">${esc(q.why)}</p>${ok ? "" : explainBtn(q.gk ? "g:" + q.gk : "e:" + q.k)}</div></details>`; }).join("")}</div>`;
   } else {
     ex.qs.forEach((q, i) => { const r = rows[q.d] || (rows[q.d] = { got: 0, tot: 0 }); r.tot += 100; r.got += ex.graded[i] ? ex.graded[i].score : 0; });
     Object.values(rows).forEach(r => r.label = `${Math.round(r.got / r.tot * 100)}% avg`);
@@ -1494,6 +1588,7 @@ function examResults(v) {
         <div style="padding:8px 0 4px 32px">${tagHTML(q)}<p style="margin:6px 0">You wrote: <i>${ex.ans[i] ? esc(ex.ans[i]) : "(skipped)"}</i></p>${g ? `<p style="margin:6px 0">${esc(g.feedback)}</p>` : ""}<p class="note" style="margin:0">Reference: ${esc(q.key)}</p></div></details>`; }).join("")}</div>`;
   }
   v.innerHTML = html + `<div class="row"><button class="btn" id="exagain">New exam</button></div>`;
+  wireExplain(v);
   $("#exagain").onclick = () => { ex.phase = "setup"; renderExam(); };
 }
 
@@ -1586,7 +1681,7 @@ function finishTyped() {
 /* ================= STATS ================= */
 function renderStats() {
   const v = $("#view-stats"), it = Object.values(stats.items);
-  if (!it.length && !stats.exams.length) { v.innerHTML = `<div class="panel empty">No attempts recorded yet. Answer a few flashcards, commands, labs or exam questions and your accuracy by domain and objective will show up here (saved in this browser only).</div>` + syncPanelHTML(); wireSync(); return; }
+  if (!it.length && !stats.exams.length) { v.innerHTML = `<div class="panel empty">No attempts recorded yet. Answer a few flashcards, commands, labs or exam questions and your accuracy by domain and objective will show up here (saved in this browser only).</div>` + achHTML() + syncPanelHTML(); wireSync(); return; }
   const agg = (f) => it.filter(f).reduce((a, x) => (a.r += x.r, a.n += x.r + x.w, a), { r: 0, n: 0 });
   const cell = a => a.n ? `${Math.round(100 * a.r / a.n)}% <span class="note">(${a.n})</span>` : `<span class="note">–</span>`;
   const rows = [1, 2, 3, 4].map(d => {
@@ -1599,11 +1694,11 @@ function renderStats() {
   v.innerHTML = `<div class="tbl"><table><thead><tr><th>Domain</th><th>Flashcards</th><th>Commands</th><th>Exam Qs</th><th>Labs</th><th style="width:28%">Overall</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="panel"><h3>Weakest objectives</h3>${weak.length ? `<div class="tbl" style="margin-top:10px"><table><thead><tr><th>Objective</th><th>Accuracy</th><th>Attempts</th></tr></thead><tbody>${weak.map(o => `<tr><td><span class="tag"><span class="dd d${o.d}">${o.d}.0</span> ${esc(o.o)}</span></td><td class="num">${Math.round(100 * o.r / o.n)}%</td><td class="num">${o.n}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Needs at least 3 attempts on an objective.</p>`}</div>
     ${stats.exams.length ? `<div class="panel"><h3>Exam history</h3><ul style="margin:8px 0 0;padding-left:18px">${stats.exams.slice(-8).reverse().map(e => `<li><span class="mono note">${new Date(e.t).toLocaleDateString()}</span> ${esc(e.label)}</li>`).join("")}</ul></div>` : ""}
-    ${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
+    ${achHTML()}${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
   wireSync();
   $("#reset").onclick = () => {
     $("#resetrow").innerHTML = `<span class="confirm"><span class="note">Erase all saved progress in this browser?</span><button class="btn" id="resetyes">Erase</button><button class="btn ghost" id="resetno">Cancel</button></span>`;
-    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); paintHud(); paintBadges(); renderStats(); };
+    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); paintHud(); paintBadges(); renderStats(); };
     $("#resetno").onclick = renderStats;
   };
 }
@@ -1611,19 +1706,93 @@ function renderStats() {
 /* ================= PBQ LAB ================= */
 const pq = { id: null, vals: {}, graded: false, orders: {} };
 function pbqList() { return PBQS.filter(inDom); }
-function pbqInit(q) {
-  pq.id = q.id; pq.vals = {}; pq.graded = false;
+function pbqBlank(q) {
+  const vals = {};
   q.fields.forEach(f => {
-    if (f.type === "order") { let o; do { o = shuffle(f.ans); } while (f.ans.length > 1 && o.every((x, i) => x === f.ans[i])); pq.vals[f.id] = o; }
-    else if (f.type === "check") pq.vals[f.id] = [];
-    else pq.vals[f.id] = "";
+    if (f.type === "order") { let o; do { o = shuffle(f.ans); } while (f.ans.length > 1 && o.every((x, i) => x === f.ans[i])); vals[f.id] = o; }
+    else if (f.type === "check") vals[f.id] = [];
+    else if (f.type === "dnd") vals[f.id] = f.targets.map(() => null);
+    else vals[f.id] = "";
   });
+  return vals;
 }
+function pbqInit(q) { pq.id = q.id; pq.vals = pbqBlank(q); pq.graded = false; }
 function fieldOK(f, v) {
   if (f.type === "text") return f.re.some(r => new RegExp(r, "i").test(normC(v)));
   if (f.type === "check") return v.length === f.ans.length && f.ans.every(a => v.includes(a));
   if (f.type === "order") return v.every((x, i) => x === f.ans[i]);
+  if (f.type === "dnd") return f.targets.every((t, i) => v[i] === t.ans);
   return v === f.ans;
+}
+function pbqScore(q, vals) {
+  let pts = 0, tot = 0;
+  q.fields.forEach(f => {
+    if (f.type === "order") { tot += f.ans.length; pts += vals[f.id].filter((x, i) => x === f.ans[i]).length; }
+    else if (f.type === "dnd") { tot += f.targets.length; pts += f.targets.filter((t, i) => vals[f.id][i] === t.ans).length; }
+    else { tot++; if (fieldOK(f, vals[f.id])) pts++; }
+  });
+  return { pts, tot };
+}
+function pbqFilled(q, vals) { return q.fields.every(f => f.type === "order" || f.type === "check" || (f.type === "dnd" ? vals[f.id].every(x => x !== null) : String(vals[f.id]).trim() !== "")); }
+const dndSel = {};
+/* generic form renderer: used by the PBQ lab and the full exam simulation */
+function pbqFormHTML(q, vals, graded, prefix) {
+  return q.fields.map(f => {
+    const ok = graded ? fieldOK(f, vals[f.id]) : null;
+    const mark = ok === null ? "" : `<span class="fmark ${ok ? "y" : "n"}" aria-label="${ok ? "correct" : "incorrect"}">${ok ? "✓" : "✗"}</span>`;
+    const why = graded ? `<div class="fwhy ${ok ? "y" : "n"}">${ok ? "" : `<b>Answer:</b> ${esc(Array.isArray(f.ans) ? (f.type === "order" ? "see order above" : f.ans.join(", ") || "none") : f.ans)}. `}${esc(f.why)}</div>` : "";
+    const fid = `${prefix}-${f.id}`;
+    let ctl = "";
+    if (f.type === "select") ctl = `<select id="${fid}" ${graded ? "disabled" : ""}><option value="">Select…</option>${f.opts.map(o => `<option${vals[f.id] === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+    else if (f.type === "text") ctl = `<input id="${fid}" class="${f.mono ? "mono" : ""}" value="${esc(vals[f.id])}" autocomplete="off" autocapitalize="off" spellcheck="false" ${graded ? "disabled" : ""}>`;
+    else if (f.type === "check") ctl = `<span class="checks">${f.opts.map((o, i) => `<label><input type="checkbox" id="${fid}-${i}" value="${esc(o)}" ${vals[f.id].includes(o) ? "checked" : ""} ${graded ? "disabled" : ""}> ${esc(o)}</label>`).join("")}</span>`;
+    else if (f.type === "order") {
+      return `<ol class="order" id="${fid}">${vals[f.id].map((s, i) => {
+        const good = graded ? s === f.ans[i] : null;
+        return `<li class="${good === null ? "" : good ? "y" : "n"}"><span class="onum">${i + 1}</span><span class="ot">${esc(s)}${good === false ? `<span class="note"> → belongs at #${f.ans.indexOf(s) + 1}</span>` : ""}</span><span class="ob"><button type="button" data-mv="${i}" data-d="-1" aria-label="Move up" ${i === 0 || graded ? "disabled" : ""}>▲</button><button type="button" data-mv="${i}" data-d="1" aria-label="Move down" ${i === vals[f.id].length - 1 || graded ? "disabled" : ""}>▼</button></span></li>`;
+      }).join("")}</ol>${graded ? `<div class="fwhy">${esc(f.why)}</div>` : ""}`;
+    }
+    else if (f.type === "dnd") {
+      const placed = vals[f.id], sel = dndSel[fid];
+      const pool = f.items.map((it, i) => ({ it, i })).filter(x => !placed.includes(x.it));
+      return `<div class="dnd" id="${fid}">
+        ${graded ? "" : `<p class="note" style="margin:0 0 8px">Drag each item onto its match, or tap an item and then tap a slot. Tap a placed item to send it back.${f.items.length > f.targets.length ? " Some items aren't used." : ""}</p>`}
+        <div class="pool" data-pool aria-label="Items to place">${pool.length ? pool.map(x => `<button type="button" class="dchip${sel === x.it ? " sel" : ""}" draggable="${!graded}" data-item="${esc(x.it)}" aria-pressed="${sel === x.it}" ${graded ? "disabled" : ""}>${esc(x.it)}</button>`).join("") : `<span class="note">All items placed.</span>`}</div>
+        <div class="dtargets">${f.targets.map((t, ti) => {
+          const v = placed[ti], good = graded ? v === t.ans : null;
+          return `<div class="drow${good === null ? "" : good ? " y" : " n"}"><span class="dlabel">${esc(t.t)}</span><button type="button" class="dzone${v ? " full" : ""}${sel && !graded ? " ready" : ""}" data-zone="${ti}" aria-label="${esc(t.t)}: ${v ? esc(v) : "empty"}" ${graded ? "disabled" : ""}>${v ? esc(v) : "Drop here"}</button>${good === false ? `<span class="dans">→ ${esc(t.ans)}</span>` : ""}</div>`;
+        }).join("")}</div></div>${graded ? `<div class="fwhy">${esc(f.why)}</div>` : ""}`;
+    }
+    return `<div class="frow"><label for="${fid}${f.type === "check" ? "-0" : ""}">${esc(f.label)}</label><div class="fctl">${ctl}${mark}</div>${why}</div>`;
+  }).join("");
+}
+function wirePbqForm(q, vals, root, prefix, rerender) {
+  q.fields.forEach(f => {
+    const fid = `${prefix}-${f.id}`;
+    if (f.type === "select") $("#" + fid).onchange = e => { vals[f.id] = e.target.value; };
+    else if (f.type === "text") $("#" + fid).oninput = e => { vals[f.id] = e.target.value; };
+    else if (f.type === "check") f.opts.forEach((o, i) => { $(`#${fid}-${i}`).onchange = e => { const s = new Set(vals[f.id]); e.target.checked ? s.add(o) : s.delete(o); vals[f.id] = f.opts.filter(x => s.has(x)); }; });
+    else if (f.type === "order") root.querySelectorAll(`#${fid} [data-mv]`).forEach(b => b.onclick = () => {
+      const i = +b.dataset.mv, j = i + +b.dataset.d, a = vals[f.id];[a[i], a[j]] = [a[j], a[i]];
+      rerender(); const nb = $(`#${fid} [data-mv="${j}"][data-d="${b.dataset.d}"]`) || $(`#${fid} [data-mv="${j}"]`); if (nb) nb.focus();
+    });
+    else if (f.type === "dnd") {
+      const box = $("#" + fid); if (!box) return;
+      const place = (item, ti) => { const a = vals[f.id]; const prev = a.indexOf(item); if (prev >= 0) a[prev] = null; a[ti] = item; dndSel[fid] = null; rerender(); const z = $(`#${fid} [data-zone="${ti}"]`); if (z) z.focus(); };
+      box.querySelectorAll(".dchip").forEach(c => {
+        c.onclick = () => { dndSel[fid] = dndSel[fid] === c.dataset.item ? null : c.dataset.item; rerender(); const n = $(`#${fid} .dchip.sel`); if (n) n.focus(); };
+        c.ondragstart = e => { try { e.dataTransfer.setData("text/plain", c.dataset.item); e.dataTransfer.effectAllowed = "move"; } catch { } c.classList.add("dragging"); };
+        c.ondragend = () => c.classList.remove("dragging");
+      });
+      box.querySelectorAll(".dzone").forEach(z => {
+        const ti = +z.dataset.zone;
+        z.onclick = () => { const sel = dndSel[fid]; if (sel) place(sel, ti); else if (vals[f.id][ti]) { vals[f.id][ti] = null; rerender(); } };
+        z.ondragover = e => { e.preventDefault(); z.classList.add("over"); };
+        z.ondragleave = () => z.classList.remove("over");
+        z.ondrop = e => { e.preventDefault(); z.classList.remove("over"); let it = ""; try { it = e.dataTransfer.getData("text/plain"); } catch { } if (it && f.items.includes(it)) place(it, ti); };
+      });
+    }
+  });
 }
 function renderPBQ() {
   const v = $("#view-pbq"), list = pbqList(), best = store.get("pbqbest", {});
@@ -1631,56 +1800,26 @@ function renderPBQ() {
   let q = list.find(x => x.id === pq.id);
   if (!q) { q = list[0]; pbqInit(q); }
   v.innerHTML = `<select class="txt pickm" id="pbqsel" aria-label="Choose a lab">${list.map(x => `<option value="${x.id}"${x.id === q.id ? " selected" : ""}>${x.d}.0 · ${esc(x.title)}${best[x.id] != null ? " (" + best[x.id] + "%)" : ""}</option>`).join("")}</select><div class="pbqpick">${list.map(x => `<button type="button" class="chip" id="pbq-${x.id}" aria-pressed="${x.id === q.id}"><i style="background:var(--d${x.d})"></i>${esc(x.title)}${best[x.id] != null ? ` <span class="mono note">${best[x.id]}%</span>` : ""}</button>`).join("")}</div>
-    <div class="panel"><div class="bar">${tagHTML(q)}<span class="tag">· Performance-based</span></div>
+    <div class="panel"><div class="bar">${tagHTML(q)}<span class="tag">· Performance-based${q.fields.some(f => f.type === "dnd") ? " · drag and drop" : ""}</span></div>
       <h2 style="margin:10px 0 6px">${esc(q.title)}</h2><p class="brief">${esc(q.brief)}</p>
       <div class="win"><div class="wintitle"><span>${esc(q.win)}</span><span class="wbtns"><i></i><i></i><i></i></span></div><div class="winbody" id="pbqbody"></div></div>
       <div class="row"><button class="btn" id="pbqsub" ${pq.graded ? "disabled" : ""}>Submit</button><button class="btn ghost" id="pbqreset">Reset</button>${pq.graded ? `<button class="btn ghost" id="pbqnext">Next PBQ →</button>` : ""}</div>
       <div id="pbqres"></div></div>`;
   list.forEach(x => { $("#pbq-" + x.id).onclick = () => { pbqInit(x); renderPBQ(); }; });
   $("#pbqsel").onchange = e => { pbqInit(list.find(x => x.id === e.target.value)); renderPBQ(); };
-  const body = $("#pbqbody");
-  body.innerHTML = q.fields.map(f => {
-    const ok = pq.graded ? fieldOK(f, pq.vals[f.id]) : null;
-    const mark = ok === null ? "" : `<span class="fmark ${ok ? "y" : "n"}" aria-label="${ok ? "correct" : "incorrect"}">${ok ? "✓" : "✗"}</span>`;
-    const why = pq.graded ? `<div class="fwhy ${ok ? "y" : "n"}">${ok ? "" : `<b>Answer:</b> ${esc(Array.isArray(f.ans) ? (f.type === "order" ? "see order above" : f.ans.join(", ") || "none") : f.ans)}. `}${esc(f.why)}</div>` : "";
-    const fid = `pf-${q.id}-${f.id}`;
-    let ctl = "";
-    if (f.type === "select") ctl = `<select id="${fid}" ${pq.graded ? "disabled" : ""}><option value="">Select…</option>${f.opts.map(o => `<option${pq.vals[f.id] === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
-    else if (f.type === "text") ctl = `<input id="${fid}" class="${f.mono ? "mono" : ""}" value="${esc(pq.vals[f.id])}" autocomplete="off" autocapitalize="off" spellcheck="false" ${pq.graded ? "disabled" : ""}>`;
-    else if (f.type === "check") ctl = `<span class="checks">${f.opts.map((o, i) => `<label><input type="checkbox" id="${fid}-${i}" value="${esc(o)}" ${pq.vals[f.id].includes(o) ? "checked" : ""} ${pq.graded ? "disabled" : ""}> ${esc(o)}</label>`).join("")}</span>`;
-    else if (f.type === "order") {
-      return `<ol class="order" id="${fid}">${pq.vals[f.id].map((s, i) => {
-        const good = pq.graded ? s === f.ans[i] : null;
-        return `<li class="${good === null ? "" : good ? "y" : "n"}"><span class="onum">${i + 1}</span><span class="ot">${esc(s)}${good === false ? `<span class="note"> → belongs at #${f.ans.indexOf(s) + 1}</span>` : ""}</span><span class="ob"><button type="button" data-mv="${i}" data-d="-1" aria-label="Move up" ${i === 0 || pq.graded ? "disabled" : ""}>▲</button><button type="button" data-mv="${i}" data-d="1" aria-label="Move down" ${i === pq.vals[f.id].length - 1 || pq.graded ? "disabled" : ""}>▼</button></span></li>`;
-      }).join("")}</ol>${pq.graded ? `<div class="fwhy">${esc(f.why)}</div>` : ""}`;
-    }
-    return `<div class="frow"><label for="${fid}${f.type === "check" ? "-0" : ""}">${esc(f.label)}</label><div class="fctl">${ctl}${mark}</div>${why}</div>`;
-  }).join("");
-  q.fields.forEach(f => {
-    const fid = `pf-${q.id}-${f.id}`;
-    if (f.type === "select") $("#" + fid).onchange = e => { pq.vals[f.id] = e.target.value; };
-    else if (f.type === "text") $("#" + fid).oninput = e => { pq.vals[f.id] = e.target.value; };
-    else if (f.type === "check") f.opts.forEach((o, i) => { $(`#${fid}-${i}`).onchange = e => { const s = new Set(pq.vals[f.id]); e.target.checked ? s.add(o) : s.delete(o); pq.vals[f.id] = f.opts.filter(x => s.has(x)); }; });
-    else if (f.type === "order") body.querySelectorAll("[data-mv]").forEach(b => b.onclick = () => {
-      const i = +b.dataset.mv, j = i + +b.dataset.d, a = pq.vals[f.id];[a[i], a[j]] = [a[j], a[i]];
-      renderPBQ(); const nb = $(`#${fid} [data-mv="${j}"][data-d="${b.dataset.d}"]`) || $(`#${fid} [data-mv="${j}"]`); if (nb) nb.focus();
-    });
-  });
+  const body = $("#pbqbody"), prefix = `pf-${q.id}`;
+  body.innerHTML = pbqFormHTML(q, pq.vals, pq.graded, prefix);
+  if (!pq.graded) wirePbqForm(q, pq.vals, body, prefix, renderPBQ);
   $("#pbqreset").onclick = () => { pbqInit(q); renderPBQ(); };
   if ($("#pbqnext")) $("#pbqnext").onclick = () => { const nx = list[(list.indexOf(q) + 1) % list.length]; pbqInit(nx); renderPBQ(); window.scrollTo({ top: 0 }); };
   if (pq.graded) {
-    let pts = 0, tot = 0;
-    q.fields.forEach(f => { if (f.type === "order") { tot += f.ans.length; pts += pq.vals[f.id].filter((x, i) => x === f.ans[i]).length; } else { tot++; if (fieldOK(f, pq.vals[f.id])) pts++; } });
-    const pct = Math.round(100 * pts / tot);
+    const { pts, tot } = pbqScore(q, pq.vals), pct = Math.round(100 * pts / tot);
     $("#pbqres").innerHTML = `<div class="fb ${pct === 100 ? "good" : pct >= 70 ? "part" : "bad"}"><b class="v">${pct}% · ${pts}/${tot} correct</b>${pct === 100 ? "Clean run." : "Fix the items marked ✗ and use Reset to try again."}</div>`;
   }
   $("#pbqsub").onclick = () => {
-    const blank = q.fields.some(f => f.type !== "order" && f.type !== "check" && !String(pq.vals[f.id]).trim());
-    if (blank && !pq.confirmBlank) { pq.confirmBlank = true; $("#pbqres").innerHTML = `<div class="fb part">Some fields are empty. Press Submit again to grade anyway.</div>`; return; }
+    if (!pbqFilled(q, pq.vals) && !pq.confirmBlank) { pq.confirmBlank = true; $("#pbqres").innerHTML = `<div class="fb part">Some fields are empty. Press Submit again to grade anyway.</div>`; return; }
     pq.confirmBlank = false; pq.graded = true;
-    let pts = 0, tot = 0;
-    q.fields.forEach(f => { if (f.type === "order") { tot += f.ans.length; pts += pq.vals[f.id].filter((x, i) => x === f.ans[i]).length; } else { tot++; if (fieldOK(f, pq.vals[f.id])) pts++; } });
-    const pct = Math.round(100 * pts / tot);
+    const { pts, tot } = pbqScore(q, pq.vals), pct = Math.round(100 * pts / tot);
     record("p:" + q.id, q.d, q.o, pct === 100, "lab");
     q.fields.forEach(f => missUpdate("pf:" + q.id + ":" + f.id, q.d, q.o, fieldOK(f, pq.vals[f.id])));
     const b = store.get("pbqbest", {}); b[q.id] = Math.max(b[q.id] || 0, pct); store.set("pbqbest", b);
@@ -1835,9 +1974,9 @@ function missCard(key) {
   if (p === "e") { const q = EXAM[+id]; return q && { src: "Exam", d: q.d, o: q.o, front: `<div class="prompt" style="font-size:1.1rem">${esc(q.q)}</div>`, back: `<b>${esc(keyText(q))}</b><br>${esc(q.why)}`, short: q.q }; }
   if (p === "t") { const s = SCENS.find(x => x.id === id); return s && { src: "Ticket", d: s.d, o: s.o, front: `<div class="ticket" style="margin:0"><span class="lbl">Ticket</span><p>${esc(s.ticket)}</p></div><p class="note">Root cause and fix?</p>`, back: `<b>Cause:</b> ${esc(s.diag.c[s.diag.a])}<br><b>Fix:</b> ${esc(s.fix.c[s.fix.a])}`, short: s.title }; }
   if (p === "pf") { const [qid, fid] = id.split(":"); const q = PBQS.find(x => x.id === qid), f = q && q.fields.find(x => x.id === fid); if (!f) return null;
-    const ans = f.type === "order" ? `<ol style="margin:4px 0 0;padding-left:20px">${f.ans.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : `<b>${esc(Array.isArray(f.ans) ? (f.ans.join(", ") || "none") : f.ans)}</b>`;
+    const ans = f.type === "dnd" ? `<ul style="margin:4px 0 0;padding-left:18px">${f.targets.map(x => `<li>${esc(x.t)} → <b>${esc(x.ans)}</b></li>`).join("")}</ul>` : f.type === "order" ? `<ol style="margin:4px 0 0;padding-left:20px">${f.ans.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : `<b>${esc(Array.isArray(f.ans) ? (f.ans.join(", ") || "none") : f.ans)}</b>`;
     return { src: "PBQ", d: q.d, o: q.o, front: `<span class="lbl">${esc(q.title)}</span><div class="prompt" style="font-size:1.1rem">${esc(f.label)}</div>${q.brief.length < 260 ? `<p class="note">${esc(q.brief)}</p>` : ""}`, back: `${ans}<br>${esc(f.why)}`, short: q.title + ": " + f.label }; }
-  return null;
+  return extraCard(p, id);
 }
 
 /* ---------- shared flip-card review deck ---------- */
@@ -1859,7 +1998,7 @@ function renderDeck(v) {
     <div class="panel">
       <div class="bar">${tagHTML({ d: c.d, o: c.o })}<span class="tag">· ${c.src}</span>${r ? `<span class="tag" style="margin-left:auto" title="Steps toward long-term memory">${boxDots(r)} ${r.miss ? "missed" : ""}</span>` : `<span class="tag" style="margin-left:auto">new</span>`}</div>
       <div style="margin-top:10px">${c.front}</div>
-      ${rv.flipped ? `<div class="fb good fback"><b class="v">Answer</b>${c.back}</div>
+      ${rv.flipped ? `<div class="fb good fback"><b class="v">Answer</b>${c.back}</div>${explainBtn(key)}
         <div class="row"><button class="btn" id="mgot" type="button">Knew it (1)</button><button class="btn ghost" id="magain" type="button">Still learning (2)</button></div>`
       : `<div class="row"><button class="btn" id="mflip" type="button">Show answer (space)</button></div>`}
     </div>
@@ -1873,6 +2012,7 @@ function renderDeck(v) {
   };
   if ($("#mflip")) { $("#mflip").onclick = () => { rv.flipped = true; renderDeck(v); const g = $("#mgot"); if (g) g.focus(); }; $("#mflip").focus(); }
   if ($("#mgot")) { $("#mgot").onclick = () => grade(true); $("#magain").onclick = () => grade(false); }
+  wireExplain(v);
   $("#mexit").onclick = () => { rv.on = false; render(); };
 }
 document.addEventListener("keydown", e => {
@@ -1944,6 +2084,7 @@ function readiness() {
 function renderToday() {
   const v = $("#view-today");
   if (rv.on && rv.from === "today") return renderDeck(v);
+  if (boss.on) return renderBoss(v);
   const due = dueKeys(), dueMiss = due.filter(k => srs[k].miss).length;
   const unseen = CARDS.filter(c => !srs["c:" + c.t]);
   const R = readiness(), pct = x => x === null ? "–" : Math.round(x * 100) + "%";
@@ -1952,10 +2093,11 @@ function renderToday() {
   const weakObj = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n)[0];
   const best = store.get("pbqbest", {}), sb = store.get("scbest", {});
   const nextPbq = PBQS.find(q => (best[q.id] || 0) < 100), nextTicket = SCENS.find(s => !sb[s.id]);
-  const mocks = stats.exams.filter(e => e.mode === "mc" && e.n >= 30), lastMock = mocks[mocks.length - 1];
+  const mocks = stats.exams.filter(e => (e.mode === "mc" || e.mode === "sim") && e.n >= 30), lastMock = mocks[mocks.length - 1];
   const daysSinceMock = lastMock ? Math.floor((nowMs() - lastMock.t) / DAY) : null;
   const plan = [];
   plan.push(due.length ? { t: `Review ${due.length} due card${due.length === 1 ? "" : "s"}`, s: `${dueMiss} from misses, ${due.length - dueMiss} scheduled flashcards · about ${Math.max(1, Math.round(due.length * 0.25))} min`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true });
+  plan.push(dailyPlanItem());
   if (unseen.length) { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; plan.push({ t: `Learn ${Math.min(15, pick.length)} new flashcards`, s: `From ${weakDom}.0 ${DOMAINS[weakDom].name}, your lowest-readiness domain · ${unseen.length} cards not started yet`, b: "Learn", id: "pnew" }); }
   if (weakObj) plan.push({ t: `Drill objective ${weakObj.o}`, s: `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
   if (nextPbq) plan.push({ t: `PBQ lab: ${nextPbq.title}`, s: best[nextPbq.id] != null ? `Best so far ${best[nextPbq.id]}%. Get it to 100%.` : "Not attempted yet", b: "Open lab", id: "ppbq" });
@@ -1992,6 +2134,8 @@ function renderToday() {
   wireHall();
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
   go("pdue", () => startDeck(due, "Today", "review", "today"));
+  go("pdaily", startDaily);
+  go("bossgo", startBoss);
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); });
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); });
   go("ppbq", () => { pbqInit(nextPbq); setTab("pbq"); });
@@ -2000,7 +2144,7 @@ function renderToday() {
 }
 
 /* ================= PROGRESS SYNC (export / import) ================= */
-const SYNC_KEYS = ["hype", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
+const SYNC_KEYS = ["hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
 function syncPanelHTML() {
   return `<div class="panel"><h3>Move progress to another device</h3><p class="note" style="margin:6px 0 10px">Progress is saved separately in each browser. Copy this code on one device and paste it on the other to bring over your stats, review schedule and lab scores. Importing replaces the progress on that device.</p>
     <div class="row" style="margin-top:0"><button class="btn ghost" id="sxexp" type="button">Show my progress code</button><button class="btn ghost" id="sximp" type="button">Paste a code</button></div><div id="sxbox"></div></div>`;
@@ -2158,16 +2302,273 @@ function hallHTML() {
       <div><span class="lbl">Best streak</span><b class="big2">${hype.best}</b><span class="note">${bt ? `Highest tier: ${bt.icon} ${bt.name}` : "Reach 5 for SAVAGE"}</span></div>
       <div><span class="lbl">Daily streak</span><b class="big2">${dailyStreak()}</b><span class="note">days in a row with 10+ answers${hype.jackpots ? ` · ${hype.jackpots} jackpot${hype.jackpots === 1 ? "" : "s"}` : ""}</span></div>
     </div>
+    ${bossHTML()}
     <div class="tierlad">${TIERS.map((T, i) => `<span class="tl ${T.cls}${hype.bestTier >= i ? " got" : ""}" title="${T.at} in a row">${T.icon} ${T.name} <small>${T.at}</small></span>`).join("")}</div>
     <div class="bar" style="margin-top:10px;gap:6px"><span class="lbl">Best by domain</span>${[1, 2, 3, 4].map(d => `<span class="chip" style="cursor:default"><i style="background:var(--d${d})"></i>${d}.0 · ${hype.bestDom[d] || 0}</span>`).join("")}</div>
     <p class="note" style="margin:10px 0 0">Streaks build from auto-graded answers: flashcards, commands (×2), PBQ labs and tickets (+5), and typed exam drills. Timed mock exams and self-graded flip reviews don't count. A miss resets the streak unless you have a shield (earn one every ${SHIELD_EVERY} in a row).</p></div>`;
 }
 function wireHall() { const s = $("#hsound"); if (s) s.onchange = () => { hype.sound = s.checked; saveHype(); if (hype.sound) sfx("tier"); }; }
 
+/* ================= EXTRAS: acronyms, daily, boss, achievements, AI ================= */
+const OBJ_TITLES = {"1.1":"OS types, purposes and file systems","1.2":"OS installations and upgrades","1.3":"Windows editions and features","1.4":"Windows features and tools","1.5":"Windows command-line tools","1.6":"Windows settings (Control Panel / Settings)","1.7":"Windows networking on a client","1.8":"macOS features and tools","1.9":"Linux features and commands","1.10":"Installing applications","1.11":"Cloud productivity tools","2.1":"Physical and logical security measures","2.2":"Windows security settings","2.3":"Wireless security protocols and authentication","2.4":"Malware types and tools","2.5":"Social engineering, threats and vulnerabilities","2.6":"Malware removal procedure","2.7":"Workstation security and hardening","2.8":"Mobile device security","2.9":"Data destruction and disposal","2.10":"SOHO network security","2.11":"Browser security","3.1":"Troubleshooting Windows OS issues","3.2":"Troubleshooting mobile OS and app issues","3.3":"Troubleshooting mobile OS and app security issues","3.4":"Troubleshooting PC security issues","4.1":"Documentation and support systems","4.2":"Change management","4.3":"Backup and recovery","4.4":"Safety procedures","4.5":"Environmental impacts and controls","4.6":"Prohibited content, privacy, licensing and policy","4.7":"Communication and professionalism","4.8":"Scripting basics","4.9":"Remote access technologies","4.10":"Basic AI concepts"};
+const gstore = () => store.get("gen", []);
+const dayKey = t => { const d = new Date(t); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
+const weekKey = () => Math.floor((sod(nowMs()) + 4 * DAY) / (7 * DAY));
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const seededPick = (arr, n, r) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); };
+
+/* extra card types for the review deck */
+function extraCard(p, id) {
+  if (p === "g") { const q = gstore().find(x => x.id === id); return q && { src: "AI question", d: q.d, o: q.o, front: `<div class="prompt" style="font-size:1.1rem">${esc(q.q)}</div>`, back: `<b>${esc(q.c[q.a])}</b><br>${esc(q.why)}`, short: q.q }; }
+  if (p === "a") { const x = ACRONYMS.find(y => y.a === id); return x && { src: "Acronym", d: x.d, o: "Acronyms", front: `<div class="prompt term">${esc(x.a)}</div><p class="note">What does it stand for?</p>`, back: `<b>${esc(x.x)}</b>`, short: `${x.a}: ${x.x}` }; }
+  return null;
+}
+
+/* ---------------- Acronym blitz (Flashcards → Acronyms) ---------------- */
+const ab = { phase: "start", end: 0, cur: null, opts: [], score: 0, n: 0, misses: [], tick: null, lock: false };
+function renderAcro() {
+  const p = $("#fcpanel"), best = store.get("acrobest", 0), pool = ACRONYMS.filter(inDom);
+  clearInterval(ab.tick);
+  $("#fcscore").textContent = ab.phase === "run" ? `${ab.score} correct` : `${pool.length} acronyms`;
+  if (ab.phase === "start") {
+    p.innerHTML = `<h2>60-second acronym blitz</h2><p class="note">CompTIA question stems are full of acronyms. Pick the right expansion as fast as you can: one minute, unlimited questions. Misses go to your Missed list.</p>
+      <div class="row"><button class="btn" id="abgo" type="button">Start blitz →</button>${best ? `<span class="note">Best: <b>${best}</b></span>` : ""}</div>`;
+    $("#abgo").onclick = () => { Object.assign(ab, { phase: "run", end: nowMs() + 60000, score: 0, n: 0, misses: [], lock: false }); nextAcro(pool); renderAcro(); };
+    return;
+  }
+  if (ab.phase === "done") {
+    const nb = ab.score > best; if (nb) store.set("acrobest", ab.score);
+    p.innerHTML = `<h2>${ab.score} correct${nb ? " · new best!" : ""}</h2><p class="note">${ab.n} answered · best ${Math.max(best, ab.score)}</p>
+      ${ab.misses.length ? `<div class="tbl" style="margin-top:10px"><table><thead><tr><th>Missed</th><th>Stands for</th></tr></thead><tbody>${ab.misses.map(m => `<tr><td class="mono"><b>${esc(m.a)}</b></td><td>${esc(m.x)}</td></tr>`).join("")}</tbody></table></div>` : `<p>No misses. 🔥</p>`}
+      <div class="row"><button class="btn" id="abagain" type="button">Go again →</button></div>`;
+    $("#abagain").onclick = () => { ab.phase = "start"; renderAcro(); $("#abgo").click(); };
+    return;
+  }
+  const left = ab.end - nowMs();
+  p.innerHTML = `<div class="abbar"><i style="width:${Math.max(0, left / 600)}%"></i></div>
+    <div class="prompt term" style="text-align:center;font-size:2.4rem;margin:18px 0">${esc(ab.cur.a)}</div>
+    <div class="opts">${ab.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}"><span class="bub">${LET[i]}</span><span>${esc(o.x)}</span></button>`).join("")}</div>`;
+  p.querySelectorAll(".opt").forEach(b => b.onclick = () => answerAcro(+b.dataset.i, pool));
+  ab.tick = setInterval(() => { const l = ab.end - nowMs(); if (tab !== "cards" || fc.mode !== "acro" || !$("#fcpanel")) { clearInterval(ab.tick); if (l <= 0) ab.phase = "done"; return; } const bar = $(".abbar i"); if (bar) bar.style.width = Math.max(0, l / 600) + "%"; if (l <= 0 && !ab.lock) { clearInterval(ab.tick); ab.phase = "done"; renderAcro(); } }, 200);
+}
+function nextAcro(pool) { ab.cur = pool[Math.floor(Math.random() * pool.length)]; const others = shuffle(ACRONYMS.filter(x => x.x !== ab.cur.x)).slice(0, 3); ab.opts = shuffle([ab.cur, ...others]); }
+function answerAcro(i, pool) {
+  if (ab.lock || ab.phase !== "run") return; ab.lock = true;
+  const ok = ab.opts[i] === ab.cur; ab.n++; if (ok) ab.score++; else ab.misses.push(ab.cur);
+  record("a:" + ab.cur.a, ab.cur.d, "Acronyms", ok, "card");
+  const btns = $("#fcpanel").querySelectorAll(".opt");
+  btns.forEach((b, k) => { b.disabled = true; if (ab.opts[k] === ab.cur) b.classList.add("ok"); else if (k === i) b.classList.add("no"); });
+  setTimeout(() => { ab.lock = false; if (ab.end - nowMs() <= 0) { ab.phase = "done"; } else nextAcro(pool); if (tab === "cards" && fc.mode === "acro") renderAcro(); }, ok ? 280 : 900);
+}
+document.addEventListener("keydown", e => { if (tab === "cards" && fc.mode === "acro" && ab.phase === "run" && /^[1-4]$/.test(e.key)) answerAcro(+e.key - 1, ACRONYMS.filter(inDom)); });
+
+/* ---------------- Daily challenge ---------------- */
+function dailyQs(key) {
+  const r = rng(key), out = [];
+  [[1, 3], [2, 3], [3, 2], [4, 2]].forEach(([d, n]) => out.push(...seededPick(EXAM.map((q, k) => ({ ...q, k })).filter(q => q.d === d), n, r)));
+  return seededPick(out, out.length, r);
+}
+function startDaily() {
+  const key = dayKey(nowMs()), qs = dailyQs(key);
+  Object.assign(ex, { qs, ans: qs.map(() => null), graded: qs.map(() => null), flags: new Set(), cur: 0, mode: "mc", phase: "run", confirm: false, end: 0, tag: "daily", dkey: key });
+  setTab("exam");
+}
+function dailyPlanItem() {
+  const done = store.get("daily", {})[dayKey(nowMs())];
+  return done != null ? { t: `Daily challenge: ${Math.round(done * 10)}/10${done === 1 ? " · perfect 🔥" : ""}`, s: "A new set unlocks tomorrow.", done: true } : { t: "Daily challenge: 10 questions", s: "The same 10 questions all day. A perfect run earns +200 XP in Hype mode.", b: "Play", id: "pdaily" };
+}
+
+/* ---------------- after any graded exam ---------------- */
+function afterExam(pct, right) {
+  if (ex.tag === "daily") {
+    const d = store.get("daily", {}); const first = d[ex.dkey] == null; d[ex.dkey] = Math.max(d[ex.dkey] || 0, pct); store.set("daily", d);
+    if (hype.on) { const t = sod(nowMs()); if (!hype.days.includes(t)) hype.days.push(t); if (pct === 1 && first) { hype.xp += 200; toast("🔥 Perfect daily challenge! +200 XP", "good"); } saveHype(); paintHud(true); }
+  }
+  if (ex.mode === "sim") store.set("simdone", (store.get("simdone", 0) || 0) + 1);
+  if (ex.tag === "gen") store.set("gendone", (store.get("gendone", 0) || 0) + 1);
+  achSoon();
+}
+
+/* ---------------- Weekly boss (Hype mode) ---------------- */
+const BOSSES = [["THE GATEKEEPER", "🚪"], ["KERNEL PANIC", "💥"], ["THE ROOTKIT", "🕳️"], ["BLUE SCREEN", "🟦"], ["PHISH KING", "🎣"], ["ZERO-DAY", "☠️"], ["THE BOTNET", "🕸️"]];
+const boss = { on: false, qs: [], i: 0, state: "fight", miss: null };
+const bossNow = () => { const w = weekKey(); return { w, name: BOSSES[w % BOSSES.length][0], icon: BOSSES[w % BOSSES.length][1], beaten: !!store.get("bosswins", {})[w] }; };
+function bossHTML() {
+  if (!hype.on) return "";
+  const b = bossNow(), wins = Object.keys(store.get("bosswins", {})).length;
+  return `<div class="bossbox"><div><span class="lbl">Weekly boss</span><div class="bossname">${b.icon} ${esc(b.name)}</div><span class="note">20 questions in a row. One miss and the boss wins. ${b.beaten ? "<b>Defeated this week ✓</b>" : "First win this week: +1,000 XP."}${wins ? ` · ${wins} boss${wins === 1 ? "" : "es"} slain` : ""}</span></div><button class="btn sm" id="bossgo" type="button">${b.beaten ? "Rematch" : "Fight"} →</button></div>`;
+}
+function startBoss() {
+  const b = bossNow(), r = rng(b.w * 7919 + (store.get("bosstries", 0) || 0));
+  store.set("bosstries", (store.get("bosstries", 0) || 0) + 1);
+  const single = EXAM.map((q, k) => ({ ...q, k })).filter(q => !isMulti(q));
+  Object.assign(boss, { on: true, qs: seededPick(single, 20, r), i: 0, state: "fight", miss: null });
+  rv.on = false; setTab("today"); window.scrollTo({ top: 0 });
+}
+function renderBoss(v) {
+  const b = bossNow(), n = boss.qs.length, hp = n - boss.i;
+  const head = `<div class="bosshead"><div class="bossname big3">${b.icon} ${esc(b.name)}</div><div class="hp" aria-label="Boss health ${hp} of ${n}">${Array.from({ length: n }, (_, k) => `<i class="${k < hp ? "on" : ""}"></i>`).join("")}</div><span class="note">${hp} HP left</span></div>`;
+  if (boss.state === "lost") {
+    const q = boss.miss;
+    v.innerHTML = `<div class="panel bosspanel lost">${head}<h2>💀 ${esc(b.name)} wins</h2><p>You made it to question ${boss.i + 1} of ${n}.</p><div class="fb bad"><b class="v">${esc(q.q)}</b>Correct: <b>${esc(keyText(q))}</b><br><span class="note">${esc(q.why)}</span></div>${explainBtn("e:" + q.k)}<div class="row"><button class="btn" id="bossre" type="button">Try again →</button><button class="btn ghost" id="bossx" type="button">Back to Today</button></div></div>`;
+    $("#bossre").onclick = startBoss; $("#bossx").onclick = () => { boss.on = false; renderToday(); }; wireExplain(v); return;
+  }
+  if (boss.state === "won") {
+    v.innerHTML = `<div class="panel bosspanel won">${head}<h2>🗡️ ${esc(b.name)} defeated!</h2><p>20 for 20. ${boss.reward ? "+1,000 XP and this week's boss badge." : "Rematch won. The weekly reward was already claimed."}</p><div class="row"><button class="btn" id="bossx" type="button">Back to Today</button></div></div>`;
+    $("#bossx").onclick = () => { boss.on = false; renderToday(); }; return;
+  }
+  const q = boss.qs[boss.i];
+  v.innerHTML = `<div class="panel bosspanel">${head}${tagHTML(q)}<div class="prompt">${esc(q.q)}</div><div class="opts">${q.c.map((o, i) => `<button class="opt" type="button" data-i="${i}"><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+    <div class="row"><button class="btn ghost" id="bossx" type="button">Run away</button></div></div>`;
+  v.querySelectorAll(".opt").forEach(btn => btn.onclick = () => {
+    const ok = +btn.dataset.i === q.a; record("e:" + q.k, q.d, q.o, ok, "exam");
+    if (!ok) { boss.state = "lost"; boss.miss = q; renderBoss(v); return; }
+    boss.i++;
+    if (boss.i >= n) {
+      boss.state = "won"; const wins = store.get("bosswins", {}); boss.reward = !wins[b.w];
+      if (boss.reward) { wins[b.w] = nowMs(); store.set("bosswins", wins); hype.xp += 1000; saveHype(); paintHud(true); }
+      showTier({ name: "BOSS SLAIN", icon: "🗡️", cls: "t7", at: 20, full: true, shake: true }, 1, boss.reward ? 1000 : 0, false); achSoon();
+    }
+    renderBoss(v);
+  });
+  $("#bossx").onclick = () => { boss.on = false; renderToday(); };
+}
+
+/* ---------------- Achievements ---------------- */
+const retainedN = () => Object.entries(srs).filter(([k, r]) => k.startsWith("c:") && r.box >= 3).length;
+const ACH = [
+  ["first", "🩸", "First blood", "Get your first answer right", () => Object.values(stats.items).some(i => i.r > 0)],
+  ["lab1", "🧪", "Lab rat", "Score 100% on any PBQ lab", () => Object.values(store.get("pbqbest", {})).some(v => v === 100)],
+  ["laball", "🛠️", "PBQ master", "Every PBQ lab at 100%", () => PBQS.every(q => store.get("pbqbest", {})[q.id] === 100)],
+  ["tkt1", "🎫", "Ticket closer", "Solve a Troubleshoot ticket", () => Object.values(store.get("scbest", {})).some(Boolean)],
+  ["tktall", "🦸", "Help desk hero", "Solve every Troubleshoot ticket", () => SCENS.every(s => store.get("scbest", {})[s.id])],
+  ["mock30", "📝", "Mock survivor", "Finish a mock exam of 30+ questions", () => stats.exams.some(e => e.n >= 30)],
+  ["pass", "🎓", "Passing grade", "Score 75%+ on a mock of 60+ questions", () => stats.exams.some(e => e.n >= 60 && e.pct >= 0.75)],
+  ["sim", "⏱️", "Full send", "Complete a full exam simulation", () => (store.get("simdone", 0) || 0) > 0],
+  ["daily", "📅", "Daily perfect", "Get 10/10 on a daily challenge", () => Object.values(store.get("daily", {})).some(v => v === 1)],
+  ["spaced50", "🧠", "Spaced out", "Retain 50 flashcards (recalled after a gap)", () => retainedN() >= 50],
+  ["spaced200", "🏛️", "Memory palace", "Retain 200 flashcards", () => retainedN() >= 200],
+  ["clean", "🧹", "Clean slate", "Clear 10 items off the Missed list for good", () => (store.get("cleared", 0) || 0) >= 10],
+  ["acro", "🔤", "Acronym ace", "Score 30+ in an acronym blitz", () => (store.get("acrobest", 0) || 0) >= 30],
+  ["gen", "✨", "Fresh blood", "Finish a set of AI-generated questions", () => (store.get("gendone", 0) || 0) > 0],
+  ["savage", "🔥", "SAVAGE", "Hit a 5 streak in Hype mode", () => hype.bestTier >= 0],
+  ["demon", "😈", "DEMON", "Hit a 20 streak in Hype mode", () => hype.bestTier >= 2],
+  ["root", "💻", "ROOT ACCESS", "Hit a 100 streak in Hype mode", () => hype.bestTier >= 6],
+  ["week", "🗓️", "Week warrior", "7-day daily streak in Hype mode", () => hype.on && dailyStreak() >= 7],
+  ["boss", "🗡️", "Boss slayer", "Defeat a weekly boss", () => Object.keys(store.get("bosswins", {})).length > 0]
+];
+let achT = null;
+function achSoon() { clearTimeout(achT); achT = setTimeout(checkAch, 60); }
+function checkAch() {
+  const got = store.get("ach", {}), fresh = [];
+  ACH.forEach(([id, icon, name, , test]) => { try { if (!got[id] && test()) { got[id] = nowMs(); fresh.push(icon + " " + name); } } catch { } });
+  if (!fresh.length) return;
+  store.set("ach", got);
+  toast(fresh.length === 1 ? `🏅 Achievement unlocked: ${fresh[0]}` : `🏅 ${fresh.length} achievements unlocked: ${fresh.join(", ")}`, "good");
+}
+function achHTML() {
+  const got = store.get("ach", {}), n = ACH.filter(a => got[a[0]]).length;
+  return `<div class="panel"><div class="bar"><h3 style="margin-right:auto">🏅 Achievements</h3><span class="note">${n}/${ACH.length}</span></div>
+    <div class="achgrid">${ACH.map(([id, icon, name, desc]) => `<div class="ach${got[id] ? " got" : ""}" title="${esc(desc)}"><span class="ai">${got[id] ? icon : "🔒"}</span><b>${esc(name)}</b><span class="note">${esc(desc)}</span></div>`).join("")}</div></div>`;
+}
+
+/* ---------------- AI: fresh questions + explain ---------------- */
+const gen = { busy: false, ctl: null, msg: "" };
+function weakestObj() {
+  const byObj = {}; Object.values(stats.items).forEach(x => { if (!OBJ_TITLES[x.o]) return; const o = byObj[x.o] || (byObj[x.o] = { o: x.o, r: 0, n: 0 }); o.r += x.r; o.n += x.r + x.w; });
+  const w = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n)[0];
+  return w ? w.o : "2.4";
+}
+function genPanelHTML() {
+  const saved = gstore(), sel = gen.obj || weakestObj();
+  return `<div class="panel"><div class="bar"><h3 style="margin-right:auto">✨ Fresh questions from Claude</h3><span data-ai></span></div>
+    <p class="note" style="margin:6px 0 10px">Claude writes 10 new scenario questions on one objective, so you're tested on understanding, not on questions you've memorized. Defaults to your weakest objective. ${sampleFn ? "Takes about 30–60 seconds." : "Available on your Claude page. The Netlify copy can't reach Claude."}</p>
+    <div class="bar"><select class="txt" id="genobj" style="max-width:420px;min-width:0;flex:1 1 200px;width:auto" ${!sampleFn ? "disabled" : ""}>${Object.entries(OBJ_TITLES).map(([o, t]) => `<option value="${o}"${o === sel ? " selected" : ""}>${o} · ${esc(t)}${o === weakestObj() ? " (weakest)" : ""}</option>`).join("")}</select>
+      <button class="btn" id="gengo" type="button" ${!sampleFn || gen.busy ? "disabled" : ""}>${gen.busy ? "Writing…" : "Generate 10"}</button>${gen.busy ? `<button class="btn ghost" id="genstop" type="button">Stop</button>` : ""}</div>
+    <div id="genmsg" class="note" style="margin-top:8px">${esc(gen.msg)}</div>
+    ${saved.length ? `<div class="row"><button class="btn ghost" id="genprac" type="button">Practice saved AI questions (${saved.length})</button><button class="btn ghost sm" id="genclr" type="button">Delete saved</button></div>` : ""}</div>`;
+}
+function wireGen(v) {
+  v.querySelectorAll("[data-ai]").forEach(paintAi);
+  const s = $("#genobj"); if (s) s.onchange = () => { gen.obj = s.value; };
+  if ($("#gengo")) $("#gengo").onclick = () => generateQs($("#genobj").value);
+  if ($("#genstop")) $("#genstop").onclick = () => gen.ctl && gen.ctl.abort();
+  if ($("#genprac")) $("#genprac").onclick = () => { const qs = shuffle(gstore()).slice(0, 20).map(q => ({ ...q, gk: q.id })); Object.assign(ex, { qs, ans: qs.map(() => null), graded: qs.map(() => null), flags: new Set(), cur: 0, mode: "mc", phase: "run", confirm: false, end: 0, tag: "gen" }); renderExam(); };
+  if ($("#genclr")) $("#genclr").onclick = () => { if (!gen.clr) { gen.clr = true; $("#genclr").textContent = "Press again to delete all"; return; } gen.clr = false; store.set("gen", []); gen.msg = "Saved AI questions deleted."; renderExam(); };
+}
+async function generateQs(obj) {
+  if (!sampleFn || gen.busy) return;
+  const d = +obj.split(".")[0], title = OBJ_TITLES[obj];
+  const ground = CARDS.filter(c => c.o === obj).slice(0, 25).map(c => `- ${c.t}: ${c.def}`).join("\n");
+  const avoid = [...EXAM.filter(q => q.o === obj).slice(0, 4).map(q => q.q), ...gstore().filter(q => q.o === obj).slice(-6).map(q => q.q)].map(s => "- " + s).join("\n");
+  const prompt = `Write 10 NEW practice questions for the CompTIA A+ Core 2 exam (220-1202), objective ${obj}: ${title} (Domain ${d}.0 ${DOMAINS[d].name}).
+
+Reference facts for this objective (use them, stay accurate, and don't invent product behavior):
+${ground || "- (use standard 220-1202 knowledge for this objective)"}
+
+Requirements:
+- Scenario-based, the way CompTIA writes them: a short help desk or technician situation, then a question (use FIRST, BEST or MOST LIKELY where natural).
+- Exactly 4 answer options, exactly one correct, with plausible distractors. No "all of the above" or "none of the above".
+- Current technology: Windows 10/11, current macOS, mainstream Linux distros.
+- Vary the sub-topics and don't repeat these existing questions:
+${avoid}
+- "why": 1-2 sentences explaining why the answer is right (and why a tempting distractor is wrong).
+
+Reply with only a JSON array of 10 objects shaped like {"q": string, "c": [string, string, string, string], "a": 0-3, "why": string}.`;
+  gen.busy = true; gen.msg = "Claude is writing your questions…"; gen.ctl = new AbortController(); renderExam();
+  try {
+    const out = await sampleFn.json(prompt, { modelTier: "default", signal: gen.ctl.signal, cache: false });
+    const items = (Array.isArray(out) ? out : []).filter(x => x && typeof x.q === "string" && Array.isArray(x.c) && x.c.length === 4 && x.c.every(c => typeof c === "string" && c.trim()) && Number.isInteger(+x.a) && +x.a >= 0 && +x.a <= 3)
+      .map((x, i) => ({ id: "g" + nowMs().toString(36) + i, d, o: obj, q: x.q.trim(), c: x.c.map(s => s.trim()), a: +x.a, why: String(x.why || "").trim(), key: x.c[+x.a], kw: [[String(x.c[+x.a]).toLowerCase().split(/\W+/).filter(w => w.length > 3)[0] || "x"]], ai: true }));
+    if (!items.length) throw { code: "invalid_json" };
+    const all = [...gstore(), ...items].slice(-200); store.set("gen", all);
+    gen.busy = false; gen.msg = `${items.length} new questions on ${obj}. Saved for later practice too.`;
+    const qs = items.map(q => ({ ...q, gk: q.id }));
+    Object.assign(ex, { qs, ans: qs.map(() => null), graded: qs.map(() => null), flags: new Set(), cur: 0, mode: "mc", phase: "run", confirm: false, end: 0, tag: "gen" });
+    renderExam();
+  } catch (e) {
+    gen.busy = false;
+    const c = e && e.code;
+    if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(c)) { sampleFn = null; aiState = "off"; gen.msg = "Claude isn't available on this page, so question generation is off."; }
+    else gen.msg = c === "cancelled" ? "Stopped." : c === "rate_limited" ? "Claude is rate-limited right now. Try again in a bit." : c === "invalid_json" ? "Claude's reply didn't come back in a usable format. Press Generate again." : "Couldn't generate questions this time. Press Generate to try again.";
+    if (tab === "exam") renderExam();
+  }
+}
+const explainCache = {};
+function explainBtn(key) { return sampleFn ? `<div class="explainwrap"><button class="btn ghost sm" type="button" data-explain="${esc(key)}">✨ Explain this</button><div class="explain" hidden></div></div>` : ""; }
+function explainCtx(key) {
+  const [p, ...rest] = key.split(":"), id = rest.join(":");
+  if (p === "e" || p === "g") { const q = p === "e" ? EXAM[+id] : gstore().find(x => x.id === id); return q && `Question (objective ${q.o}): ${q.q}\nOptions: ${q.c.join(" | ")}\nCorrect answer: ${keyText(q)}\nOfficial explanation: ${q.why}`; }
+  const c = missCard(key); if (!c) return null;
+  const strip = h => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return `Study item (${c.src}, objective ${c.o}): ${strip(c.front)}\nCorrect answer: ${strip(c.back)}`;
+}
+function wireExplain(root) {
+  root.querySelectorAll("[data-explain]").forEach(b => b.onclick = async () => {
+    const key = b.dataset.explain, box = b.nextElementSibling, ctx = explainCtx(key);
+    if (!ctx || !sampleFn) return;
+    box.hidden = false;
+    if (explainCache[key]) { box.innerHTML = explainCache[key]; b.remove(); return; }
+    b.disabled = true; box.textContent = "Thinking…";
+    const render = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+    try {
+      const { text } = await sampleFn(`You're a friendly CompTIA A+ Core 2 (220-1202) tutor. A student got this wrong and wants to understand it.
+
+${ctx}
+
+Explain in plain English for someone new to IT, under 130 words, in exactly three short parts that start with "Why:", "Memory trick:" and "On the exam:". No headers or bullet lists. Be accurate, and stick to what CompTIA expects.`, { modelTier: "quick", onText: ({ text }) => { box.innerHTML = render(text); } });
+      explainCache[key] = box.innerHTML = render(text); b.remove();
+    } catch (e) {
+      b.disabled = false;
+      box.textContent = e && e.code === "rate_limited" ? "Claude is rate-limited. Try again shortly." : e && ["not_granted", "sampling_disabled"].includes(e.code) ? "Claude isn't available on this page." : "Couldn't get an explanation this time. Press the button to try again.";
+    }
+  });
+}
+
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
 function render() {
-  paintBadges();
+  paintBadges(); achSoon();
   if (tab === "today") renderToday();
   else if (tab === "cards") renderCards();
   else if (tab === "code") renderCode();
@@ -2181,6 +2582,12 @@ document.addEventListener("keydown", e => { if (fc.keyHandler) fc.keyHandler(e);
 buildDomainBar();
 paintMissBadge();
 $("#hypeslot").innerHTML = hypeToggleHTML(); wireHypeToggle(); paintHud();
+/* installable app: only on your own https host (e.g. Netlify), never inside Claude */
+if (location.protocol === "https:" && !/(^|\.)(claude\.ai|claudeusercontent\.com|anthropic\.com)$/.test(location.hostname)) {
+  const add = (tag, attrs) => { const el = document.createElement(tag); Object.assign(el, attrs); document.head.appendChild(el); };
+  add("link", { rel: "manifest", href: "manifest.webmanifest" }); add("link", { rel: "apple-touch-icon", href: "icon-192.png" }); add("meta", { name: "theme-color", content: "#1d47c9" });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => { });
+}
 setTab(tab);
 })();
 
