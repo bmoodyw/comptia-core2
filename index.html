@@ -2480,7 +2480,7 @@ function renderPBQ() {
   }
   $("#pbqsub").onclick = () => {
     if (!pbqFilled(q, pq.vals) && !pq.confirmBlank) { pq.confirmBlank = true; $("#pbqres").innerHTML = `<div class="fb part">Some fields are empty. Press Submit again to grade anyway.</div>`; return; }
-    pq.confirmBlank = false; pq.graded = true;
+    pq.confirmBlank = false; pq.graded = true; planMark("pbq:" + q.id);
     const { pts, tot } = pbqScore(q, pq.vals), pct = Math.round(100 * pts / tot);
     record("p:" + q.id, q.d, q.o, pct === 100, "lab");
     q.fields.forEach(f => missUpdate("pf:" + q.id + ":" + f.id, q.d, q.o, fieldOK(f, pq.vals[f.id])));
@@ -2518,7 +2518,7 @@ function scRun(s, raw) {
   else if (st.fixed && s.verify && !st.verified && s.verify.re.some(r => new RegExp(r, "i").test(c))) { st.preVerified = true; }
 }
 function scFinish(s) {
-  const st = sc.st; if (st.done) return; st.done = true;
+  const st = sc.st; if (st.done) return; st.done = true; planMark("tkt:" + s.id);
   const ok = st.diag === s.diag.a && (st.fixBy === "cmd" || st.fix === s.fix.a);
   record("t:" + s.id, s.d, s.o, ok, "lab");
   const b = store.get("scbest", {}); b[s.id] = Math.max(b[s.id] || 0, ok ? 1 : 0); store.set("scbest", b);
@@ -2644,12 +2644,15 @@ function missCard(key) {
 
 /* ---------- shared flip-card review deck ---------- */
 const rv = { on: false, deck: [], i: 0, flipped: false, got: 0, again: 0, label: "", mode: "review", from: "today" };
+function todayPlan() { const td = sod(nowMs()); let TP = store.get("todayplan", null); if (!TP || TP.day !== td) TP = { day: td, items: [], done: {} }; return TP; }
+function planMark(id) { const TP = todayPlan(); TP.done[id] = true; store.set("todayplan", TP); }
 function startDeck(keys, label, mode, from) {
-  Object.assign(rv, { on: true, deck: keys, i: 0, flipped: false, got: 0, again: 0, label, mode, from });
+  Object.assign(rv, { on: true, deck: keys, i: 0, flipped: false, got: 0, again: 0, label, mode, from, planId: null });
   setTab(from); window.scrollTo({ top: 0 });
 }
 function renderDeck(v) {
   if (rv.i >= rv.deck.length) {
+    if (rv.planId) { planMark(rv.planId); rv.planId = null; }
     const due = dueKeys().length;
     v.innerHTML = `<div class="panel empty"><h2>Deck done</h2><p>${rv.got} knew it · ${rv.again} still learning</p><p class="note">${due ? `${due} review${due === 1 ? "" : "s"} still due today.` : "Nothing else due today."} Cards you knew come back in a few days, and cards you missed come back tomorrow.</p><div class="row" style="justify-content:center"><button class="btn" id="rvback" type="button">Done</button></div></div>`;
     $("#rvback").onclick = () => { rv.on = false; render(); }; return;
@@ -2766,14 +2769,27 @@ function renderToday() {
   const plan = [], bench = store.get("bench", []) || [];
   const lastBak = store.get("lastbak", 0) || 0, bakDays = Math.floor((nowMs() - lastBak) / DAY);
   const needBak = Object.keys(srs).length >= 30 && (!lastBak || bakDays >= 7);
-  plan.push(due.length ? { t: `Review ${due.length} due card${due.length === 1 ? "" : "s"}`, s: `${dueMiss} from misses, ${due.length - dueMiss} scheduled flashcards · about ${Math.max(1, Math.round(due.length * 0.25))} min`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true });
+  plan.push(due.length ? { t: `Review ${due.length} due card${due.length === 1 ? "" : "s"}`, s: `${dueMiss} from misses, ${due.length - dueMiss} scheduled flashcards · about ${Math.max(1, Math.round(due.length * 0.25))} min`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true, id: "pdue" });
   plan.push(dailyPlanItem());
   if (unseen.length) { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; plan.push({ t: `Learn ${Math.min(15, pick.length)} new flashcards`, s: `From ${weakDom}.0 ${DOMAINS[weakDom].name}, your lowest-readiness domain · ${unseen.length} cards not started yet`, b: "Learn", id: "pnew" }); }
   if (weakObj) plan.push({ t: `Drill objective ${weakObj.o}`, s: `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
-  if (nextPbq) plan.push({ t: `PBQ lab: ${nextPbq.title}`, s: best[nextPbq.id] != null ? `Best so far ${best[nextPbq.id]}%. Get it to 100%.` : "Not attempted yet", b: "Open lab", id: "ppbq" });
-  else if (nextTicket) plan.push({ t: `Troubleshoot: ${nextTicket.title}`, s: "Unsolved ticket", b: "Open ticket", id: "ptkt" });
+  if (nextPbq) plan.push({ t: `PBQ lab: ${nextPbq.title}`, s: best[nextPbq.id] != null ? `Best so far ${best[nextPbq.id]}%. Get it to 100%.` : "Not attempted yet", b: "Open lab", id: "ppbq", meta: nextPbq.id });
+  else if (nextTicket) plan.push({ t: `Troubleshoot: ${nextTicket.title}`, s: "Unsolved ticket", b: "Open ticket", id: "ptkt", meta: nextTicket.id });
   if (needBak) plan.push({ t: "Back up your progress", s: lastBak ? `Last backup was ${bakDays} days ago. Clearing browser data would wipe your review schedule.` : "Your progress only lives in this browser. Save a backup file or code so it can't be lost.", b: "Back up", id: "pbak" });
   if (daysSinceMock === null || daysSinceMock >= 3) plan.push({ t: "Take a 30-question mock exam", s: lastMock ? `Last full mock was ${daysSinceMock} days ago (${Math.round(lastMock.pct * 100)}%)` : "You haven't taken one yet. It gives your readiness a baseline.", b: "Start mock", id: "pmock" });
+  /* freeze today's plan the first time it's shown, then tick items off as you finish them */
+  const TP = todayPlan(), finalPlan = [];
+  plan.forEach(p => { if (!TP.items.some(x => x.id === p.id)) TP.items.push({ id: p.id, t: p.t, meta: p.meta || null }); });
+  TP.items.forEach(it => {
+    const live = plan.find(p => p.id === it.id);
+    const done = live && live.done || TP.done[it.id] || !live || (it.meta && live.meta !== it.meta) ||
+      (it.id === "ppbq" && TP.done["pbq:" + it.meta]) || (it.id === "ptkt" && TP.done["tkt:" + it.meta]) ||
+      (it.id === "pmock" && stats.exams.some(e => e.n >= 30 && e.t >= TP.day)) || (it.id === "pbak" && (store.get("lastbak", 0) || 0) >= TP.day);
+    if (done && !(live && live.done)) finalPlan.push({ t: it.t, s: "Done for today ✓", done: true, id: it.id });
+    else finalPlan.push(live);
+  });
+  store.set("todayplan", TP);
+  plan.length = 0; plan.push(...finalPlan);
   const checks = [
     [R[1].ret + R[2].ret + R[3].ret + R[4].ret >= 0.8 * CARDS.length, `Retain 80% of flashcards (recalled after a gap of 3+ days)`, `${Math.round(100 * (R[1].ret + R[2].ret + R[3].ret + R[4].ret) / CARDS.length)}%`],
     [mocks.length >= 2 && mocks.slice(-2).every(m => m.pct >= 0.85), "85%+ on your last two mock exams of 30+ questions", mocks.length ? mocks.slice(-2).map(m => Math.round(m.pct * 100) + "%").join(", ") : "none yet"],
@@ -2814,8 +2830,8 @@ function renderToday() {
   go("pdue", () => startDeck(due, "Today", "review", "today"));
   go("pdaily", startDaily);
   go("tsarc", () => setTab("arcade"));
-  go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); });
-  go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); });
+  go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); rv.planId = "pnew"; });
+  go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); rv.planId = "pobj"; });
   go("ppbq", () => { pbqInit(nextPbq); setTab("pbq"); });
   go("ptkt", () => { scInit(nextTicket); setTab("scen"); });
   go("tsboss", startBoss);
@@ -3157,7 +3173,7 @@ function startDaily() {
 }
 function dailyPlanItem() {
   const done = store.get("daily", {})[dayKey(nowMs())];
-  return done != null ? { t: `Daily challenge: ${Math.round(done * 10)}/10${done === 1 ? " · perfect 🔥" : ""}`, s: "A new set unlocks tomorrow.", done: true } : { t: "Daily challenge: 10 questions", s: "The same 10 questions all day. A perfect run earns +200 XP in Hype mode.", b: "Play", id: "pdaily" };
+  return done != null ? { t: `Daily challenge: ${Math.round(done * 10)}/10${done === 1 ? " · perfect 🔥" : ""}`, s: "A new set unlocks tomorrow.", done: true, id: "pdaily" } : { t: "Daily challenge: 10 questions", s: "The same 10 questions all day. A perfect run earns +200 XP in Hype mode.", b: "Play", id: "pdaily" };
 }
 
 /* ---------------- after any graded exam ---------------- */
