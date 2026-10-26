@@ -450,6 +450,7 @@ main{padding-bottom:70px}
 .poset{margin-top:12px;font-size:.88rem}.poset summary{cursor:pointer;color:var(--muted);font-weight:600}
 .posetg{display:grid;gap:6px;margin-top:8px}
 .posetg label{display:flex;align-items:center;gap:8px}.posetg label input{width:72px;padding:6px 8px;margin-left:auto}
+.resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-color:var(--accent)}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -1814,6 +1815,87 @@ PBQS.push(
   const xi = CARDS.findIndex(x => x.t === "xcopy"); if (xi >= 0) CARDS.splice(xi, 1);
 })();
 
+/* ===== Round 6: competitive wrong answers. Keeps each correct choice, swaps easy-to-eliminate distractors for near-misses ===== */
+(() => {
+  // index -> [new wrong choices] (3 for single-answer, 3 for choose-two), optional why override
+  const D = {
+    4: { w: ["TPM 1.2 and legacy BIOS (CSM) boot", "An NVMe SSD and 8 GB of RAM", "A DirectX 9 GPU and a 1080p display"], why: "Windows 11 needs TPM 2.0 and UEFI with Secure Boot capability (plus a supported 64-bit CPU and a DirectX 12/WDDM 2.0 GPU). TPM 1.2 or legacy BIOS mode fails the check; NVMe and 8 GB aren't requirements." },
+    5: { w: ["Event Viewer, Security log", "Task Scheduler history", "Resource Monitor"], why: "Application crashes are logged in Event Viewer's Application log (Application Error / Windows Error Reporting). The Security log holds sign-in and audit events; Resource Monitor only shows what's happening right now." },
+    6: { w: ["System Configuration (msconfig) > Startup tab", "Services (services.msc)", "Task Scheduler"], why: "In Windows 10/11, startup apps are enabled or disabled in Task Manager's Startup apps page. msconfig's Startup tab now just links there; services and scheduled tasks are separate mechanisms." },
+    13: { w: ["Eject the mounted .dmg in Finder", "Delete the .dmg file from Downloads", "Remove the app's icon from the Dock"], why: "Apps installed by dragging from a .dmg are uninstalled by dragging the .app from Applications to the Trash. Ejecting or deleting the .dmg only removes the installer, and removing a Dock icon just removes the shortcut." },
+    16: { w: ["chmod u+r deploy.sh", "chown $USER deploy.sh", "sudo ./deploy.sh"], why: "The owner lacks the execute bit, so add it with chmod u+x. Read permission and ownership don't make a file executable, and even root can't execute a file with no execute bit set." },
+    78: { w: ["File Explorer Options > View: 'Show hidden files, folders, and drives'", "Settings > Apps > Default apps", "File Explorer Options > General: 'Open each folder in its own window'"], why: "Unchecking 'Hide extensions for known file types' shows the real extension (invoice.pdf.exe). Showing hidden files reveals hidden items, not extensions, and default apps only change which program opens a type." },
+    88: { w: ["ext4", "ReFS", "NTFS"], why: "XFS is built for very large volumes and parallel I/O and is RHEL's default. ext4 is the other common Linux file system (Ubuntu's default), while ReFS and NTFS are Windows file systems." },
+    93: { w: ["The monitors support 4K resolution", "Each PC has an optical drive for the install media", "Users keep permanent local admin rights"] },
+    143: { w: ["The OS stops booting after the end-of-life date", "Windows deactivates and the license is revoked", "Installed apps stop running immediately"], why: "End of life means the vendor stops releasing security patches, so new vulnerabilities stay open. The PC keeps booting and running apps; that's exactly why EOL systems linger and become risky." },
+    154: { w: ["Launchpad (pinch with thumb and three fingers)", "App Exposé (shows only the current app's windows)", "Spotlight (Command+Space)"], why: "Mission Control (three- or four-finger swipe up) shows every open window and desktop. App Exposé shows windows for the current app only, Launchpad shows installed apps, and Spotlight searches." },
+    157: { w: ["Device impact: 3 GB of disk space on each PC", "Operation impact: users need training on the new app", "Business impact: the license cost per seat"], why: "Pushing 600 GB across the network during business hours is the biggest immediate risk. Schedule it off-hours or use a local distribution point. Disk space, training and cost matter, but they don't take the office down." },
+    158: { w: ["BitLocker is enabled on the drive", "Secure Boot is turned off", "The PC is in a workgroup instead of a domain"] },
+    159: { w: ["Turn on identity synchronization for the user", "Reset the user's password", "Add the user to a mail-enabled security group"], why: "The account exists (they can sign in), so identity sync already worked. Without a license assigned, Microsoft 365 doesn't provision a mailbox or Teams." },
+    160: { w: ["Pause OneDrive syncing for 24 hours", "Set the network connection as metered", "Run Disk Cleanup on the OneDrive folder"], why: "Files On-Demand keeps cloud-only placeholders until a file is opened, freeing local space. Pausing sync or a metered connection only delays syncing; files already downloaded stay on disk." },
+    38: { w: ["Check that the file size matches the vendor's download page", "Make sure the download page used HTTPS", "Scan it with antivirus before running it"], why: "Only a matching hash (SHA-256) from the vendor proves the file is exactly what was published. File size can match a tampered file, HTTPS protects the transfer but not the source, and antivirus misses new threats." },
+    42: { w: ["Enable BitLocker on the system drive", "Require a Windows sign-in password", "Turn on Secure Boot"], why: "A BIOS/UEFI supervisor password stops changes to firmware settings like boot order. BitLocker protects data at rest, Windows passwords apply after boot, and Secure Boot checks bootloader signatures without locking the boot order." },
+    98: { w: ["Fingerprint", "Password", "Answer to a security question"] },
+    109: { w: ["Require password changes every 7 days", "Disable AutoRun for removable media", "Enable a screen-saver lock after 10 minutes"], why: "Account lockout stops repeated guessing, and renaming or disabling the well-known Administrator account removes the easiest target. Frequent expiration, AutoRun and screen locks address other risks." },
+    110: { w: ["Encrypt drives with BitLocker To Go", "Enable Microsoft Defender SmartScreen", "Disable USB selective suspend"], why: "Disabling AutoRun/AutoPlay stops code from launching automatically when a drive is inserted. BitLocker To Go encrypts data, SmartScreen checks downloaded apps, and selective suspend is a power setting." },
+    111: { w: ["Fully enroll the phones in MDM so IT can wipe them", "Require a VPN app for email", "Install a mobile antivirus app only"], why: "A work profile/container separates corporate data so IT can selectively wipe only that. Full-device enrollment would let IT wipe personal photos too, which the employees don't want." },
+    163: { w: ["A badge reader on the building entrance", "Video surveillance of the room", "A locator app on each laptop"], why: "Cable locks physically stop someone walking off with a laptop during the day. Badges, cameras and locator apps help you investigate or recover a theft, but don't prevent it in a room people are already allowed into." },
+    168: { w: ["Safe Mode with Networking", "System Restore from Settings", "msconfig > Boot tab"], why: "If Windows won't start, you need the Windows Recovery Environment, whose command prompt runs bootrec and offline scans. Safe Mode and Settings require Windows to boot, and msconfig runs inside Windows." },
+    169: { w: ["An email security gateway", "EDR on every endpoint", "Blocking all email attachments"], why: "The root cause is people clicking, so training addresses it. Gateways, EDR and attachment blocking reduce the damage but don't change the behavior." },
+    172: { w: ["Password expiration every 30 days", "Login time restrictions", "A screen lock after 5 minutes"] },
+    173: { w: ["Disable the Guest account", "Enable account lockout after failed attempts", "Turn on BitLocker"], why: "An automatic screensaver lock plus the habit of pressing Win+L protect a signed-in, unattended PC. Guest, lockout and BitLocker don't help when the session is already open." },
+    174: { w: ["Enable BitLocker on each workstation", "Set a BIOS/UEFI password", "Join them to the domain"], why: "Identical, well-known default credentials are the most urgent risk, so change them (and rename or disable the account) before deployment. The other steps are good hardening but don't fix the shared password." },
+    175: { w: ["The entire phone, to be safe", "Nothing; just revoke their Microsoft 365 license", "Remove the MDM app and leave the data"], why: "With BYOD, a selective wipe removes only the corporate profile and its data. A full wipe is for corporate-owned devices; revoking a license or removing MDM leaves company data on the phone." },
+    176: { w: ["A remote backup app (iCloud or Google backup)", "A screen lock with a PIN", "A content-filtering app"], why: "Locator apps (Find My / Find My Device) show the phone's location and can lock or erase it remotely. Backups help you restore data, and a PIN protects it, but neither finds or wipes the phone." },
+    177: { w: ["Quick format skips the bad-sector scan but still erases the data", "Quick format only works on NTFS drives", "Quick format encrypts the data, so the key could be recovered"], why: "A quick (standard) format only rebuilds the file system, so the old data stays on the platters and can be recovered. Use an overwrite/wipe tool or destroy the drive." },
+    178: { w: ["A service-level agreement (SLA)", "A non-disclosure agreement (NDA)", "A data retention policy"], why: "A certificate of destruction is proof the drives were destroyed. Keep it for audits. An SLA, NDA or retention policy doesn't prove anything was destroyed." },
+    180: { w: ["Disable SSID broadcast", "Enable WPS for easier setup", "Enable UPnP"], why: "Management hardening means changing the default admin password and managing only from inside (HTTPS), with WAN-side admin off. Hiding the SSID is weak, and WPS and UPnP weaken security." },
+    181: { w: ["Reset the browser to default settings", "Clear saved passwords", "Disable all extensions"], why: "A stale cache serves old copies of pages. Clearing the cache (or a hard refresh, Ctrl+F5) loads the new version. Resetting the browser or disabling extensions is overkill." },
+    182: { w: ["It's safe if the download page uses HTTPS", "It's safe if antivirus finds nothing", "The only risk is that it won't auto-update"], why: "Software from untrusted sources can bundle malware that antivirus doesn't catch yet. HTTPS only protects the transfer. Get browsers from the vendor and verify the hash." },
+    226: { w: ["Remove extensions from each PC once a month", "Set the browser to clear browsing data on exit", "Turn on private browsing by default"], why: "Browser feature management through Group Policy (or MDM) blocks extension installs centrally. Manual cleanup, clearing data and private browsing don't stop installs." },
+    44: { w: ["Run chkdsk /r from WinRE", "Use Last Known Good Configuration", "Update the BIOS/UEFI firmware"], why: "The crash started with the new driver, so boot to Safe Mode (or WinRE) and roll the driver back. Last Known Good Configuration no longer exists in Windows 10/11, and disk or firmware fixes don't address a bad driver." },
+    46: { w: ["Run Disk Cleanup", "Defragment the SSD", "Clear the browser cache"], why: "More virtual memory (a larger paging file) and closing memory-heavy apps relieve low-memory warnings. Disk Cleanup frees disk space, not RAM, and SSDs shouldn't be defragmented." },
+    50: { w: ["Device Manager for driver errors", "msconfig > Startup", "Disk Management"], why: "Event Viewer's System log names the service and the error. Then check the service's dependencies and its logon account in services.msc." },
+    52: { w: ["Clear the game's cache and keep using it", "Update Android and keep the app", "Factory reset the phone immediately"], why: "A sideloaded app plus heavy data use and battery drain points to malware. Uninstall it and scan first; a factory reset is the fallback if that doesn't clean it." },
+    53: { w: ["Screen Time content restrictions on the phone", "The user isn't signed in with an Apple ID", "The app needs a newer iOS version"], why: "On a company-managed iPhone, an MDM configuration profile can block App Store installs or specific apps. The fact that only managed phones are affected points to MDM." },
+    55: { w: ["The homepage setting changed; just set it back", "Stale DNS cache; run ipconfig /flushdns", "An outage at the ISP's proxy; wait it out"], why: "Repeated redirects to an unfamiliar search site are a classic browser hijacker. Scan and clean (remove malicious extensions too); just changing the setting back lets the malware change it again." },
+    57: { w: ["Clear the browser cache", "Turn off all Windows notifications", "Uninstall the browser"], why: "The site was allowed to send push notifications, so revoke that permission in the browser's site settings, then run a malware scan. Turning off all notifications hides useful alerts too." },
+    58: { w: ["A Group Policy that turned off Defender for a third-party AV", "An expired antivirus subscription", "The firewall blocking Microsoft's update servers"], why: "Antivirus turned off, updates failing and security sites blocked together point to malware protecting itself. A policy or subscription wouldn't block security websites." },
+    117: { w: ["Run sfc /scannow", "Reset the user's domain password", "Remove the PC from the domain and rejoin it"], why: "'Signed in with a temporary profile' means the user's profile is corrupt or can't load. Back up their data and rebuild the profile. sfc and domain fixes don't repair a single user's profile." },
+    118: { w: ["Reinstall the printer driver", "Run sfc /scannow", "Power-cycle the printer"] },
+    119: { w: ["Disk Management for the partition layout", "Event Viewer's Security log", "Windows Update history"] },
+    120: { w: ["Sign out of the Apple ID and back in", "Reset network settings", "Restart the phone"], why: "Updates need free space to download and unpack, and 300 MB is too little. Free up storage first; signing out, resetting network settings or restarting won't create space." },
+    121: { w: ["Calibrate the battery by fully draining it", "Update iOS to the latest version", "Clear the cache and restart"], why: "Heat, random reboots and a lifting screen point to a swollen battery, which is a fire risk. Power it off, stop charging it, and have the battery replaced." },
+    126: { w: ["Run an anti-malware scan right away", "Restore the files from backup", "Shut the PC down and wipe the drive"], why: "Disconnect it from the network first so the ransomware can't encrypt more shares, then follow the malware removal steps. Restoring before you clean it risks re-encryption." },
+    128: { w: ["A failing hard drive with bad sectors", "A new Group Policy changed the permissions", "A backup job that ran overnight"], why: "Renamed files, changed permissions and 'Access denied' together point to malware altering files. A failing drive causes read errors, not renamed files and new permissions." },
+    187: { w: ["A corrupt user profile", "A sleep timer set to 20 minutes", "A DNS misconfiguration"] },
+    190: { w: ["Lower the screen brightness", "Replace the battery", "Perform a factory reset"], why: "Battery stats point to one app. Restrict its background activity or uninstall it. Brightness and a new battery don't fix a single app draining 45%." },
+    194: { w: ["A Group Policy turned Defender off for a third-party AV", "A tune-up utility disabled the Windows Update service", "Low disk space"], why: "Security updates failing for weeks plus Defender refusing to open is a red flag for malware disabling security tools. Investigate with an offline scan." },
+    129: { w: ["The fix you plan to try", "The user's manager's name", "Notes from unrelated past tickets"] },
+    199: { w: ["The technician's certifications", "A customer satisfaction survey", "The help desk's current ticket backlog"] },
+    200: { w: ["The backups run too slowly", "The backups use too much storage", "The backup software's license may expire"] },
+    206: { w: ["A power surge; use a surge suppressor", "A blackout; use a generator only", "Normal; nothing is needed"], why: "Brief dimming is under-voltage (a brownout). A UPS (or line conditioner) keeps power steady. A surge suppressor only handles spikes." },
+    209: { w: ["It's fine if installed on fewer than three PCs", "It's fine because it's a perpetual license", "It just needs to be activated online"], why: "Personal-use licenses usually forbid commercial use, whatever the seat count or license term. Business use needs a business license." },
+    210: { w: ["Internal meeting notes", "Employees' work phone extensions", "The company's public price list"] },
+    214: { w: ["It could void the Windows license", "It will run slower than a .bat file", "It can't run without PowerShell 7"] },
+    215: { w: ["Approving changes at a CAB meeting", "Physically installing RAM", "Deciding which users get admin rights"] }
+  };
+  const seedShuffle = (arr, seed) => { const a = arr.slice(); let s = seed; for (let i = a.length - 1; i > 0; i--) { s = (s * 1103515245 + 12345) % 2147483648; const j = s % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  Object.entries(D).forEach(([k, v]) => {
+    const q = EXAM[+k]; if (!q) return;
+    const right = (Array.isArray(q.a) ? q.a : [q.a]).map(i => q.c[i]);
+    const opts = seedShuffle([...right, ...v.w], 31 + +k * 17);
+    q.c = opts; q.a = Array.isArray(q.a) ? right.map(r => opts.indexOf(r)).sort((x, y) => x - y) : opts.indexOf(right[0]);
+    if (v.why) q.why = v.why;
+  });
+  // the chkdsk question: near-miss tools (chkdsk /f, sfc, DISM) instead of unrelated ones
+  EXAM.push({ d: 1, o: "1.5", q: "A user's D: drive gives read errors on some files, and you suspect bad sectors. Which command finds bad sectors and recovers readable data?",
+    c: ["chkdsk D: /r", "chkdsk D: /f", "sfc /scannow", "DISM /Online /Cleanup-Image /RestoreHealth"], a: 0,
+    why: "chkdsk /r locates bad sectors and recovers readable information (it includes /f). chkdsk /f only fixes file-system errors, sfc repairs protected Windows system files, and DISM repairs the Windows image that sfc uses.",
+    key: "chkdsk D: /r (finds bad sectors and recovers readable data; /f only fixes file-system errors).", kw: [["chkdsk"], ["/r"]] });
+  { const q = EXAM[EXAM.length - 1], o = seedShuffle(q.c, 4242); q.a = o.indexOf(q.c[q.a]); q.c = o; }
+})();
+
 /* CompTIA 220-1202 acronyms (d = domain where they mostly appear) */
 const ACRONYMS = [
  ["APFS","Apple File System",1],["APIPA","Automatic Private IP Addressing",1],["BIOS","Basic Input/Output System",1],["CLI","Command-Line Interface",1],["DHCP","Dynamic Host Configuration Protocol",1],["DNS","Domain Name System",1],["EFS","Encrypting File System",1],["exFAT","Extensible File Allocation Table",1],["FAT32","File Allocation Table 32",1],["GPT","GUID Partition Table",1],["GUI","Graphical User Interface",1],["GPU","Graphics Processing Unit",1],["ISO","International Organization for Standardization",1],["MBR","Master Boot Record",1],["MMC","Microsoft Management Console",1],["NTFS","New Technology File System",1],["PXE","Preboot Execution Environment",1],["ReFS","Resilient File System",1],["RSR","Rapid Security Response",1],["SMB","Server Message Block",1],["SSID","Service Set Identifier",1],["TPM","Trusted Platform Module",1],["UEFI","Unified Extensible Firmware Interface",1],["UNC","Universal Naming Convention",1],["VPN","Virtual Private Network",1],["WWAN","Wireless Wide Area Network",1],["VRAM","Video Random-Access Memory",1],["SSD","Solid-State Drive",1],["HDD","Hard Disk Drive",1],["NIC","Network Interface Card",1],
@@ -1877,7 +1959,10 @@ let sampleFn = null, aiState = "checking";
 })();
 function paintAi(el) {
   el.className = "aistate" + (aiState === "ready" ? " on" : "");
-  el.textContent = aiState === "ready" ? "AI grading ready" : aiState === "checking" ? "Checking for AI grading…" : "AI grading unavailable: keyword grading";
+  el.textContent = aiState === "ready" ? "Graded by Claude (AI)" : aiState === "checking" ? "Checking for AI grading…" : "Keyword grading";
+  const n = el.parentElement && el.parentElement.querySelector(".ainote");
+  if (n) n.textContent = aiState === "ready" ? "Claude compares each typed answer with a reference answer and explains what's missing. If Claude is busy, a keyword check fills in." : "Each answer is checked for the key terms in the reference answer. It can't judge your wording or reasoning, so compare with the reference answer every time.";
+  const m = $("#mode-typed"); if (m) m.textContent = aiState === "ready" ? "Typed answers (AI-graded)" : "Typed answers (keyword-graded)";
 }
 
 /* ---------- tabs ---------- */
@@ -1929,9 +2014,12 @@ function renderCards() {
 function nextCard() { fc.i++; fc.answered = false; renderCards(); }
 function renderMC() {
   const c = fc.deck[fc.i], p = $("#fcpanel");
-  let pool = CARDS.filter(x => x.t !== c.t && x.d === c.d && x.def !== c.def);
-  if (pool.length < 3) pool = CARDS.filter(x => x.t !== c.t);
-  const opts = shuffle([c, ...shuffle(pool).slice(0, 3)]);
+  // competitive distractors: siblings from the same objective first, then the same domain
+  const same = shuffle(CARDS.filter(x => x.t !== c.t && x.o === c.o && x.def !== c.def));
+  const dom = shuffle(CARDS.filter(x => x.t !== c.t && x.d === c.d && x.o !== c.o && x.def !== c.def));
+  let picks = [...same.slice(0, 3), ...dom].slice(0, 3);
+  if (picks.length < 3) picks = [...picks, ...shuffle(CARDS.filter(x => x.t !== c.t && !picks.includes(x)))].slice(0, 3);
+  const opts = shuffle([c, ...picks]);
   p.innerHTML = `${tagHTML(c)}<div class="prompt term">${esc(c.t)}</div><p class="note" style="margin:-8px 0 12px">Pick the matching definition (keys 1–4).</p>
     <div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}" type="button"><span class="bub">${LET[i]}</span><span>${esc(o.def)}</span></button>`).join("")}</div><div id="fcfb"></div>`;
   const btns = [...p.querySelectorAll(".opt")];
@@ -2076,6 +2164,37 @@ function renderRead(x, p) {
 /* ================= MOCK EXAM ================= */
 const ex = { phase: "setup", len: store.get("exlen", 30), mode: store.get("exmode", "mc"), timed: store.get("extimed", true), qs: [], ans: [], flags: new Set(), cur: 0, end: 0, tick: null, graded: [], busy: false, ctl: null };
 const isMulti = q => Array.isArray(q.a);
+const cleanLabel = s => String(s || "").replace(/,\s*≈\d+\)/, ")");
+/* ---------- save and resume an unfinished exam ---------- */
+function saveEx() {
+  if (ex.phase !== "run") return;
+  try { store.set("exsave", { v: 1, qs: ex.qs, ans: ex.ans, flags: [...ex.flags], cur: ex.cur, mode: ex.mode, tag: ex.tag || null, dkey: ex.dkey || null, graded: ex.graded, timed: !!ex.end, left: ex.end ? Math.max(0, ex.end - Date.now()) : 0, t: Date.now() }); } catch { }
+}
+function clearExSave() { store.set("exsave", null); }
+function savedEx() { const s = store.get("exsave", null); return s && Array.isArray(s.qs) && s.qs.length ? s : null; }
+function savedExDesc(s) {
+  const kind = s.tag === "daily" ? "daily challenge" : s.tag === "gen" ? "AI question set" : s.tag === "lightning" ? "lightning round" : s.mode === "sim" ? "full simulation" : s.mode === "typed" ? "typed drill" : "multiple-choice exam";
+  const done = s.mode === "typed" ? s.graded.filter(Boolean).length : s.qs.filter((q, k) => answered(q, s.ans[k])).length;
+  return { kind, text: `${done} of ${s.qs.length} answered${s.timed ? ` · ${fmt(s.left)} left on the clock` : ""} · saved ${new Date(s.t).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" })}` };
+}
+function resumeEx() {
+  const s = savedEx(); if (!s) return;
+  Object.assign(ex, { qs: s.qs, ans: s.ans, flags: new Set(s.flags || []), cur: Math.min(s.cur || 0, s.qs.length - 1), mode: s.mode, tag: s.tag, dkey: s.dkey, graded: s.graded || s.qs.map(() => null), phase: "run", confirm: false, busy: false, end: s.timed ? Date.now() + s.left : 0 });
+  rv.on = false; setTab("exam"); window.scrollTo({ top: 0 });
+}
+function resumeBannerHTML() {
+  const s = savedEx(); if (!s || ex.phase === "run") return "";
+  const d = savedExDesc(s);
+  return `<div class="panel resume" id="resumebox"><div><b>Unfinished ${esc(d.kind)}</b><br><span class="note">${esc(d.text)}. The clock was paused while you were away.</span></div>
+    <div class="row" style="margin:0"><button class="btn" id="exresume" type="button">Resume →</button><button class="btn ghost sm" id="exdiscard" type="button">Discard</button></div></div>`;
+}
+function wireResume(after) {
+  const r = $("#exresume"), d = $("#exdiscard");
+  if (r) r.onclick = resumeEx;
+  if (d) d.onclick = () => { if (d.dataset.sure) { clearExSave(); after(); } else { d.dataset.sure = "1"; d.textContent = "Tap again to discard"; } };
+}
+addEventListener("pagehide", saveEx);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveEx(); });
 const answered = (q, v) => q.pbq ? pbqFilled(q, v) : isMulti(q) ? Array.isArray(v) && v.length === q.a.length : v !== null && v !== undefined;
 const isRight = (q, v) => q.pbq ? (() => { const r = pbqScore(q, v); return r.pts === r.tot; })() : isMulti(q) ? answered(q, v) && q.a.every(x => v.includes(x)) : v === q.a;
 const ansText = (q, v) => (v === null || v === undefined || (Array.isArray(v) && !v.length)) ? "(blank)" : Array.isArray(v) ? v.map(i => q.c[i]).join(" + ") : q.c[v];
@@ -2098,7 +2217,7 @@ function renderExam() {
   clearInterval(ex.tick);
   const v = $("#view-exam");
   if (ex.phase === "setup") return examSetup(v);
-  if (ex.phase === "run") return ex.mode === "typed" ? examTyped(v) : examMC(v);
+  if (ex.phase === "run") { const r = ex.mode === "typed" ? examTyped(v) : examMC(v); saveEx(); return r; }
   return examResults(v);
 }
 function examSetup(v) {
@@ -2106,18 +2225,18 @@ function examSetup(v) {
   const lens = [10, 30, 60, 90].filter(n => n <= poolN || n === 10);
   if (!lens.includes(ex.len)) ex.len = lens[Math.min(1, lens.length - 1)];
   const sb = (k, val, l, cur) => `<button type="button" id="${k}-${val}" data-${k}="${val}" aria-pressed="${cur === val}">${l}</button>`;
-  v.innerHTML = `<div class="panel setup">
+  v.innerHTML = resumeBannerHTML() + `<div class="panel setup">
     <h2>Mock exam</h2>
     <p class="note" style="margin:0">Questions are drawn to match the official domain weights (28 / 28 / 23 / 21) across the domains selected above. The bank has ${poolN} scenario questions for this selection.</p>
-    <div class="bar"><span class="lbl">Mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "sim", "Full simulation", ex.mode)}${sb("mode", "typed", "Typed answers (AI graded)", ex.mode)}</span></div>
+    <div class="bar"><span class="lbl">Mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "sim", "Full simulation", ex.mode)}${sb("mode", "typed", aiState === "ready" ? "Typed answers (AI-graded)" : "Typed answers (keyword-graded)", ex.mode)}</span></div>
     ${ex.mode === "sim" ? `<div class="fb"><b class="v">Real exam conditions</b>4 performance-based labs first, then 86 multiple-choice questions, all on a single 90-minute clock. Flag a PBQ and come back to it, just like the real test. Each PBQ is worth 3 points with partial credit.</div>` : ""}
     <div class="bar" ${ex.mode === "sim" ? "hidden" : ""}><span class="lbl">Length</span><span class="seg">${lens.map(n => sb("len", String(n), n === 90 ? "90 (full)" : String(n), String(ex.len))).join("")}</span></div>
     <div class="bar" ${ex.mode !== "mc" ? "hidden" : ""}><span class="lbl">Timer</span><span class="seg">${sb("timed", "on", "1 min / question", ex.timed ? "on" : "off")}${sb("timed", "off", "Untimed", ex.timed ? "on" : "off")}</span></div>
-    <div class="bar" ${ex.mode !== "typed" ? "hidden" : ""}><span data-ai></span><span class="note">Claude grades each typed answer against a reference answer. If it isn't available here, a keyword check is used instead.</span></div>
+    <div class="bar" ${ex.mode !== "typed" ? "hidden" : ""}><span data-ai></span><span class="note ainote"></span></div>
     <div class="row"><button class="btn" id="exstart">Start ${ex.mode === "typed" ? "typed drill" : ex.mode === "sim" ? "simulation" : "exam"}</button></div></div>
-    ${stats.exams.length ? `<div class="note">Last attempt: ${esc(stats.exams[stats.exams.length - 1].label)}</div>` : ""}
+    ${stats.exams.length ? `<div class="note">Last attempt: ${esc(cleanLabel(stats.exams[stats.exams.length - 1].label))}</div>` : ""}
     ${genPanelHTML()}`;
-  wireGen(v);
+  wireGen(v); wireResume(renderExam);
   v.querySelectorAll("[data-ai]").forEach(paintAi);
   v.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { ex.mode = b.dataset.mode; store.set("exmode", ex.mode); renderExam(); });
   v.querySelectorAll("[data-len]").forEach(b => b.onclick = () => { ex.len = +b.dataset.len; store.set("exlen", ex.len); renderExam(); });
@@ -2151,7 +2270,7 @@ function examMC(v) {
       ${ex.cur < n - 1 ? `<button class="btn" id="exnext">Next →</button>` : ""}
       <span style="margin-left:auto" id="subwrap">${ex.confirm ? `<span class="confirm"><span class="note">${n - answeredN} unanswered. Submit?</span><button class="btn" id="exyes">Submit</button><button class="btn ghost" id="exno">Keep going</button></span>` : `<button class="btn ${ex.cur === n - 1 ? "" : "ghost"}" id="exsub">Submit exam</button>`}</span></div></div>
     <div class="qnav" aria-label="Question navigator">${ex.qs.map((_, i) => `<button type="button" data-q="${i}" class="${answered(ex.qs[i], ex.ans[i]) ? "ans" : ""} ${i === ex.cur ? "cur" : ""} ${ex.flags.has(i) ? "flag" : ""}" aria-label="Question ${i + 1}${ex.qs[i].pbq ? " (PBQ)" : ""}">${ex.qs[i].pbq ? "P" + (i + 1) : i + 1}</button>`).join("")}</div>
-    <div class="row"><button class="btn ghost" id="exquit">Quit to setup</button></div>`;
+    <div class="row"><button class="btn ghost" id="exquit">Save and exit</button></div>`;
   if (q.pbq) wirePbqForm(q, ex.ans[ex.cur], $("#xbody"), "xf-" + ex.cur, () => { const y = window.scrollY; renderExam(); window.scrollTo({ top: y }); });
   v.querySelectorAll(".opt").forEach(b => b.onclick = () => {
     const i = +b.dataset.i;
@@ -2164,15 +2283,16 @@ function examMC(v) {
   $("#exflag").onclick = () => { ex.flags.has(ex.cur) ? ex.flags.delete(ex.cur) : ex.flags.add(ex.cur); renderExam(); };
   if ($("#exsub")) $("#exsub").onclick = () => { if (ex.qs.every((qq, k) => answered(qq, ex.ans[k]))) finishMC(); else { ex.confirm = true; renderExam(); } };
   if ($("#exyes")) { $("#exyes").onclick = finishMC; $("#exno").onclick = () => { ex.confirm = false; renderExam(); }; }
-  $("#exquit").onclick = () => { ex.phase = "setup"; renderExam(); };
+  $("#exquit").onclick = () => { clearInterval(ex.tick); saveEx(); ex.phase = "setup"; renderExam(); toast("Saved. Resume it from Mock exam or Today.", "good"); };
   if (ex.end) ex.tick = setInterval(() => {
     const left = ex.end - Date.now(), t = $("#timer");
     if (t) { t.textContent = fmt(left); t.classList.toggle("low", left < 300000); }
     if (left <= 0) finishMC();
+    else if (Math.round(left / 1000) % 15 === 0) saveEx();
   }, 1000);
 }
 function finishMC() {
-  clearInterval(ex.tick);
+  clearInterval(ex.tick); clearExSave();
   hypeMute = true;
   ex.qs.forEach((q, i) => {
     if (q.pbq) { record("p:" + q.id, q.d, q.o, isRight(q, ex.ans[i]), "lab"); q.fields.forEach(f => missUpdate("pf:" + q.id + ":" + f.id, q.d, q.o, fieldOK(f, ex.ans[i][f.id]))); }
@@ -2181,9 +2301,8 @@ function finishMC() {
   hypeMute = false;
   const got = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), max = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = got / max;
   const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length;
-  const scaled = Math.round(100 + 800 * pct);
   const kind = ex.mode === "sim" ? "full simulation" : ex.tag === "daily" ? "daily challenge" : ex.tag === "gen" ? "AI question set" : "multiple choice";
-  stats.exams.push({ t: Date.now(), mode: ex.mode === "sim" ? "sim" : "mc", tag: ex.tag || null, n: ex.qs.length, pct, label: `${right}/${ex.qs.length} ${kind} (${Math.round(pct * 100)}%, ≈${scaled})` });
+  stats.exams.push({ t: Date.now(), mode: ex.mode === "sim" ? "sim" : "mc", tag: ex.tag || null, n: ex.qs.length, pct, label: `${right}/${ex.qs.length} ${kind} (${Math.round(pct * 100)}%)` });
   if (typeof afterExam === "function") afterExam(pct, right);
   store.set("stats", stats);
   ex.phase = "results"; renderExam();
@@ -2201,12 +2320,17 @@ function examResults(v) {
     ex.qs.forEach((q, i) => { const r = rows[q.d] || (rows[q.d] = { got: 0, tot: 0 }); r.tot += itemMax(q); r.got += itemPts(q, ex.ans[i]); });
     Object.values(rows).forEach(r => r.label = Number.isInteger(r.got) ? `${r.got}/${r.tot}` : `${r.got.toFixed(1)}/${r.tot}`);
     const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length;
-    const gotP = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), maxP = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = gotP / maxP, scaled = Math.round(100 + 800 * pct);
+    const gotP = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), maxP = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = gotP / maxP;
+    const weak = [1, 2, 3, 4].filter(d => rows[d] && rows[d].tot >= 3).sort((a, b) => rows[a].got / rows[a].tot - rows[b].got / rows[b].tot);
+    const objs = {}; ex.qs.forEach((q, i) => { const o = objs[q.o] || (objs[q.o] = { o: q.o, d: q.d, got: 0, tot: 0 }); o.tot += itemMax(q); o.got += itemPts(q, ex.ans[i]); });
+    const weakObjs = Object.values(objs).filter(o => o.got < o.tot).sort((a, b) => (a.got / a.tot - b.got / b.tot) || (b.tot - a.tot)).slice(0, 5);
     const pbqs = ex.qs.map((q, i) => ({ q, i })).filter(x => x.q.pbq);
-    html = `<div class="panel"><span class="lbl">Result</span><div class="big ${scaled >= 700 ? "pass" : "fail"}">${scaled}<span style="font-size:.4em;color:var(--muted)"> / 900 est.</span></div>
-      <p style="margin:6px 0 0">${pbqs.length ? `${gotP.toFixed(1)} of ${maxP} points` : `${right} of ${n} correct`} (${Math.round(pct * 100)}%). ${scaled >= 700 ? "Above" : "Below"} the 700 passing line.</p>
+    html = `<div class="panel"><span class="lbl">Result</span><div class="big ${pct >= 0.85 ? "pass" : "fail"}">${Math.round(pct * 100)}%<span style="font-size:.4em;color:var(--muted)"> correct</span></div>
+      <p style="margin:6px 0 0">${pbqs.length ? `${gotP.toFixed(1)} of ${maxP} points` : `${right} of ${n} correct`}. ${pct >= 0.85 ? "At or above this site's 85% ready target." : "Below this site's 85% ready target."}</p>
+      ${weak.length ? `<p style="margin:8px 0 0"><b>Weakest domain:</b> ${weak[0]}.0 ${esc(DOMAINS[weak[0]].name)} (${Math.round(100 * rows[weak[0]].got / rows[weak[0]].tot)}%)</p>` : ""}
+      ${weakObjs.length ? `<p class="note" style="margin:4px 0 0"><b>Objectives to review:</b> ${weakObjs.map(o => `${o.o} ${esc((typeof OBJ_TITLES !== "undefined" && OBJ_TITLES[o.o]) || "")} (${Number.isInteger(o.got) ? o.got : o.got.toFixed(1)}/${o.tot})`).join(" · ")}</p>` : ""}
       ${pbqs.length ? `<p class="note" style="margin:6px 0 0">PBQs: ${pbqs.map(x => { const r = pbqScore(x.q, ex.ans[x.i]); return `${esc(x.q.title)} ${r.pts}/${r.tot}`; }).join(" · ")}</p>` : ""}
-      <p class="note">CompTIA doesn't publish its scaling, so this is a straight-line estimate (100 + 800 × % correct). Treat roughly 80%+ on unseen questions as ready.</p></div>
+      <p class="note">No scaled score here on purpose: CompTIA converts results to its 100–900 scale with an unpublished method, so a straight conversion from percent correct would be misleading. <a href="https://help.comptia.org/hc/en-us/articles/11186025660308-How-Are-CompTIA-Exams-Scored" target="_blank" rel="noopener">How CompTIA scores exams</a></p></div>
       ${domainTable(rows)}
       <div class="panel"><h3>Review</h3>${ex.qs.map((q, i) => { const ok = isRight(q, ex.ans[i]);
         if (q.pbq) { const r = pbqScore(q, ex.ans[i]); return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : r.pts + "/" + r.tot}</span><span>${i + 1}. PBQ: ${esc(q.title)}</span></summary><div class="winbody" style="padding:8px 0 4px 0">${pbqFormHTML(q, ex.ans[i], true, "xr-" + i)}</div></details>`; }
@@ -2260,10 +2384,10 @@ function examTyped(v) {
     <div class="row">${g ? "" : `<button class="btn" id="exgrade">Grade answer</button><button class="btn ghost" id="exstop" hidden>Stop</button><button class="btn ghost" id="exskip">Skip</button>`}
     ${g ? `<button class="btn" id="exnext2">${ex.cur < n - 1 ? "Next question →" : "See results"}</button>` : ""}<span class="note" id="exhint">${g ? "" : "Ctrl+Enter to grade"}</span></div>
     <div id="exfb">${g ? gradeHTML(q, g) : ""}</div></div>
-    <div class="row"><button class="btn ghost" id="exquit">Quit to setup</button>${ex.graded.some(Boolean) ? `<button class="btn ghost" id="exfin">Finish now</button>` : ""}</div>`;
+    <div class="row"><button class="btn ghost" id="exquit">Save and exit</button>${ex.graded.some(Boolean) ? `<button class="btn ghost" id="exfin">Finish now</button>` : ""}</div>`;
   v.querySelectorAll("[data-ai]").forEach(paintAi);
   const ta = $("#exin");
-  $("#exquit").onclick = () => { if (ex.ctl) ex.ctl.abort(); ex.phase = "setup"; renderExam(); };
+  $("#exquit").onclick = () => { if (ex.ctl) ex.ctl.abort(); ex.busy = false; saveEx(); ex.phase = "setup"; renderExam(); toast("Saved. Resume it from Mock exam or Today.", "good"); };
   if ($("#exfin")) $("#exfin").onclick = () => { if (ex.ctl) ex.ctl.abort(); finishTyped(); };
   if (g) { $("#exnext2").onclick = () => { if (ex.cur < n - 1) { ex.cur++; renderExam(); } else finishTyped(); }; $("#exnext2").focus(); return; }
   ta.focus();
@@ -2305,6 +2429,7 @@ function gradeHTML(q, g) {
     <div class="fb"><b class="v">Reference answer</b>${esc(q.key)}<br><span class="note">${esc(q.why)}</span></div>`;
 }
 function finishTyped() {
+  clearExSave();
   const n = ex.qs.length, avg = ex.graded.reduce((s, g) => s + (g ? g.score : 0), 0) / n;
   stats.exams.push({ t: Date.now(), mode: "typed", n, pct: avg / 100, label: `typed drill, ${n} questions, ${Math.round(avg)}% average` });
   store.set("stats", stats);
@@ -2327,7 +2452,7 @@ function renderStats() {
   const weak = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n).slice(0, 6);
   v.innerHTML = `<div class="tbl"><table><thead><tr><th>Domain</th><th>Flashcards</th><th>Commands</th><th>Exam Qs</th><th>Labs</th><th style="width:28%">Overall</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="panel"><h3>Weakest objectives</h3>${weak.length ? `<div class="tbl" style="margin-top:10px"><table><thead><tr><th>Objective</th><th>Accuracy</th><th>Attempts</th></tr></thead><tbody>${weak.map(o => `<tr><td><span class="tag"><span class="dd d${o.d}">${o.d}.0</span> ${esc(o.o)}</span></td><td class="num">${Math.round(100 * o.r / o.n)}%</td><td class="num">${o.n}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Needs at least 3 attempts on an objective.</p>`}</div>
-    ${stats.exams.length ? `<div class="panel"><h3>Exam history</h3><ul style="margin:8px 0 0;padding-left:18px">${stats.exams.slice(-8).reverse().map(e => `<li><span class="mono note">${new Date(e.t).toLocaleDateString()}</span> ${esc(e.label)}</li>`).join("")}</ul></div>` : ""}
+    ${stats.exams.length ? `<div class="panel"><h3>Exam history</h3><ul style="margin:8px 0 0;padding-left:18px">${stats.exams.slice(-8).reverse().map(e => `<li><span class="mono note">${new Date(e.t).toLocaleDateString()}</span> ${esc(cleanLabel(e.label))}</li>`).join("")}</ul></div>` : ""}
     ${achHTML()}${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
   wireSync();
   $("#reset").onclick = () => {
@@ -2790,6 +2915,8 @@ function renderToday() {
   });
   store.set("todayplan", TP);
   plan.length = 0; plan.push(...finalPlan);
+  const sx = typeof savedEx === "function" && savedEx();
+  if (sx) { const d = savedExDesc(sx); plan.unshift({ t: `Resume your unfinished ${d.kind}`, s: d.text, b: "Resume", id: "pres" }); }
   const checks = [
     [R[1].ret + R[2].ret + R[3].ret + R[4].ret >= 0.8 * CARDS.length, `Retain 80% of flashcards (recalled after a gap of 3+ days)`, `${Math.round(100 * (R[1].ret + R[2].ret + R[3].ret + R[4].ret) / CARDS.length)}%`],
     [mocks.length >= 2 && mocks.slice(-2).every(m => m.pct >= 0.85), "85%+ on your last two mock exams of 30+ questions", mocks.length ? mocks.slice(-2).map(m => Math.round(m.pct * 100) + "%").join(", ") : "none yet"],
@@ -2800,7 +2927,7 @@ function renderToday() {
   ];
   const ready = checks.filter(c => c[0]).length;
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
-      <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
+      <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" || p.id === "pres" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
       <p class="note" style="margin:4px 0 10px">An estimate from cards retained, exam accuracy and labs, weighted by domain.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
@@ -2829,6 +2956,7 @@ function renderToday() {
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
   go("pdue", () => startDeck(due, "Today", "review", "today"));
   go("pdaily", startDaily);
+  go("pres", resumeEx);
   go("tsarc", () => setTab("arcade"));
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); rv.planId = "pnew"; });
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); rv.planId = "pobj"; });
