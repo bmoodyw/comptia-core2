@@ -2747,9 +2747,10 @@ const missKeys = dom => Object.entries(srs).filter(([k, r]) => r.miss && (!dom |
 function paintBadges() {
   const m = $("#misscount"), t = $("#duecount");
   if (m) { const n = missKeys().length; m.textContent = n; m.hidden = !n; }
-  if (t) { const n = dueKeys().length; t.textContent = n; t.hidden = !n; }
+  if (t) { const TP = todayPlan(), n = TP.done.pdue ? 0 : Math.min(REV_CAP, dueKeys().length); t.textContent = n; t.hidden = !n; }
 }
 const paintMissBadge = paintBadges;
+const REV_CAP = 20; // daily review cap: the rest roll over, most important first
 const whenTxt = due => { const days = Math.round((sod(due) - sod(nowMs())) / DAY); return days <= 0 ? "due today" : days === 1 ? "due tomorrow" : `in ${days} days`; };
 const boxDots = r => `${"●".repeat(Math.min(4, r.box - 1))}${"○".repeat(Math.max(0, 4 - (r.box - 1)))}`;
 
@@ -2777,8 +2778,9 @@ function startDeck(keys, label, mode, from) {
 }
 function renderDeck(v) {
   if (rv.i >= rv.deck.length) {
+    const wasRev = rv.planId === "pdue";
     if (rv.planId) { planMark(rv.planId); rv.planId = null; }
-    const due = dueKeys().length;
+    const due = wasRev ? 0 : dueKeys().length;
     v.innerHTML = `<div class="panel empty"><h2>Deck done</h2><p>${rv.got} knew it · ${rv.again} still learning</p><p class="note">${due ? `${due} review${due === 1 ? "" : "s"} still due today.` : "Nothing else due today."} Cards you knew come back in a few days, and cards you missed come back tomorrow.</p><div class="row" style="justify-content:center"><button class="btn" id="rvback" type="button">Done</button></div></div>`;
     $("#rvback").onclick = () => { rv.on = false; render(); }; return;
   }
@@ -2894,7 +2896,8 @@ function renderToday() {
   const plan = [], bench = store.get("bench", []) || [];
   const lastBak = store.get("lastbak", 0) || 0, bakDays = Math.floor((nowMs() - lastBak) / DAY);
   const needBak = Object.keys(srs).length >= 30 && (!lastBak || bakDays >= 7);
-  plan.push(due.length ? { t: `Review ${due.length} due card${due.length === 1 ? "" : "s"}`, s: `${dueMiss} from misses, ${due.length - dueMiss} scheduled flashcards · about ${Math.max(1, Math.round(due.length * 0.25))} min`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true, id: "pdue" });
+  const todayRev = due.slice(0, REV_CAP), extra = due.length - todayRev.length, revMiss = todayRev.filter(k => srs[k].miss).length;
+  plan.push(due.length ? { t: `Review ${todayRev.length} card${todayRev.length === 1 ? "" : "s"}`, s: `Misses and most overdue first · about ${Math.max(1, Math.round(todayRev.length * 0.25))} min${extra > 0 ? ` · ${extra} more roll over to later days` : ""}`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true, id: "pdue" });
   plan.push(dailyPlanItem());
   if (unseen.length) { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; plan.push({ t: `Learn ${Math.min(15, pick.length)} new flashcards`, s: `From ${weakDom}.0 ${DOMAINS[weakDom].name}, your lowest-readiness domain · ${unseen.length} cards not started yet`, b: "Learn", id: "pnew" }); }
   if (weakObj) plan.push({ t: `Drill objective ${weakObj.o}`, s: `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
@@ -2954,7 +2957,7 @@ function renderToday() {
       </ul></details>`;
   wireHall();
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
-  go("pdue", () => startDeck(due, "Today", "review", "today"));
+  go("pdue", () => { startDeck(todayRev, "Today", "review", "today"); rv.planId = "pdue"; });
   go("pdaily", startDaily);
   go("pres", resumeEx);
   go("tsarc", () => setTab("arcade"));
