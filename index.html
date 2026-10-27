@@ -451,6 +451,7 @@ main{padding-bottom:70px}
 .posetg{display:grid;gap:6px;margin-top:8px}
 .posetg label{display:flex;align-items:center;gap:8px}.posetg label input{width:72px;padding:6px 8px;margin-left:auto}
 .resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-color:var(--accent)}
+.acrx{margin:8px 0 6px;font-size:.92rem;padding:6px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:4px;color:var(--ink)}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -2012,6 +2013,21 @@ function renderCards() {
   fc.mode === "mc" ? renderMC() : renderType();
 }
 function nextCard() { fc.i++; fc.answered = false; renderCards(); }
+/* spell out acronyms in a card's term (e.g. PHI = Protected Health Information) */
+const ACR_EXTRA = { USB: "Universal Serial Bus", OS: "Operating System", IP: "Internet Protocol", "PCI DSS": "Payment Card Industry Data Security Standard", MSRA: "Microsoft Remote Assistance", MNDA: "Mutual Non-Disclosure Agreement", FAT: "File Allocation Table" };
+function acrList(t) {
+  const map = Object.assign({}, ...(typeof ACRONYMS !== "undefined" ? ACRONYMS.map(a => ({ [a.a.toUpperCase()]: a.x })) : []), ACR_EXTRA);
+  const out = [], seen = new Set(), add = (k, x) => { if (x && !seen.has(k)) { seen.add(k); out.push([k, x]); } };
+  Object.keys(ACR_EXTRA).filter(k => k.includes(" ")).forEach(k => { if (t.includes(k)) { add(k, ACR_EXTRA[k]); k.split(" ").forEach(w => seen.add(w)); } });
+  (t.match(/[A-Za-z0-9+]+/g) || []).forEach(w => {
+    if (!/[A-Z]{2}/.test(w) || seen.has(w)) return; // only all-caps style tokens
+    const up = w.toUpperCase();
+    if (map[up]) add(w, map[up]); else { const base = up.replace(/\d+$/, ""); if (base.length >= 2 && map[base]) add(base, map[base]); }
+  });
+  return out;
+}
+window.__c2acr = t => acrList(t);
+const acrHTML = t => { const l = acrList(t); return l.length ? `<div class="acrx">${l.map(([k, x]) => `<b>${esc(k)}</b> = ${esc(x)}`).join("<br>")}</div>` : ""; };
 function renderMC() {
   const c = fc.deck[fc.i], p = $("#fcpanel");
   // competitive distractors: siblings from the same objective first, then the same domain
@@ -2028,7 +2044,7 @@ function renderMC() {
     const ok = opts[i] === c; fc.n++; if (ok) fc.r++;
     record("c:" + c.t, c.d, c.o, ok, "card");
     btns.forEach((b, j) => { b.disabled = true; if (opts[j] === c) b.classList.add("ok"); else if (j === i) b.classList.add("no"); });
-    $("#fcfb").innerHTML = `<div class="fb ${ok ? "good" : "bad"}"><b class="v">${ok ? "Correct" : "Not this one"}</b>${ok ? "" : `You picked the definition of <span class="mono">${esc(opts[i].t)}</span>.`}</div><div class="row"><button class="btn" id="fcnext">Next card →</button></div>`;
+    $("#fcfb").innerHTML = `<div class="fb ${ok ? "good" : "bad"}"><b class="v">${ok ? "Correct" : "Not this one"}</b>${ok ? "" : `You picked the definition of <span class="mono">${esc(opts[i].t)}</span>.`}${acrHTML(c.t)}</div><div class="row"><button class="btn" id="fcnext">Next card →</button></div>`;
     $("#fcnext").onclick = nextCard; $("#fcnext").focus();
     $("#fcscore").textContent = `${fc.r}/${fc.n} · card ${fc.i + 1} of ${fc.deck.length}`;
   };
@@ -2048,7 +2064,7 @@ function renderType() {
     record("c:" + c.t, c.d, c.o, ok, "card");
     inp.disabled = true; $("#fccheck").disabled = true; $("#fcskip").disabled = true;
     const alts = (c.alt || []).length ? ` <span class="note">(also accepted: ${c.alt.map(esc).join(", ")})</span>` : "";
-    $("#fcfb").innerHTML = `<div class="fb ${ok ? "good" : "bad"}"><b class="v">${ok ? "Correct" : "Answer"}</b><span class="mono">${esc(c.t)}</span>${alts}</div>
+    $("#fcfb").innerHTML = `<div class="fb ${ok ? "good" : "bad"}"><b class="v">${ok ? "Correct" : "Answer"}</b><span class="mono">${esc(c.t)}</span>${alts}${acrHTML(c.t)}</div>
       <div class="row"><button class="btn" id="fcnext">Next card →</button>${!ok && !give && inp.value.trim() ? `<button class="btn ghost" id="fcover">I was right, count it</button>` : ""}</div>`;
     $("#fcnext").onclick = nextCard; $("#fcnext").focus();
     const ov = $("#fcover");
@@ -2757,7 +2773,7 @@ const boxDots = r => `${"●".repeat(Math.min(4, r.box - 1))}${"○".repeat(Math
 /* turn any key into a reviewable card */
 function missCard(key) {
   const [p, ...rest] = key.split(":"); const id = rest.join(":");
-  if (p === "c") { const c = CARDS.find(x => x.t === id); return c && { src: "Flashcard", d: c.d, o: c.o, front: `<div class="prompt term">${esc(c.t)}</div><p class="note">What is it? Say it, then flip.</p>`, back: esc(c.def), short: c.t }; }
+  if (p === "c") { const c = CARDS.find(x => x.t === id); return c && { src: "Flashcard", d: c.d, o: c.o, front: `<div class="prompt term">${esc(c.t)}</div><p class="note">What is it? Say it, then flip.</p>`, back: (typeof acrHTML === "function" ? acrHTML(c.t) : "") + esc(c.def), short: c.t }; }
   if (p === "k") { const c = CMDS[+id]; return c && { src: "Command", d: c.d, o: c.o, front: `<div class="prompt">${esc(c.task)}</div><p class="note">Say or type the command, then flip.</p>`, back: `<span class="mono big-ans">${esc(c.ans)}</span><br>${esc(c.why)}`, short: c.task }; }
   if (p === "s") { const c = SCRIPTS[+id]; return c && { src: "Script", d: c.d, o: c.o, front: `<div class="term"><pre>${esc(c.code)}</pre></div><div class="prompt" style="font-size:1.05rem">${esc(c.q)}</div>`, back: `<b>${esc(c.c[c.a])}</b><br>${esc(c.why)}`, short: c.q + " (" + c.lang + ")" }; }
   if (p === "e") { const q = EXAM[+id]; return q && { src: "Exam", d: q.d, o: q.o, front: `<div class="prompt" style="font-size:1.1rem">${esc(q.q)}</div>`, back: `<b>${esc(keyText(q))}</b><br>${esc(q.why)}`, short: q.q }; }
