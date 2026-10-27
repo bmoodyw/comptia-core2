@@ -452,6 +452,9 @@ main{padding-bottom:70px}
 .posetg label{display:flex;align-items:center;gap:8px}.posetg label input{width:72px;padding:6px 8px;margin-left:auto}
 .resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-color:var(--accent)}
 .acrx{margin:8px 0 6px;font-size:.92rem;padding:6px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:4px;color:var(--ink)}
+.tip{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--wash);font-size:.9rem;line-height:1.45}
+.tip .tipi{font-size:1.1rem;line-height:1.3}.tip>div{flex:1;min-width:0}.tip .btn{flex:none}
+@media (max-width:520px){.tip{flex-wrap:wrap}.tip>div{flex-basis:calc(100% - 40px)}.tip .btn{margin-left:30px}}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -2875,6 +2878,28 @@ function renderMissed() {
   };
 }
 
+/* ================= STUDY TIPS ================= */
+const STUDY_TIPS = [
+  { t: "Space it out.", d: "Reviewing right before you'd forget makes memories last. That's why cards come back after 1, 3, 7, 14 and 30 days. Do the daily 20 reviews instead of rereading notes." },
+  { t: "Answer before you look.", d: "Pulling an answer from memory (active recall) builds it far more than rereading. Say your answer out loud before you flip a card or check an option." },
+  { t: "Explain the why.", d: "After a miss, say in your own words why the right answer is right and why yours was wrong. That's what makes it stick." },
+  { t: "Test yourself to learn.", d: "Quizzes aren't just for measuring. Every retrieval strengthens the memory (the testing effect), so mocks and the daily challenge are study, not just checkups." },
+  { t: "Mix it up.", d: "Switching between topics (interleaving) feels harder than drilling one, but it trains you to recognize which tool or fix a question needs, just like the real exam." },
+  { t: "Harder is better.", d: "Typing an answer beats picking one, and near-miss choices beat easy ones. If it feels like effort, it's working." },
+  { t: "Short and daily beats long and rare.", d: "20–40 minutes every day outlasts a 3-hour Sunday cram. Keep the daily streak going even on busy days." },
+  { t: "Read the explanation even when you're right.", d: "Lucky guesses hide gaps. Ten seconds on the why confirms you actually knew it." },
+  { t: "Mine your mistakes.", d: "The Missed tab is your highest-value study list. Each miss tells you exactly what the exam can still catch you on." },
+  { t: "Take real breaks.", d: "Focus fades after 20–25 minutes. Use the Pomodoro timer and get up during breaks. Look away from screens and stretch." },
+  { t: "Sleep on it.", d: "Your brain locks in what you studied while you sleep. A good night beats a late-night cram, especially before the exam." },
+  { t: "Make it yours.", d: "Tie a concept to something real: the last time you reset a password, mapped a drive or cleaned malware at work. Personal links are easier to recall." },
+  { t: "Use a memory hook for ordered lists.", d: "Build a silly sentence from the first letters, e.g. the 7 malware removal steps (Investigate, Quarantine, Disable System Restore, Remediate, Schedule scans, Enable System Restore, Educate): \"I Quickly Delete Really Sneaky Evil Executables.\"" },
+  { t: "Teach it.", d: "Explaining a topic to someone else (even an imaginary student) shows you what you don't really understand yet." },
+  { t: "Practice like it's game day.", d: "Take a timed mock once a week. Getting used to the clock and the PBQs-first layout takes the surprise out of the real thing." }
+];
+let tipOffset = 0;
+function tipHTML() { const i = (Math.floor(sod(nowMs()) / DAY) + tipOffset) % STUDY_TIPS.length, t = STUDY_TIPS[(i + STUDY_TIPS.length) % STUDY_TIPS.length]; return `<div class="tip" id="tipbox"><span class="tipi" aria-hidden="true">💡</span><div><b>Study tip:</b> <b>${esc(t.t)}</b> ${esc(t.d)}</div><button class="btn ghost sm" id="tipnext" type="button" aria-label="Show another study tip">Another tip</button></div>`; }
+function wireTip() { const b = $("#tipnext"); if (b) b.onclick = () => { tipOffset++; $("#tipbox").outerHTML = tipHTML(); wireTip(); }; }
+
 /* ================= TODAY + READINESS ================= */
 function readiness() {
   const out = {};
@@ -2946,7 +2971,8 @@ function renderToday() {
   ];
   const ready = checks.filter(c => c[0]).length;
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2><span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
-      <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" || p.id === "pres" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol></div>
+      <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" || p.id === "pres" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol>
+      ${tipHTML()}</div>
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
       <p class="note" style="margin:4px 0 10px">An estimate from cards retained, exam accuracy and labs, weighted by domain.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
@@ -2961,6 +2987,8 @@ function renderToday() {
         ${bench.length ? `<ul class="benchlist">${bench.map((b, i) => `<li><b class="mono${b.pct >= 85 ? " good" : ""}">${b.pct}%</b><span>${esc(b.src)}</span><span class="note">${new Date(b.t).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span><button class="btn ghost sm" type="button" data-bdel="${i}" aria-label="Delete this score">✕</button></li>`).join("")}</ul>` : ""}
       </div></div>
     ${teaserHTML()}
+    <details class="panel strat" id="howstudy"><summary><h3 style="display:inline">How to study: what actually works</h3></summary>
+      <ul>${STUDY_TIPS.map(t => `<li><b>${esc(t.t)}</b> ${esc(t.d)}</li>`).join("")}</ul></details>
     <details class="panel strat"><summary><h3 style="display:inline">Exam-day strategy</h3></summary>
       <ul>
         <li><b>PBQs usually come first.</b> If one is eating your time, flag it, move on and come back at the end. Don't burn 15 minutes on question 2.</li>
@@ -2976,6 +3004,8 @@ function renderToday() {
   go("pdue", () => { startDeck(todayRev, "Today", "review", "today"); rv.planId = "pdue"; });
   go("pdaily", startDaily);
   go("pres", resumeEx);
+  go("tipnext", () => { tipOffset++; const t = $("#tipbox"); if (t) t.outerHTML = tipHTML(); wireTip(); });
+  wireTip();
   go("tsarc", () => setTab("arcade"));
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); rv.planId = "pnew"; });
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); rv.planId = "pobj"; });
