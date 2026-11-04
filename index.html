@@ -482,7 +482,7 @@ main{padding-bottom:70px}
   <div class="wrap">
     <h1>Core 2 Drill Room<small>CompTIA A+ 220-1202</small></h1>
     <div class="topctl"><span id="zdpill" class="zdpill" role="status"></span><div id="hypeslot" class="hypeslot"></div><div id="musicslot" class="musicslot"></div></div>
-    <div class="facts"><span>Max <b>90</b> questions</span><span><b>90</b> minutes</span><span>Pass <b>700</b> / 900</span><span>MC, drag-and-drop, PBQs</span></div>
+    <div class="facts"><span>Max <b>90</b> questions</span><span><b>90</b> minutes</span><span>Pass <b>700</b> (scale 100–900)</span><span>MC, drag-and-drop, PBQs</span></div>
     <div class="wbar" role="img" aria-label="Domain weights: Operating systems 28%, Security 28%, Software troubleshooting 23%, Operational procedures 21%">
       <span class="w1" style="width:28%">1.0 · 28%</span><span class="w2" style="width:28%">2.0 · 28%</span><span class="w3" style="width:23%">3.0 · 23%</span><span class="w4" style="width:21%">4.0 · 21%</span>
     </div>
@@ -772,8 +772,8 @@ const CMDS = [
   {d:1,o:"1.5",sh:"cmd",task:"Send exactly 10 echo requests to 10.0.0.1.",ans:"ping -n 10 10.0.0.1",ok:["^ping\\s+[/-]n\\s+10\\s+10\\.0\\.0\\.1$","^ping\\s+10\\.0\\.0\\.1\\s+[/-]n\\s+10$"],why:"Windows uses -n for count; Linux uses -c."},
   {d:1,o:"1.5",sh:"cmd",task:"List every router hop to example.com.",ans:"tracert example.com",ok:["^tracert\\s+example\\.com$"],why:"tracert raises the TTL one hop at a time and records the ICMP Time Exceeded replies."},
   {d:1,o:"1.5",sh:"cmd",task:"Find which hop between you and example.com is dropping packets.",ans:"pathping example.com",ok:["^pathping\\s+example\\.com$"],why:"pathping traces the route, then measures loss and latency at each hop over a few minutes."},
-  {d:1,o:"1.5",sh:"cmd",task:"Show all connections and listening ports with numeric addresses (no name lookups).",ans:"netstat -an",ok:["^netstat\\s+([/-]a\\s*[/-]?n|[/-]n\\s*[/-]?a|-an|-na)$"],why:"-a shows all connections and listeners; -n skips DNS so the output is faster."},
-  {d:1,o:"1.5",sh:"cmd",task:"Show which executable owns each connection (needs an elevated prompt).",ans:"netstat -b",ok:["^netstat\\s+[/-]b"],why:"-b lists the binary behind each connection, which helps spot malware calling out."},
+  {d:1,o:"1.5",sh:"cmd",task:"Show all connections and listening ports with numeric addresses (no name lookups).",ans:"netstat -an",ok:["^netstat\\s+([/-]a\\s+[/-]n|[/-]n\\s+[/-]a|[/-]an|[/-]na)$"],why:"-a shows all connections and listeners; -n skips DNS so the output is faster."},
+  {d:1,o:"1.5",sh:"cmd",task:"Show which executable owns each connection (needs an elevated prompt).",ans:"netstat -b",ok:["^netstat\\s+-(?=[abno]*b)[abno]+$","^netstat(\\s+[/-][anob])*\\s+[/-]b(\\s+[/-][anob])*$"],why:"-b lists the binary behind each connection, which helps spot malware calling out."},
   {d:1,o:"1.5",sh:"cmd",task:"Look up the IP address for intranet.corp.local in DNS.",ans:"nslookup intranet.corp.local",ok:["^nslookup\\s+intranet\\.corp\\.local"],why:"nslookup queries the configured DNS server; add a server name as a second argument to query a different one."},
   {d:1,o:"1.5",sh:"cmd",task:"Map drive H: to the share \\\\fs01\\users.",ans:"net use H: \\\\fs01\\users",ok:["^net\\s+use\\s+h:\\s+\\\\\\\\fs01\\\\users(\\s+[/-]persistent:(yes|no))?$"],why:"Add /persistent:yes to reconnect at each login."},
   {d:1,o:"1.5",sh:"cmd",task:"Disconnect mapped drive H:.",ans:"net use H: /delete",ok:["^net\\s+use\\s+h:\\s+[/-](delete|d)(\\s+[/-]y)?$"],why:"/delete (or /d) removes the mapping."},
@@ -799,17 +799,17 @@ const CMDS = [
   {d:1,o:"1.9",sh:"bash",task:"Add execute permission for the owner of backup.sh only (symbolic).",ans:"chmod u+x backup.sh",ok:["^chmod\\s+u\\+x\\s+backup\\.sh$"],why:"u = owner, g = group, o = others, a = all."},
   {d:1,o:"1.9",sh:"bash",task:"Make alice the owner and devs the group of app.conf (as root via sudo).",ans:"sudo chown alice:devs app.conf",ok:["^sudo\\s+chown\\s+alice:devs\\s+app\\.conf$"],why:"chown owner:group file."},
   {d:1,o:"1.9",sh:"bash",task:"Search /var/log/auth.log for lines containing: Failed password",ans:"grep \"Failed password\" /var/log/auth.log",ok:["^(sudo\\s+)?grep\\s+(-i\\s+)?([\"'])failed password\\3\\s+/var/log/auth\\.log$"],why:"Quote patterns that contain spaces. -i ignores case; -r searches directories."},
-  {d:1,o:"1.9",sh:"bash",task:"Find every file ending in .log under /var.",ans:"find /var -name \"*.log\"",ok:["^(sudo\\s+)?find\\s+/var\\s+-i?name\\s+([\"']?)\\*\\.log\\2$"],why:"Quote the wildcard so the shell doesn't expand it first."},
+  {d:1,o:"1.9",sh:"bash",task:"Find every file ending in .log under /var.",ans:"find /var -name \"*.log\"",ok:["^(sudo\\s+)?find\\s+/var(\\s+-type\\s+f)?\\s+-i?name\\s+([\"'])\\*\\.log\\3(\\s+-type\\s+f)?$","^(sudo\\s+)?find\\s+/var(\\s+-type\\s+f)?\\s+-i?name\\s+\\\\\\*\\.log(\\s+-type\\s+f)?$"],why:"Quote the wildcard so the shell doesn't expand it first."},
   {d:1,o:"1.9",sh:"bash",task:"Show free space on every mounted file system in human-readable units.",ans:"df -h",ok:["^df\\s+-h$"],why:"df = disk free. du shows usage per file or directory."},
-  {d:1,o:"1.9",sh:"bash",task:"Show the total size of /home/alice in human-readable form.",ans:"du -sh /home/alice",ok:["^(sudo\\s+)?du\\s+(-sh|-hs|-s\\s+-h|-h\\s+-s|-h)\\s+/home/alice/?$"],why:"-s summarizes to one total; -h = human-readable."},
+  {d:1,o:"1.9",sh:"bash",task:"Show the total size of /home/alice in human-readable form.",ans:"du -sh /home/alice",ok:["^(sudo\\s+)?du\\s+(-sh|-hs|-s\\s+-h|-h\\s+-s)\\s+/home/alice/?$"],why:"-s summarizes to one total; -h = human-readable."},
   {d:1,o:"1.9",sh:"bash",task:"Install the htop package on Ubuntu.",ans:"sudo apt install htop",ok:["^sudo\\s+apt(-get)?\\s+install\\s+(-y\\s+)?htop$"],why:"On Fedora/RHEL: sudo dnf install htop."},
   {d:1,o:"1.9",sh:"bash",task:"Install the htop package on Fedora.",ans:"sudo dnf install htop",ok:["^sudo\\s+dnf\\s+install\\s+(-y\\s+)?htop$"],why:"dnf replaced yum and manages RPM packages."},
   {d:1,o:"1.9",sh:"bash",task:"Show every interface's IP addresses.",ans:"ip address",ok:["^ip\\s+(a|addr|address)(\\s+show)?$"],why:"ip replaces the older ifconfig. ip route shows the routing table."},
   {d:1,o:"1.9",sh:"bash",task:"Show the routing table.",ans:"ip route",ok:["^ip\\s+(r|route|ro)(\\s+show)?$"],why:"Look for the 'default via' line, which is the gateway."},
   {d:1,o:"1.9",sh:"bash",task:"Query DNS for example.com's mail (MX) records.",ans:"dig example.com MX",ok:["^dig\\s+(example\\.com\\s+mx|mx\\s+example\\.com|-t\\s+mx\\s+example\\.com)$"],why:"dig is the Linux counterpart of nslookup."},
-  {d:1,o:"1.9",sh:"bash",task:"Fetch only the HTTP response headers from https://example.com.",ans:"curl -I https://example.com",ok:["^curl\\s+(-I|--head)\\s+https?://example\\.com/?$"],why:"curl transfers data with URLs; -I sends a HEAD request."},
+  {d:1,o:"1.9",sh:"bash",task:"Fetch only the HTTP response headers from https://example.com.",ans:"curl -I https://example.com",cs:true,ok:["^curl\\s+(-I|--head)\\s+https?://example\\.com/?$"],why:"curl transfers data with URLs; -I sends a HEAD request."},
   {d:1,o:"1.9",sh:"bash",task:"Trace the route to example.com from Linux.",ans:"traceroute example.com",ok:["^traceroute\\s+example\\.com$"],why:"Linux traceroute sends UDP probes by default; Windows tracert uses ICMP."},
-  {d:1,o:"1.9",sh:"bash",task:"List every running process on the system.",ans:"ps -e",ok:["^ps\\s+(-e|-ef|-A|aux|-aux)$"],why:"Plain ps shows only your session's processes. Use top for a live view."},
+  {d:1,o:"1.9",sh:"bash",task:"List every running process on the system.",ans:"ps -e",cs:true,ok:["^ps\\s+(-e|-ef|-A|-eF|-ely|aux|-aux)$"],why:"Plain ps shows only your session's processes. Use top for a live view."},
   {d:1,o:"1.9",sh:"bash",task:"Check the unmounted partition /dev/sdb1 for file system errors.",ans:"sudo fsck /dev/sdb1",ok:["^sudo\\s+fsck(\\.\\w+)?\\s+(-y\\s+)?/dev/sdb1$"],why:"Never fsck a mounted read-write file system."},
   {d:1,o:"1.9",sh:"bash",task:"Mount /dev/sdb1 at /mnt/usb.",ans:"sudo mount /dev/sdb1 /mnt/usb",ok:["^sudo\\s+mount\\s+/dev/sdb1\\s+/mnt/usb/?$"],why:"For a permanent mount, add an /etc/fstab entry."},
   {d:1,o:"1.9",sh:"bash",task:"Open the manual page for chmod.",ans:"man chmod",ok:["^man\\s+chmod$"],why:"Press q to quit the pager."},
@@ -831,7 +831,7 @@ const SCRIPTS = [
   {d:4,o:"4.8",lang:".sh",code:"#!/bin/bash\nsudo apt update && sudo apt -y upgrade",q:"What is this script's use case?",c:["Restarting machines","Gathering information","Initiating updates","Remapping network drives"],a:2,why:"It refreshes the package lists, then upgrades every installed package."},
   {d:4,o:"4.8",lang:"?",code:"Set fso = CreateObject(\"Scripting.FileSystemObject\")\nWScript.Echo fso.GetDrive(\"C:\").FreeSpace",q:"Which file extension does this script use?",c:[".ps1",".bat",".vbs",".js"],a:2,why:"CreateObject and WScript.Echo are VBScript, so the file is .vbs."},
   {d:4,o:"4.8",lang:"?",code:"Get-Service | Where-Object Status -eq 'Stopped'",q:"Which file extension does this script use?",c:[".sh",".ps1",".py",".bat"],a:1,why:"Verb-Noun cmdlets piped together are PowerShell, so the file is .ps1."},
-  {d:4,o:"4.8",lang:".bat",code:"for /f %%u in (users.txt) do net user %%u /domain",q:"What risk should you check before running this across the domain?",c:["It needs Python installed","It could unintentionally change settings or hit the wrong accounts, so test it first","It only runs on Linux","Batch files can't query the domain"],a:1,why:"4.8 lists unintended system changes and unintentional malware as scripting risks: test and review before you deploy."}
+  {d:4,o:"4.8",lang:".bat",code:"for /f %%u in (users.txt) do net user %%u /active:no /domain",q:"This script disables every account listed in users.txt. What risk should you check before running it across the domain?",c:["It needs Python installed","It could unintentionally change settings or hit the wrong accounts, so test it first","It only runs on Linux","Batch files can't query the domain"],a:1,why:"4.8 lists inadvertently changing system settings (and introducing malware) as scripting risks. One wrong line in users.txt disables the wrong account, so review the input and test before you deploy."}
 ];
 
 /* Mock exam bank: scenario questions. key = reference answer for typed mode; kw = keyword groups for offline fallback (every group must match one alternative). */
@@ -1110,7 +1110,8 @@ const SCENS = [
    {re:["^ping\\s+(-t\\s+)?10\\.0\\.0\\.1$"],out:`Pinging 10.0.0.1 with 32 bytes of data:\nReply from 10.0.0.1: bytes=32 time<1ms TTL=64\nReply from 10.0.0.1: bytes=32 time<1ms TTL=64\nReply from 10.0.0.1: bytes=32 time<1ms TTL=64\nReply from 10.0.0.1: bytes=32 time<1ms TTL=64`},
    {re:["^ping\\s+(-t\\s+)?96\\.120\\.44\\.1$"],out:`Pinging 96.120.44.1 with 32 bytes of data:\nReply from 96.120.44.1: bytes=32 time=2ms TTL=254\nReply from 96.120.44.1: bytes=32 time=2ms TTL=254\nReply from 96.120.44.1: bytes=32 time=3ms TTL=254\nReply from 96.120.44.1: bytes=32 time=2ms TTL=254`},
    {re:["^ping\\s+(-t\\s+)?\\S+"],out:c=>`Pinging ${c.split(/\s+/).pop()} with 32 bytes of data:\nRequest timed out.\nRequest timed out.\nRequest timed out.\nRequest timed out.\n\nPing statistics:\n    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),`,fixed:c=>`Pinging ${c.split(/\s+/).pop()} with 32 bytes of data:\nReply from 8.8.8.8: bytes=32 time=14ms TTL=117\nReply from 8.8.8.8: bytes=32 time=13ms TTL=117\nReply from 8.8.8.8: bytes=32 time=13ms TTL=117\nReply from 8.8.8.8: bytes=32 time=14ms TTL=117`},
-   {re:["^tracert\\s+\\S+","^pathping\\s+\\S+"],out:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  10.0.0.1\n  2     2 ms     2 ms     3 ms  96.120.44.1\n  3     *        *        *     Request timed out.\n  4     *        *        *     Request timed out.\n  5     *        *        *     Request timed out.\n\n(Trace interrupted)`,fixed:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  10.0.0.1\n  2     2 ms     2 ms     3 ms  96.120.44.1\n  3     9 ms     8 ms     9 ms  po-302.cr01.lax.isp.net [68.86.92.33]\n  4    13 ms    13 ms    14 ms  dns.google [8.8.8.8]\n\nTrace complete.`},
+   {re:["^pathping\\s+\\S+"],out:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n  0  FRONT-01 [10.0.0.31]\n  1  10.0.0.1\n  2  96.120.44.1\n  3     *        *        *\nComputing statistics for 50 seconds...\n            Source to Here   This Node/Link\nHop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address\n  0                                           FRONT-01 [10.0.0.31]\n                                0/ 100 =  0%   |\n  1    0ms     0/ 100 =  0%     0/ 100 =  0%  10.0.0.1\n                                0/ 100 =  0%   |\n  2    2ms     0/ 100 =  0%     0/ 100 =  0%  96.120.44.1\n\nTrace complete.\n\n(Nothing answers past hop 2, so pathping stops there.)`,fixed:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n  0  FRONT-01 [10.0.0.31]\n  1  10.0.0.1\n  2  96.120.44.1\n  3  po-302.cr01.lax.isp.net [68.86.92.33]\n  4  dns.google [8.8.8.8]\nComputing statistics for 100 seconds...\n            Source to Here   This Node/Link\nHop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address\n  0                                           FRONT-01 [10.0.0.31]\n                                0/ 100 =  0%   |\n  1    0ms     0/ 100 =  0%     0/ 100 =  0%  10.0.0.1\n                                0/ 100 =  0%   |\n  2    2ms     0/ 100 =  0%     0/ 100 =  0%  96.120.44.1\n                                0/ 100 =  0%   |\n  3    9ms     0/ 100 =  0%     0/ 100 =  0%  po-302.cr01.lax.isp.net [68.86.92.33]\n                                0/ 100 =  0%   |\n  4   13ms     0/ 100 =  0%     0/ 100 =  0%  dns.google [8.8.8.8]\n\nTrace complete.`},
+   {re:["^tracert\\s+\\S+"],out:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  10.0.0.1\n  2     2 ms     2 ms     3 ms  96.120.44.1\n  3     *        *        *     Request timed out.\n  4     *        *        *     Request timed out.\n  5     *        *        *     Request timed out.\n\n(Trace interrupted)`,fixed:`Tracing route to dns.google [8.8.8.8]\nover a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  10.0.0.1\n  2     2 ms     2 ms     3 ms  96.120.44.1\n  3     9 ms     8 ms     9 ms  po-302.cr01.lax.isp.net [68.86.92.33]\n  4    13 ms    13 ms    14 ms  dns.google [8.8.8.8]\n\nTrace complete.`},
    {re:["^ipconfig"],out:`Windows IP Configuration\n\nEthernet adapter Ethernet:\n\n   IPv4 Address. . . . . . . . . . . : 10.0.0.31\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 10.0.0.1`},
    {re:["^nslookup\\s+\\S+"],out:`DNS request timed out.\n    timeout was 2 seconds.\nServer:  UnKnown\nAddress:  8.8.8.8\n\n*** Request to UnKnown timed-out`}
   ],
@@ -1122,13 +1123,13 @@ const SCENS = [
   ticket:"INC-4163 · Marketing laptop MKT-09 is very slow and the mouse 'moves on its own' sometimes. You're at an elevated prompt.",
   hints:["What's talking to the network, and which program owns it? netstat -b","Look for odd ports, odd destinations and misspelled process names.","Then follow the malware removal order. What comes right after you verify symptoms?"],
   cmds:[
-   {re:["^netstat\\s+(-b|-ab|-ba|-a\\s+-b|-b\\s+-a|-abn|-bn|-nb|-anb|-bna)$"],out:`Active Connections\n\n  Proto  Local Address          Foreign Address        State\n  TCP    10.0.0.57:49712        52.112.98.4:https      ESTABLISHED\n [Teams.exe]\n  TCP    10.0.0.57:49790        185.220.101.33:4444    ESTABLISHED\n [svch0st.exe]\n  TCP    10.0.0.57:49801        142.250.72.206:https   ESTABLISHED\n [chrome.exe]`,fixed:`Active Connections\n\n  Proto  Local Address          Foreign Address        State\n\n(no connections: the laptop is disconnected from the network)`},
+   {re:["^netstat\\s+-(?=[abno]*b)[abno]+$","^netstat(\\s+[/-][anob])*\\s+[/-]b(\\s+[/-][anob])*$"],out:`Active Connections\n\n  Proto  Local Address          Foreign Address        State\n  TCP    10.0.0.57:49712        52.112.98.4:https      ESTABLISHED\n [Teams.exe]\n  TCP    10.0.0.57:49790        185.220.101.33:4444    ESTABLISHED\n [svch0st.exe]\n  TCP    10.0.0.57:49801        142.250.72.206:https   ESTABLISHED\n [chrome.exe]`,fixed:`Active Connections\n\n  Proto  Local Address          Foreign Address        State\n\n(no connections: the laptop is disconnected from the network)`},
    {re:["^netstat\\s+(-a|-an|-na|-ano|-aon|-n|-o|-no|-on)$","^netstat$"],out:`Active Connections\n\n  Proto  Local Address          Foreign Address        State           PID\n  TCP    10.0.0.57:49712        52.112.98.4:443        ESTABLISHED     8812\n  TCP    10.0.0.57:49790        185.220.101.33:4444    ESTABLISHED     5120\n  TCP    10.0.0.57:49801        142.250.72.206:443     ESTABLISHED     9044\n\n(Tip: -b shows the executable name)`,fixed:`Active Connections\n\n  Proto  Local Address          Foreign Address        State\n\n(no connections: the laptop is disconnected from the network)`},
    {re:["^tasklist"],out:`Image Name                     PID Session Name        Mem Usage\n========================= ======== ================ ============\nsvchost.exe                   1140 Services             22,416 K\nTeams.exe                     8812 Console             402,120 K\nsvch0st.exe                   5120 Console              61,904 K\nchrome.exe                    9044 Console             311,552 K`},
    {re:["^ipconfig"],out:`Windows IP Configuration\n\nWireless LAN adapter Wi-Fi:\n\n   IPv4 Address. . . . . . . . . . . : 10.0.0.57\n   Default Gateway . . . . . . . . . : 10.0.0.1`,fixed:`Windows IP Configuration\n\nWireless LAN adapter Wi-Fi:\n\n   Media State . . . . . . . . . . . : Media disconnected`}
   ],
   diag:{q:"What's going on?",c:["A failing hard drive","A remote access Trojan: 'svch0st.exe' (zero, not o) holds a session to an external host on TCP 4444","Teams is using too much bandwidth","A DNS misconfiguration"],a:1,why:"A misspelled system process, port 4444 (a common reverse-shell port) and the 'mouse moves by itself' report all point to a RAT under remote control."},
-  fix:{q:"Symptoms are verified. What's next in the malware removal procedure?",c:["Kill the process and close the ticket","Quarantine: disconnect the laptop from the network and isolate removable media","Disable System Restore before anything else","Educate the user"],a:1,why:"The 2.6 order is investigate/verify, then quarantine, disable System Restore, remediate, schedule scans, re-enable System Restore, educate. Cut the attacker's channel first."},
+  fix:{q:"Symptoms are verified. What's next in the malware removal procedure?",c:["Kill the process and close the ticket","Quarantine: disconnect the laptop from the network and isolate removable media","Disable System Restore before anything else","Educate the user"],a:1,why:"In the 220-1202 2.6 procedure, quarantine comes right after you investigate and verify symptoms: 1 investigate and verify, 2 quarantine, 3 disable System Restore in Windows Home, 4 remediate, 5 update anti-malware software, 6 scan and removal techniques (safe mode, preinstallation environment), 7 reimage/reinstall, 8 schedule scans and run updates, 9 enable System Restore and create a restore point in Windows Home, 10 educate the end user. Cut the attacker's channel first."},
   verify:{re:["^netstat","^ipconfig"],hint:"Confirm it's isolated: netstat -b should show no external sessions."}},
 
  {id:"disk",d:1,o:"1.9",sh:"bash",user:"tech",host:"inv-api01",par:4,title:"Linux web API throwing errors",
@@ -1140,10 +1141,13 @@ const SCENS = [
    {re:["^(sudo\\s+)?du\\s+.*/(var/?\\*?|\\*)$"],out:`1.2G\t/var/lib\n30G\t/var/log\n310M\t/var/cache\n4.0K\t/var/tmp`,fixed:`1.2G\t/var/lib\n430M\t/var/log\n310M\t/var/cache\n4.0K\t/var/tmp`},
    {re:["^(sudo\\s+)?ls\\s+-\\w*l\\w*\\s+/var/log/?$"],out:`-rw-r----- 1 syslog adm    2.1M Oct 22 23:40 auth.log\n-rw-r--r-- 1 invapi invapi  29G Oct 22 23:41 inventory-api.log\ndrwxr-sr-x 3 root   systemd 4.0K Jun  2 10:11 journal\n-rw-r----- 1 syslog adm     18M Oct 22 23:41 syslog`},
    {re:["^(sudo\\s+)?rm\\s+(-f\\s+)?/var/log/inventory-api\\.log$"],out:`(removed)\n\nNote: the API process still holds the deleted file open, so the space isn't released until the service restarts. Check df -h.`},
+   {re:["^truncate\\s+.*inventory-api\\.log$"],out:`truncate: cannot open '/var/log/inventory-api.log' for writing: Permission denied\n\n(The log belongs to invapi. You're tech, so you need sudo.)`},
+   {re:["^(sudo\\s+)?(:\\s*)?>\\s*/var/log/inventory-api\\.log$"],out:`bash: /var/log/inventory-api.log: Permission denied\n\n(The redirect runs in your own shell as tech, even after sudo. Use sudo truncate -s 0 instead.)`},
+   {re:["^(sudo\\s+)?logrotate\\b.*$"],out:`(rotated: inventory-api.log renamed to inventory-api.log.1)\n\nNote: the API still has the renamed file open, so the 29G isn't released. Truncate it now (sudo truncate -s 0 /var/log/inventory-api.log), and use copytruncate in the logrotate config.`},
    {re:["^(top|ps\\s+.*)$"],out:`  PID USER     %CPU %MEM COMMAND\n  812 invapi   38.2  9.1 inventory-api --log-level=debug\n  601 root      0.3  0.2 sshd\n    1 root      0.0  0.3 systemd`},
    {re:["^tail\\s+.*inventory-api\\.log$"],out:`2026-10-22T23:41:02Z DEBUG request id=9f2c headers={...}\n2026-10-22T23:41:02Z DEBUG request id=9f2d headers={...}\n2026-10-22T23:41:02Z ERROR write failed: No space left on device`}
   ],
-  fixCmd:{re:["^(sudo\\s+)?truncate\\s+-s\\s*0\\s+/var/log/inventory-api\\.log$","^(sudo\\s+)?(:\\s*)?>\\s*/var/log/inventory-api\\.log$","^(sudo\\s+)?logrotate\\s+(-f\\s+)?.*$"],out:`(log truncated: 29G freed)`},
+  fixCmd:{re:["^sudo\\s+truncate\\s+(-s\\s*0|--size[= ]0)\\s+/var/log/inventory-api\\.log$","^sudo\\s+(sh|bash)\\s+-c\\s+[\"'](:\\s*)?>\\s*/var/log/inventory-api\\.log[\"']$","^(echo\\s+-n\\s*|:\\s*|printf\\s+[\"'][\"']\\s*)\\|\\s*sudo\\s+tee\\s+/var/log/inventory-api\\.log(\\s*>\\s*/dev/null)?$"],out:`(log truncated: 29G freed)`},
   diag:{q:"What is the root cause?",c:["Bad RAM","The root file system is 100% full, filled by a 29 GB debug-level application log","DNS failure","/etc/fstab is missing a mount"],a:1,why:"df shows / at 100%, and du points to /var/log/inventory-api.log."},
   fix:{q:"What fix do you apply?",c:["Delete random files in /usr to free space","Truncate or rotate the oversized log, set up logrotate, and turn the log level back down from debug","Reboot the server and hope","Run fsck on the mounted root file system"],a:1,why:"Free the space safely, then stop it recurring. rm on an open file doesn't free space until the process restarts, and never fsck a mounted file system."},
   verify:{re:["^(sudo\\s+)?df"],hint:"Prove it: df -h."}},
@@ -1158,7 +1162,7 @@ const SCENS = [
    {re:["^head\\s+.*deploy\\.sh$","^cat\\s+deploy\\.sh$"],out:`#!/bin/bash\nset -e\necho "Deploying build $(date +%Y.%m.%d)..."`},
    {re:["^whoami$"],out:`tech`}
   ],
-  fixCmd:{re:["^(sudo\\s+)?chmod\\s+(u\\+x|\\+x|a\\+x|ug\\+x|0?7[0-7][0-7])\\s+deploy\\.sh$"],out:""},
+  fixCmd:{re:["^(sudo\\s+)?chmod\\s+(u\\+x|\\+x|a\\+x|ug\\+x|0?7[0-7][0-7])\\s+(\\./)?deploy\\.sh$"],out:""},
   diag:{q:"What is the root cause?",c:["Wrong file owner","The execute bit isn't set (-rw-r--r--)","A syntax error in the script","The user needs sudo"],a:1,why:"The owner has rw- only. Files copied between servers often lose the x bit."},
   fix:{q:"What fix do you apply?",c:["sudo chown root deploy.sh","chmod u+x deploy.sh (or chmod 755)","Rename it to deploy.bat","Run fsck"],a:1,why:"Add execute permission for the owner."},
   verify:{re:["^\\./deploy\\.sh$","^ls"],hint:"Prove it: ./deploy.sh"}},
@@ -1700,7 +1704,7 @@ PBQS.push(
   {id:"dnd-remote",d:4,o:"4.9",title:"Match the remote access technology",win:"Drag and drop · Remote access",
    brief:"An MSP tech uses a different remote tool for each job. Match each task to the right technology.",
    fields:[{id:"m",type:"dnd",label:"Remote access",items:["SSH","RDP","VNC","RMM","SPICE","WinRM","Telnet"],
-     targets:[{t:"Encrypted command line on a Linux server (TCP 22)",ans:"SSH"},{t:"Full Windows desktop session (TCP 3389)",ans:"RDP"},{t:"Cross-platform screen sharing using the RFB protocol",ans:"VNC"},{t:"Patch, monitor and inventory 300 client PCs from one console",ans:"RMM"},{t:"View the console of a KVM/Proxmox virtual machine",ans:"SPICE"},{t:"Run PowerShell commands on remote Windows servers",ans:"WinRM"}],
+     targets:[{t:"Encrypted command line on a Linux server (TCP 22)",ans:"SSH"},{t:"Full Windows desktop session (TCP 3389)",ans:"RDP"},{t:"Cross-platform screen sharing using the RFB protocol",ans:"VNC"},{t:"Patch, monitor and inventory 300 client PCs from one console",ans:"RMM"},{t:"Remote display protocol built for KVM/QEMU virtual machines, with USB redirection and audio",ans:"SPICE"},{t:"Run PowerShell commands on remote Windows servers",ans:"WinRM"}],
      why:"Telnet (TCP 23) is unencrypted. SSH replaced it."}]},
   {id:"dnd-malware",d:2,o:"2.4",title:"Match the malware to the symptom",win:"Drag and drop · Malware identification",
    brief:"Each help desk ticket describes a different infection. Match the symptom to the malware type.",
@@ -1750,16 +1754,16 @@ PBQS.push(
     {c:["Information","10/22 7:58:12 AM","Service Control Manager","7036"],name:"Service Control Manager event 7036 (Information)",ic:"ℹ️",detail:"The Windows Update service entered the running state."},
     {c:["Information","10/22 2:15:40 AM","EventLog","6005"],name:"EventLog event 6005 (Information)",ic:"ℹ️",detail:"The Event log service was started."},
     {c:["Critical","10/22 2:15:31 AM","Kernel-Power","41"],name:"Kernel-Power event 41 (Critical)",ic:"⛔",detail:"The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly."},
-    {c:["Warning","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Warning)",ic:"⚠️",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
-    {c:["Information","10/21 6:02:55 PM","EventLog","6006"],name:"EventLog event 6006 (Information)",ic:"ℹ️",detail:"The Event log service was stopped."},
+    {c:["Error","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Error)",ic:"❗",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
+    {c:["Information","10/21 6:02:55 PM","Service Control Manager","7040"],name:"Service Control Manager event 7040 (Information)",ic:"ℹ️",detail:"The start type of the Background Intelligent Transfer Service service was changed from auto start to demand start."},
     {c:["Information","10/21 6:01:12 PM","WindowsUpdateClient","19"],name:"WindowsUpdateClient event 19 (Information)",ic:"ℹ️",detail:"Installation Successful: Windows successfully installed the following update: Security Intelligence Update for Microsoft Defender Antivirus."}],
    ans:2,
-   why:"Kernel-Power 41 (Critical) means the PC restarted without a clean shutdown: power loss, a hang or a crash. 6006/6005 mark a normal stop and start of the log service."},
+   why:"Kernel-Power 41 (Critical) means the PC restarted without a clean shutdown: power loss, a hang or a crash. Event 6005 only marks the event log service starting at boot. A clean shutdown would have logged 6006 first, and there isn't one."},
   {id:"g2",type:"grid",label:"Select the event that explains the corrupted files on D: (Disk 1).",cols:["Level","Date and Time","Source","Event ID"],
    rows:[
     {c:["Information","10/22 7:58:12 AM","Service Control Manager","7036"],name:"Service Control Manager event 7036 (Information)",ic:"ℹ️",detail:"The Windows Update service entered the running state."},
     {c:["Critical","10/22 2:15:31 AM","Kernel-Power","41"],name:"Kernel-Power event 41 (Critical)",ic:"⛔",detail:"The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly."},
-    {c:["Warning","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Warning)",ic:"⚠️",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
+    {c:["Error","10/22 1:47:03 AM","Disk","7"],name:"Disk event 7 (Error)",ic:"❗",detail:"The device, \\Device\\Harddisk1\\DR1, has a bad block."},
     {c:["Information","10/21 6:01:12 PM","WindowsUpdateClient","19"],name:"WindowsUpdateClient event 19 (Information)",ic:"ℹ️",detail:"Installation Successful: Windows successfully installed the following update: Security Intelligence Update for Microsoft Defender Antivirus."}],
    ans:2,
    why:"Disk event 7 reports a bad block on Harddisk1 (the second physical disk, D:). Bad sectors cause read errors and corrupted files."},
@@ -2081,11 +2085,908 @@ PBQS.push(
 
 /* CompTIA 220-1202 acronyms (d = domain where they mostly appear) */
 const ACRONYMS = [
- ["APFS","Apple File System",1],["APIPA","Automatic Private IP Addressing",1],["BIOS","Basic Input/Output System",1],["CLI","Command-Line Interface",1],["DHCP","Dynamic Host Configuration Protocol",1],["DNS","Domain Name System",1],["EFS","Encrypting File System",1],["exFAT","Extensible File Allocation Table",1],["FAT32","File Allocation Table 32",1],["GPT","GUID Partition Table",1],["GUI","Graphical User Interface",1],["GPU","Graphics Processing Unit",1],["ISO","International Organization for Standardization",1],["MBR","Master Boot Record",1],["MMC","Microsoft Management Console",1],["NTFS","New Technology File System",1],["PXE","Preboot Execution Environment",1],["ReFS","Resilient File System",1],["RSR","Rapid Security Response",1],["SMB","Server Message Block",1],["SSID","Service Set Identifier",1],["TPM","Trusted Platform Module",1],["UEFI","Unified Extensible Firmware Interface",1],["UNC","Universal Naming Convention",1],["VPN","Virtual Private Network",1],["WWAN","Wireless Wide Area Network",1],["VRAM","Video Random-Access Memory",1],["SSD","Solid-State Drive",1],["HDD","Hard Disk Drive",1],["NIC","Network Interface Card",1],
+ ["FRT","Facial Recognition Technology",2],["SOHO","Small Office/Home Office",2],["MNDA","Mutual Non-Disclosure Agreement",4],
+ ["APFS","Apple File System",1],["APIPA","Automatic Private IP Addressing",1],["BIOS","Basic Input/Output System",1],["CLI","Command-Line Interface",1],["DHCP","Dynamic Host Configuration Protocol",1],["DNS","Domain Name System",1],["EFS","Encrypting File System",1],["exFAT","Extended File Allocation Table",1],["XFS","Extended File System",1],["FAT32","File Allocation Table 32",1],["GPT","GUID Partition Table",1],["GUI","Graphical User Interface",1],["GPU","Graphics Processing Unit",1],["ISO","International Organization for Standardization",1],["MBR","Master Boot Record",1],["MMC","Microsoft Management Console",1],["NTFS","New Technology File System",1],["PXE","Preboot Execution Environment",1],["ReFS","Resilient File System",1],["RSR","Rapid Security Response",1],["SMB","Server Message Block",1],["SSID","Service Set Identifier",1],["TPM","Trusted Platform Module",1],["UEFI","Unified Extensible Firmware Interface",1],["UNC","Universal Naming Convention",1],["VPN","Virtual Private Network",1],["WWAN","Wireless Wide Area Network",1],["VRAM","Video Random-Access Memory",1],["SSD","Solid-State Drive",1],["HDD","Hard Disk Drive",1],["NIC","Network Interface Card",1],
  ["AAA","Authentication, Authorization and Accounting",2],["ACL","Access Control List",2],["AES","Advanced Encryption Standard",2],["BEC","Business Email Compromise",2],["BYOD","Bring Your Own Device",2],["DDoS","Distributed Denial of Service",2],["DLP","Data Loss Prevention",2],["DoH","DNS over HTTPS",2],["DoS","Denial of Service",2],["EDR","Endpoint Detection and Response",2],["EOL","End of Life",2],["IAM","Identity and Access Management",2],["JIT","Just-in-Time (access)",2],["MDM","Mobile Device Management",2],["MDR","Managed Detection and Response",2],["MFA","Multifactor Authentication",2],["NAC","Network Access Control",2],["OTP","One-Time Password",2],["PAM","Privileged Access Management",2],["PUP","Potentially Unwanted Program",2],["RADIUS","Remote Authentication Dial-In User Service",2],["RFID","Radio-Frequency Identification",2],["SAE","Simultaneous Authentication of Equals",2],["SAML","Security Assertion Markup Language",2],["SMS","Short Message Service",2],["SQL","Structured Query Language",2],["SSO","Single Sign-On",2],["TACACS+","Terminal Access Controller Access-Control System Plus",2],["TKIP","Temporal Key Integrity Protocol",2],["TOTP","Time-based One-Time Password",2],["UAC","User Account Control",2],["UPnP","Universal Plug and Play",2],["WPA","Wi-Fi Protected Access",2],["XDR","Extended Detection and Response",2],["XSS","Cross-Site Scripting",2],["DMZ","Demilitarized Zone",2],["PIN","Personal Identification Number",2],
  ["APK","Android Package Kit",3],["BCD","Boot Configuration Data",3],["BSOD","Blue Screen of Death",3],["NFC","Near-Field Communication",3],["SFC","System File Checker",3],["WinRE","Windows Recovery Environment",3],["WinPE","Windows Preinstallation Environment",3],
  ["AI","Artificial Intelligence",4],["AUP","Acceptable Use Policy",4],["CAB","Change Advisory Board",4],["CMDB","Configuration Management Database",4],["DRM","Digital Rights Management",4],["ESD","Electrostatic Discharge",4],["EULA","End-User License Agreement",4],["FOSS","Free and Open-Source Software",4],["GDPR","General Data Protection Regulation",4],["GFS","Grandfather-Father-Son",4],["HIPAA","Health Insurance Portability and Accountability Act",4],["MSDS","Material Safety Data Sheet",4],["MSP","Managed Service Provider",4],["NDA","Non-Disclosure Agreement",4],["PCI DSS","Payment Card Industry Data Security Standard",4],["PHI","Protected Health Information",4],["PII","Personally Identifiable Information",4],["RDP","Remote Desktop Protocol",4],["RMM","Remote Monitoring and Management",4],["SDS","Safety Data Sheet",4],["SLA","Service-Level Agreement",4],["SOP","Standard Operating Procedure",4],["SPICE","Simple Protocol for Independent Computing Environments",4],["SSH","Secure Shell",4],["UPS","Uninterruptible Power Supply",4],["VNC","Virtual Network Computing",4],["WinRM","Windows Remote Management",4]
 ].map(([a, x, d]) => ({ a, x, d }));
+
+/* ===== Round 6: second independent audit (verified against the 220-1202 v3.0 objectives) ===== */
+(() => {
+  const setQ = (k, f) => Object.assign(EXAM[k], f);
+  // q152: Private and Domain are separate firewall profiles
+  setQ(152, { c: ["Allow the app through Windows Defender Firewall on the office network's profile", "Open every inbound port on the Public profile", "Change the office network to the Public profile", "Turn off Windows Defender Firewall for all profiles"], a: 0,
+    why: "'Allow an app through Windows Firewall' scopes access to that one program on the right profile: Private for a trusted workgroup network, Domain for a domain-joined PC. Disabling the firewall or opening every port is never the best answer.",
+    key: "Create a firewall exception for that app on the office network's profile (Private, or Domain on a domain-joined PC)." });
+  // q21: 220-1202 2.5 lists Tailgating only
+  setQ(21, { c: ["Shoulder surfing", "Tailgating", "Dumpster diving", "Impersonation"], a: 1,
+    why: "Getting through a secured door by following an authorized person is tailgating, the term in the 220-1202 objectives (some sources call it piggybacking when the employee knowingly holds the door). Controls: an access control vestibule and training staff not to hold doors for anyone without a badge.",
+    key: "Tailgating: following an authorized person through a secured entrance." });
+  // q283: was a duplicate of q29; now tests step 3 → step 4
+  setQ(283, { q: "In CompTIA's 220-1202 malware removal procedure, which step comes right after 'Disable System Restore in Windows Home'?",
+    c: ["Remediate infected systems", "Quarantine infected systems", "Enable System Restore and create a restore point in Windows Home", "Educate the end user"], a: 0,
+    key: "Remediate infected systems (step 4)." });
+  // q120: state the update size so storage is clearly the cause
+  setQ(120, { q: "One app on an iPhone won't update ('Unable to download'), while other apps work. The update is 1.2 GB and Settings shows 300 MB of storage free. What's the likely fix?",
+    why: "The 1.2 GB update can't download and unpack with only 300 MB free. Free up storage first; signing out, resetting network settings or restarting won't create space." });
+  // q197: was a duplicate of q69; now tests the off-boarding checklist (4.1)
+  setQ(197, { q: "An employee leaves the company on Friday. Which documented process makes sure their accounts are disabled, their laptop and badge are returned, and their files are handed over?",
+    c: ["On-boarding checklist", "Incident report", "Off-boarding checklist", "Change request"], a: 2,
+    why: "Off-boarding checklists cover disabling accounts, recovering assets and transferring data when someone leaves. On-boarding is for new hires.",
+    key: "The off-boarding checklist.", kw: [["off-board", "offboard"]] });
+  // q211: was a duplicate of q77; now tests 'difficult customers: don't argue or be defensive' (4.7)
+  setQ(211, { q: "A customer angrily insists the laptop 'was fine until IT touched it.' What's the BEST response?",
+    c: ["Explain that the logs prove IT didn't cause the problem", "Reassure them it's a minor issue and not worth worrying about", "Acknowledge their frustration without arguing and focus on the fix", "Ask them to call back once they've calmed down"], a: 2,
+    why: "With difficult customers, don't argue, get defensive or dismiss the problem. Acknowledge the frustration and work toward a fix.",
+    key: "Stay calm, don't argue or get defensive, acknowledge the frustration and focus on the fix.", kw: [["argue", "defensive"]] });
+  // q216: RDP locks/disconnects the console session; it doesn't sign the user out
+  setQ(216, { why: "Quick Assist and MSRA are invitation-based screen sharing: the user stays signed in, watches and approves. An RDP connection to a Windows client locks or disconnects the local console session, so the user can't watch." });
+  // duplicates: kept in place (progress keys never shift) but no longer served
+  [1, 172, 175, 195, 194, 191, 202, 205, 201].forEach(k => { EXAM[k].off = true; });
+
+  const card = (t, f) => { const c = CARDS.find(x => x.t === t); if (c) Object.assign(c, f); };
+  card("Standard format", { def: "High-level (OS) format that creates a new file system. A quick format only rebuilds the file table, so data is recoverable; a full format in Windows Vista and later also writes zeros to the volume. For disposal, use a wipe tool or physical destruction instead." });
+  card("AutoPlay", { t: "AutoRun / AutoPlay", def: "AutoRun launches a program listed in autorun.inf when media is inserted; AutoPlay prompts for an action. Disabling AutoRun (a 2.7 hardening step) stops inserted media from starting malware: Settings > Bluetooth & devices > AutoPlay, or Group Policy 'Turn off AutoPlay' / 'Set the default behavior for AutoRun'." });
+  card("Product life cycle", { def: "Each Windows 11 feature update (version, e.g. 25H2) has its own servicing period: 24 months for Home and Pro, 36 months for Enterprise and Education. Install the next feature update before that version's end of servicing. Windows 10 support itself ended Oct 14, 2025." });
+})();
+
+/* ===== Round 6 gap questions (verified against the 220-1202 v3.0 objectives). Appended only: indices 340+ ===== */
+EXAM.push(...[
+{
+"d": 1,
+"o": "1.2",
+"q": "A company ships new Windows 11 laptops straight from the vendor to remote hires. When a user powers one on and signs in with their work account, it should join Entra ID, enroll in Intune and install company apps and policies without IT touching it. Which deployment approach is this?",
+"c": [
+"Image deployment from a sysprepped reference image",
+"Zero-touch deployment (e.g., Windows Autopilot)",
+"PXE network boot to a WDS server",
+"In-place upgrade of the factory OS"
+],
+"a": 1,
+"why": "Zero-touch deployment keeps the OEM's preinstalled Windows and configures it from the cloud at first sign-in. Windows Autopilot with Intune is Microsoft's version. Imaging and PXE need IT-run infrastructure, usually on the local network. An in-place upgrade changes the OS version, not the company configuration.",
+"key": "Zero-touch: the device configures itself from the cloud (Autopilot + Intune) at first sign-in.",
+"kw": [
+[
+"zero-touch",
+"zero touch",
+"Autopilot"
+]
+]
+},
+{
+"d": 1,
+"o": "1.2",
+"q": "Windows 11 on a user's PC has corrupted system components that sfc and DISM couldn't fix. The user's installed apps and files must stay. Which option fixes Windows itself while keeping apps, files and settings?",
+"c": [
+"Reset this PC with 'Remove everything'",
+"Clean install from USB media",
+"Repair installation (in-place reinstall of the same version)",
+"Restore from the OEM recovery partition"
+],
+"a": 2,
+"why": "A repair installation reinstalls the same Windows version over itself and replaces system files without removing apps or data. You can run it from Settings > System > Recovery > 'Fix problems using Windows Update', or run setup.exe from matching media and choose to keep files and apps. A clean install, 'Remove everything' and a factory recovery-partition restore all wipe apps and data.",
+"key": "Repair install = reinstall Windows system files, keep apps, files and settings.",
+"kw": [
+[
+"repair install",
+"repair installation",
+"in-place repair",
+"reinstall now"
+]
+]
+},
+{
+"d": 1,
+"o": "1.4",
+"q": "An older office PC with a mechanical hard drive has become slow to open large files, and the drive is badly fragmented. Which built-in tool should you run?",
+"c": [
+"Disk Management (diskmgmt.msc)",
+"Disk Cleanup (cleanmgr.exe)",
+"chkdsk /r",
+"Optimize Drives (dfrgui.exe)"
+],
+"a": 3,
+"why": "dfrgui defragments HDDs so each file's pieces sit together. For SSDs it sends TRIM instead, because SSDs shouldn't be defragmented. Disk Cleanup frees space but doesn't rearrange files, chkdsk repairs file-system errors and bad sectors, and Disk Management works with partitions and volumes.",
+"key": "Fragmented HDD → dfrgui (Optimize Drives). SSDs get TRIM, not defrag.",
+"kw": [
+[
+"dfrgui",
+"defrag",
+"optimize drives"
+]
+]
+},
+{
+"d": 1,
+"o": "1.5",
+"q": "A software vendor asks which Windows version and OS build a user is running (for example, 24H2, build 26100). From the Run box, which command shows this in a small About Windows dialog?",
+"c": [
+"winver",
+"hostname",
+"whoami",
+"sfc /verifyonly"
+],
+"a": 0,
+"why": "winver opens About Windows, which shows the version (e.g., 24H2) and OS build. hostname prints the computer name, whoami prints the signed-in account, and sfc /verifyonly checks system files without repairing them.",
+"key": "Version and build in a dialog → winver.",
+"kw": [
+[
+"winver"
+]
+]
+},
+{
+"d": 1,
+"o": "1.6",
+"q": "In Teams, a user's webcam shows 'camera blocked'. Device Manager shows the camera working with no errors, and the driver hasn't changed. Where should you look first?",
+"c": [
+"Settings > Bluetooth & devices > Cameras: remove and re-add the camera",
+"Device Manager: roll back the camera driver",
+"Settings > Privacy & security > Camera: allow apps (including Teams) to use the camera",
+"Control Panel > Sound: set the camera as the default recording device"
+],
+"a": 2,
+"why": "Windows 11 controls camera, microphone and location access for apps under Privacy & security. If camera access is off for all apps or for Teams, the app sees a blocked camera even though the hardware and driver are fine. Device Manager shows no fault, so a driver rollback isn't indicated. Sound only handles audio devices.",
+"key": "App can't use camera/mic but the hardware is fine → Settings > Privacy & security app permissions.",
+"kw": [
+[
+"Privacy"
+],
+[
+"camera"
+]
+]
+},
+{
+"d": 1,
+"o": "1.6",
+"q": "A user leaves their desktop for 20-minute meetings several times a day. They want their open apps back within a couple of seconds when they return, and low power use while they're away. Which power state fits?",
+"c": [
+"Hibernate",
+"Sleep",
+"Shut down with fast startup",
+"Turn off the display only"
+],
+"a": 1,
+"why": "Sleep keeps the session in RAM at very low power and resumes almost instantly, which suits short breaks. Hibernate saves RAM to disk and powers off, so it uses no power but resumes more slowly; it's better for long periods or a laptop on battery. Shutting down closes the apps, and turning off only the display leaves the PC fully running.",
+"key": "Short break, instant resume → Sleep. Long break or battery, zero power → Hibernate.",
+"kw": [
+[
+"sleep",
+"standby"
+]
+]
+},
+{
+"d": 1,
+"o": "1.7",
+"q": "A remote employee's Windows 11 laptop needs the company's VPN (IKEv2, server vpn.corp.com) set up with Windows' built-in client and no third-party software. Where do you add it?",
+"c": [
+"Network and Sharing Center > Change adapter settings > IPv4 properties",
+"Control Panel > Internet Options > Connections > LAN settings",
+"Settings > Network & internet > Proxy",
+"Settings > Network & internet > VPN > Add VPN"
+],
+"a": 3,
+"why": "The built-in Windows VPN client is set up under Settings > Network & internet > VPN > Add VPN, where you enter the server, VPN type and sign-in method. (Network and Sharing Center > 'Set up a new connection or network' also works.) LAN settings and the Proxy page configure web proxies, and the adapter's IPv4 properties set addressing, not tunnels.",
+"key": "Built-in VPN client → Settings > Network & internet > VPN.",
+"kw": [
+[
+"VPN"
+],
+[
+"Network & internet",
+"Network and internet",
+"Add VPN"
+]
+]
+},
+{
+"d": 1,
+"o": "1.8",
+"q": "A Mac user needs the Wi-Fi password for the office network. Their Mac joined that network months ago and still remembers it. Which built-in macOS feature stores the password, so you can reveal it after an admin authenticates?",
+"c": [
+"iCloud Drive",
+"FileVault",
+"Keychain",
+"Spotlight"
+],
+"a": 2,
+"why": "macOS stores saved Wi-Fi, website and app passwords, plus certificates, in the keychain. You can show a saved password in Keychain Access, or in the Passwords app in macOS Sequoia and later, after authenticating. FileVault encrypts the startup disk, iCloud Drive syncs files, and Spotlight searches but doesn't reveal secrets.",
+"key": "Saved Mac passwords and certificates live in the Keychain.",
+"kw": [
+[
+"Keychain",
+"Passwords app"
+]
+]
+},
+{
+"d": 1,
+"o": "1.8",
+"q": "After an overnight update, the version on a user's Mac now ends in a letter, such as '(a)'. No major upgrade was installed. What did the Mac most likely receive?",
+"c": [
+"A beta build from the Apple Beta Software Program",
+"A Rapid Security Response",
+"An upgrade to the next major macOS version",
+"A Time Machine snapshot label"
+],
+"a": 1,
+"why": "A Rapid Security Response delivers urgent security fixes between standard software updates. The version gets a letter suffix like (a), and you can remove the response if it causes problems. Newer Apple OS releases deliver this kind of fix as Background Security Improvements. Betas are marked as beta builds, a major upgrade changes the main version number, and Time Machine snapshots don't change the OS version.",
+"key": "Letter after the macOS version (a) = Rapid Security Response.",
+"kw": [
+[
+"Rapid Security Response",
+"RSR",
+"Background Security Improvement"
+]
+]
+},
+{
+"d": 1,
+"o": "1.8",
+"q": "A Mac user shares their screen in Zoom, but the other attendees see only the desktop wallpaper and none of the app windows. What should you check?",
+"c": [
+"System Settings > Accessibility > Zoom: turn it off",
+"System Settings > Displays: change the resolution",
+"Mission Control: move Zoom to its own desktop",
+"Privacy & Security > Screen Recording: allow Zoom"
+],
+"a": 3,
+"why": "macOS only lets an app capture the screen after you allow it under Privacy & Security > Screen Recording (called Screen & System Audio Recording in newer macOS). Without that permission, shared screens show only the wallpaper. Restart the app after you allow it. Displays changes resolution, and Accessibility > Zoom is the screen magnifier, not the Zoom app.",
+"key": "Mac screen share shows only wallpaper → grant Screen Recording in Privacy & Security.",
+"kw": [
+[
+"Privacy"
+],
+[
+"Screen Recording",
+"screen and system audio recording"
+]
+]
+},
+{
+"d": 1,
+"o": "1.9",
+"q": "In a Linux security audit, you need to confirm that password hashes are kept in a file only root can read, not in the world-readable list of accounts. Which file holds the hashes?",
+"c": [
+"/etc/shadow",
+"/etc/passwd",
+"/etc/group",
+"/etc/sudoers"
+],
+"a": 0,
+"why": "/etc/passwd lists accounts (username, UID, GID, home directory, shell) and must be readable by everyone, so the hashes were moved to /etc/shadow. That file is readable only by root and also holds the password-aging fields. /etc/group lists groups, and /etc/sudoers controls who can use sudo.",
+"key": "Hashes → /etc/shadow (root only). Account list → /etc/passwd (world-readable).",
+"kw": [
+[
+"/etc/shadow",
+"shadow"
+]
+]
+},
+{
+"d": 1,
+"o": "1.9",
+"q": "After editing the nginx web server's config on an Ubuntu server, you need to restart the service and make sure it starts at every boot. Which commands do this?",
+"c": [
+"sudo apt install --reinstall nginx, then sudo reboot",
+"sudo systemctl restart nginx, then sudo systemctl enable nginx",
+"sudo kill -9 nginx, then sudo reboot",
+"sudo mount -a, then sudo systemctl daemon-reload"
+],
+"a": 1,
+"why": "systemd is the init system and service manager on most modern distributions. systemctl restart reloads the service with the new config, and systemctl enable sets it to start at boot. Reinstalling the package doesn't apply the config, kill -9 needs a PID and a reboot is disruptive, mount -a mounts the entries in /etc/fstab, and daemon-reload only reloads systemd's unit files.",
+"key": "Linux services → systemd: systemctl restart / enable / status.",
+"kw": [
+[
+"systemctl"
+],
+[
+"restart"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "A store with a glass front and an ATM next to the entrance wants to stop a vehicle from being driven into the building, without blocking customers on foot. What should be installed?",
+"c": [
+"Motion-activated lighting",
+"An access control vestibule",
+"Bollards",
+"A magnetometer at the door"
+],
+"a": 2,
+"why": "Bollards are short, sturdy posts that stop vehicles while people walk between them. A vestibule controls people one at a time, lighting deters and helps cameras, and a magnetometer detects metal objects people carry.",
+"key": "Stop vehicles, allow pedestrians → bollards.",
+"kw": [
+[
+"bollard"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "Only the accounting subnet (10.10.20.0/24) should be able to reach the finance database server on TCP 1433. Every other internal subnet must be blocked. Which control on the router or firewall enforces this?",
+"c": [
+"Moving the finance server to a screened subnet (DMZ)",
+"A data loss prevention (DLP) policy",
+"A port forwarding rule to the finance server",
+"An ACL that permits only 10.10.20.0/24 to the server"
+],
+"a": 3,
+"why": "An ACL is an ordered list of permit and deny rules by source, destination and port. The router checks them top-down and ends with an implicit deny. DLP inspects content leaving the organization, port forwarding exposes an inside host to the internet, and a screened subnet is for public-facing servers.",
+"key": "Allow or deny traffic by source, destination and port → ACL.",
+"kw": [
+[
+"ACL",
+"access control list"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "Microsoft Defender Antivirus on a laptop that sat offline for a month didn't detect a widely reported new threat. The real-time protection engine is running. What should you do first?",
+"c": [
+"Update the Defender security intelligence (definitions)",
+"Turn off Windows Defender Firewall and rescan",
+"Install a second real-time antivirus alongside Defender",
+"Run sfc /scannow"
+],
+"a": 0,
+"why": "Signature-based detection is only as current as its definitions. Check for updates under Protection updates (they also come through Windows Update), then rescan. Two real-time antivirus engines conflict, so on a Windows client Defender turns itself off automatically when another antivirus registers. The firewall doesn't detect malware, and sfc repairs system files.",
+"key": "Missed a known threat → update Defender definitions, then scan.",
+"kw": [
+[
+"definition",
+"security intelligence",
+"protection updates"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "A home user wants their Windows settings, Microsoft Store apps and OneDrive files to follow them automatically when they sign in to a new laptop. They use a local account now. What should they switch to?",
+"c": [
+"The Guest account",
+"A domain account",
+"A Microsoft account",
+"A local administrator account"
+],
+"a": 2,
+"why": "A Microsoft account (such as an outlook.com address) is tied to Microsoft's cloud services, so it syncs settings, Store purchases and OneDrive across devices. A local account exists on one PC only. A domain account needs Active Directory, which Home editions can't join. The Guest account is disabled by default.",
+"key": "Settings and OneDrive follow you across PCs → Microsoft account.",
+"kw": [
+[
+"Microsoft account"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "Domain users keep losing files saved to their Desktop and Documents folders when their PCs are replaced. The company wants those folders stored on a file server automatically, so they're backed up and follow users to any PC. Which Group Policy feature does this?",
+"c": [
+"A home folder set on the user's Profile tab",
+"Folder redirection",
+"A logon script that maps a network drive letter",
+"BitLocker To Go"
+],
+"a": 1,
+"why": "Folder redirection (User Configuration > Policies > Windows Settings > Folder Redirection) points known folders like Desktop and Documents at a network share, so the data lives on the server. A home folder or a mapped drive only gives users a network location; they still have to choose to save there. BitLocker To Go encrypts removable drives.",
+"key": "Desktop and Documents on a server automatically → Folder redirection (GPO).",
+"kw": [
+[
+"folder redirection"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "A user installed a free 'video converter' that works as advertised. EDR now shows it quietly opened a remote-access backdoor to an outside server. It hasn't copied itself to other files or PCs. What type of malware is this?",
+"c": [
+"Adware",
+"Virus",
+"Potentially unwanted program (PUP)",
+"Trojan"
+],
+"a": 3,
+"why": "A Trojan poses as useful software and hides a malicious payload, often a remote-access backdoor (RAT). It doesn't replicate itself. A virus attaches to files and spreads when they run. A PUP is unwanted bundled software that isn't truly malicious, and adware exists to show ads.",
+"key": "Useful-looking app with a hidden backdoor, no self-replication → Trojan.",
+"kw": [
+[
+"Trojan"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "A bundled 'shopping helper' secretly records the websites a user visits and what they search for, and sends it to a marketing server. It shows no ads and doesn't capture keystrokes. What type of malware is it?",
+"c": [
+"Adware",
+"Keylogger",
+"Spyware",
+"Ransomware"
+],
+"a": 2,
+"why": "Spyware secretly collects information about a user's activity and sends it to a third party. A keylogger records keystrokes specifically, adware's purpose is showing ads, and ransomware encrypts files and demands payment.",
+"key": "Secretly collects and sends activity data → spyware.",
+"kw": [
+[
+"spyware"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "Phishing emails with malicious attachments keep reaching inboxes across the company. Management wants them stopped before any user can see or click them. What should be deployed?",
+"c": [
+"A software firewall on every PC",
+"An email security gateway",
+"EDR on every endpoint",
+"A pop-up blocker in every browser"
+],
+"a": 1,
+"why": "An email security gateway, on-premises or cloud, scans inbound mail for spam, phishing links and malicious attachments and quarantines it before delivery. EDR and host firewalls act on the endpoint after the message has arrived, and pop-up blockers don't touch email.",
+"key": "Stop malicious mail before it reaches inboxes → email security gateway.",
+"kw": [
+[
+"email security gateway",
+"email gateway",
+"mail filter"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "On a shared office LAN, a user's traffic is being silently relayed through a rogue laptop that poisoned the network's ARP caches, so the attacker can read and change the data. What attack is this?",
+"c": [
+"Cross-site scripting",
+"Evil twin",
+"Denial of service",
+"On-path attack"
+],
+"a": 3,
+"why": "In an on-path attack (formerly man-in-the-middle), the attacker sits between two parties, here through ARP poisoning on the wired LAN, and can read or alter the traffic. An evil twin is a rogue Wi-Fi access point, DoS blocks access to a service, and XSS runs injected script in a browser.",
+"key": "Attacker relays and can alter traffic between two parties → on-path.",
+"kw": [
+[
+"on-path",
+"on path",
+"man-in-the-middle",
+"MITM"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "On the company's support forum, an attacker posts a comment that contains a <script> tag. When other visitors view the thread, the script runs in their browsers and sends their session cookies to the attacker. What attack is this?",
+"c": [
+"Cross-site scripting (XSS)",
+"SQL injection",
+"On-path attack",
+"Brute-force attack"
+],
+"a": 0,
+"why": "XSS injects script into a trusted site so it runs in other users' browsers. This is stored XSS, because the script is saved in the forum post. SQL injection targets the site's database through input fields. The fix is input validation and output encoding on the site.",
+"key": "Injected script runs in other visitors' browsers → XSS.",
+"kw": [
+[
+"XSS",
+"cross-site scripting",
+"cross site scripting"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "Accounts payable gets an email from a real supplier's actual mailbox saying the supplier's bank details changed and the next invoice should go to a new account. The supplier's email account had been hacked. What attack is this?",
+"c": [
+"Whaling",
+"Business email compromise (BEC)",
+"Smishing",
+"Vishing"
+],
+"a": 1,
+"why": "BEC uses a compromised or impersonated business email account to redirect payments or steal data. Because the message often has no malware or links, filters miss it. Verify any payment change by calling a known phone number. Whaling targets executives, smishing uses text messages, and vishing uses phone calls.",
+"key": "Hijacked business mailbox redirects a payment → BEC.",
+"kw": [
+[
+"BEC",
+"business email compromise"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "Five people on the payroll team get an email that uses their names, mentions the new payroll system announced last week, and asks them to 'verify' their login on a lookalike site. No one else receives it. What is this?",
+"c": [
+"Business email compromise",
+"Whaling",
+"Spear phishing",
+"Vishing"
+],
+"a": 2,
+"why": "Spear phishing targets a specific person or group with tailored details so it looks credible. Whaling is spear phishing aimed at senior executives. BEC uses a hijacked or impersonated business mailbox, usually to redirect payments. Vishing happens over the phone.",
+"key": "Targeted, personalized phishing of a specific group → spear phishing.",
+"kw": [
+[
+"spear phishing",
+"spear-phishing"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "A security bulletin says attackers are actively exploiting a flaw in a popular PDF reader, and the vendor hasn't released a patch yet. What kind of vulnerability is this?",
+"c": [
+"Non-compliant system",
+"End-of-life software",
+"Supply chain attack",
+"Zero-day"
+],
+"a": 3,
+"why": "A zero-day is a flaw that's exploited before a patch exists. Until the vendor releases one, reduce the risk with workarounds such as disabling the vulnerable feature, restricting the app and relying on EDR. EOL software never gets patched again, a supply chain attack compromises a vendor to reach its customers, and a non-compliant system fails the organization's policy.",
+"key": "Exploited before a patch exists → zero-day.",
+"kw": [
+[
+"zero-day",
+"zero day",
+"0-day"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "A sales rep who just gave two weeks' notice is using their own valid account to download the entire customer database to a personal USB drive. Which threat is this?",
+"c": [
+"Insider threat",
+"Business email compromise",
+"Brute-force attack",
+"Impersonation"
+],
+"a": 0,
+"why": "An insider threat is an employee or contractor misusing legitimate access. Least privilege, DLP and monitoring departing staff help. No credentials were stolen or guessed, and the user isn't pretending to be anyone else.",
+"key": "Employee misusing legitimate access → insider threat.",
+"kw": [
+[
+"insider"
+]
+]
+},
+{
+"d": 2,
+"o": "2.7",
+"q": "A contractor needs a domain account for a project that ends December 31. Policy says contractor access must end automatically, even if no one remembers to disable the account. What should you configure?",
+"c": [
+"Logon hours limited to business hours",
+"A password that expires on December 31",
+"An account expiration date",
+"Membership in the Guests group"
+],
+"a": 2,
+"why": "An account expiration date blocks sign-in automatically after that date (Active Directory Users and Computers > account Properties > Account tab > Account expires). Password expiration only forces the user to set a new password, logon-hour limits still allow access indefinitely, and the Guests group doesn't end access.",
+"key": "Temporary worker → set an account expiration date.",
+"kw": [
+[
+"expiration",
+"expires",
+"expiry"
+]
+]
+},
+{
+"d": 2,
+"o": "2.10",
+"q": "A home-office owner doesn't want their Wi-Fi name showing up in neighbors' lists of available networks. Devices that already know the network should still connect. Which router setting does this, and what is its limitation?",
+"c": [
+"Disable SSID broadcast. It fully prevents anyone from finding or attacking the network.",
+"Disable SSID broadcast. It hides the name from normal lists, but a Wi-Fi scanner can still find the network.",
+"Turn on MAC filtering. It hides the network name.",
+"Enable the guest network. It hides the main SSID."
+],
+"a": 1,
+"why": "With SSID broadcast off, the router stops advertising the name in its beacons, so the network doesn't appear in normal lists. Clients that connect still reveal the name, so scanning tools find it easily. It's minor obscurity, never a substitute for WPA2/WPA3 encryption. MAC filtering controls which devices may join, not whether the name is visible.",
+"key": "Hide the Wi-Fi name → disable SSID broadcast. It's obscurity, not security.",
+"kw": [
+[
+"SSID broadcast",
+"hide SSID",
+"hidden SSID"
+]
+]
+},
+{
+"d": 3,
+"o": "3.2",
+"q": "An app on a user's iPhone (Face ID model, no Home button) is frozen on one screen and ignores taps. Switching to another app and back doesn't help. What should the user try first?",
+"c": [
+"Erase the iPhone and restore from an iCloud backup",
+"Reset All Settings in Settings > General > Transfer or Reset iPhone",
+"Offload the app in Settings > General > iPhone Storage",
+"Force-close the app from the App Switcher"
+],
+"a": 3,
+"why": "Force-closing the unresponsive app from the App Switcher is the least invasive fix, and it's Apple's documented procedure. If the app keeps freezing, restart the iPhone, then update or reinstall the app. Resetting settings, offloading and erasing are bigger steps for later.",
+"key": "Frozen iPhone app → close it from the App Switcher first.",
+"kw": [
+[
+"App Switcher",
+"force close",
+"swipe up"
+]
+]
+},
+{
+"d": 3,
+"o": "3.3",
+"q": "After installing a 'free VPN' app from a link on a website, a user's Android phone shows full Wi-Fi bars, but most sites won't load and the rest are very slow. Other phones on the same Wi-Fi work fine. What is the most likely cause?",
+"c": [
+"The phone reached its mobile data-usage limit",
+"The Wi-Fi router's DHCP scope is full",
+"A malicious VPN or proxy set up by the app",
+"NFC is interfering with the Wi-Fi radio"
+],
+"a": 2,
+"why": "Malicious apps often set up a VPN or proxy to intercept traffic, which leaves only that phone with limited or no connectivity. Uninstall the app, check Settings for leftover VPN profiles, and scan the phone. A full DHCP scope stops new devices from getting an address at all, a mobile data limit doesn't affect Wi-Fi, and NFC doesn't block Wi-Fi.",
+"key": "Limited connectivity on one phone after a sideloaded app → malicious VPN/proxy. Remove it.",
+"kw": [
+[
+"VPN",
+"proxy"
+],
+[
+"remove",
+"uninstall"
+]
+]
+},
+{
+"d": 3,
+"o": "3.4",
+"q": "A user's Chrome has become very slow. Task Manager shows Chrome using a lot of CPU even with one blank tab open, and a 'Coupon Finder' toolbar has appeared that the user doesn't remember installing. What should you do?",
+"c": [
+"Clear the browser cache only",
+"Remove the unknown extension and scan for malware",
+"Add more RAM to the PC",
+"Use private browsing mode for all sessions"
+],
+"a": 1,
+"why": "Unwanted extensions are a common cause of degraded browser performance, redirects and extra ads, and some mine cryptocurrency or track browsing. Remove the extension, reset the browser and scan the PC, since it may have arrived with other malware. Clearing the cache doesn't remove extensions, and private mode doesn't remove them either.",
+"key": "Slow browser plus an unknown toolbar → remove the extension, reset, scan.",
+"kw": [
+[
+"extension",
+"add-on",
+"toolbar"
+],
+[
+"remove",
+"disable",
+"uninstall"
+]
+]
+},
+{
+"d": 4,
+"o": "4.1",
+"q": "This week, three help desk techs each spent an hour on the same new VPN error before finding the same registry fix. What would most help the next tech who sees it?",
+"c": [
+"Submit a change request to reinstall the VPN client on every PC",
+"Add the VPN client to the asset inventory",
+"Raise the default severity for VPN tickets",
+"Write a knowledge base article with the symptoms and the fix"
+],
+"a": 3,
+"why": "A knowledge base is a searchable library of known issues and their fixes, so the next tech finds the answer in minutes. The asset inventory tracks hardware and software, severity sets how urgently a ticket is worked, and a mass reinstall is a change, not documentation.",
+"key": "Recurring issue with a known fix → knowledge base article.",
+"kw": [
+[
+"knowledge base",
+"KB"
+]
+]
+},
+{
+"d": 4,
+"o": "4.2",
+"q": "IT plans to upgrade the firmware on the office's core firewall next month. The change isn't urgent, isn't on the pre-approved list and carries moderate risk. Which change type is this, and what does it need?",
+"c": [
+"Normal change: needs risk analysis and CAB approval",
+"Standard change: pre-approved, so just schedule it",
+"Emergency change: do it now and document it later",
+"No change process: firmware updates are exempt"
+],
+"a": 0,
+"why": "A normal change isn't pre-approved and isn't urgent, so it goes through the full process: request form, risk analysis, CAB approval, then implementation in a maintenance window. Standard changes are routine, low-risk and pre-approved. Emergency changes fix urgent problems, such as an actively exploited zero-day, with expedited approval.",
+"key": "Not routine, not urgent → normal change with full CAB review.",
+"kw": [
+[
+"normal"
+]
+]
+},
+{
+"d": 4,
+"o": "4.2",
+"q": "A retailer says no normal or standard changes may be made to its point-of-sale systems from Thanksgiving through New Year's Day, its busiest season. Only emergency changes are allowed. What is this period called?",
+"c": [
+"Maintenance window",
+"Change freeze",
+"Rollback plan",
+"Sandbox testing"
+],
+"a": 1,
+"why": "A change freeze blocks routine changes during a critical business period to lower the risk of outages, and only emergency changes are allowed. A maintenance window is the opposite: a scheduled low-impact time when changes are allowed to happen.",
+"key": "No routine changes during a critical period → change freeze.",
+"kw": [
+[
+"change freeze",
+"freeze"
+]
+]
+},
+{
+"d": 4,
+"o": "4.5",
+"q": "A small office in an area with frequent summer thunderstorms has had two PCs damaged by voltage spikes. Power outages are rare and short, and staff can simply restart afterward. What's the most cost-effective protection?",
+"c": [
+"A standby generator",
+"A line-interactive UPS for every PC",
+"Surge suppressors for each workstation",
+"Ordinary power strips with extra outlets"
+],
+"a": 2,
+"why": "Surge suppressors absorb voltage spikes, and a higher joule rating means more absorption capacity. They're inexpensive. A UPS also protects against outages and brownouts, but it costs more and outages aren't the problem here. A basic power strip adds outlets without surge protection. A direct lightning strike can overwhelm any suppressor, so unplug equipment in severe storms.",
+"key": "Spikes but rare outages → surge suppressor. Outages or brownouts → UPS.",
+"kw": [
+[
+"surge suppressor",
+"surge protector"
+]
+]
+},
+{
+"d": 4,
+"o": "4.6",
+"q": "A user bought a movie from an online store. It plays only in the store's own app on up to five registered devices and won't open in other media players. What technology enforces these limits?",
+"c": [
+"An open-source license",
+"The end-user license agreement (EULA)",
+"Data loss prevention (DLP)",
+"Digital rights management (DRM)"
+],
+"a": 3,
+"why": "DRM is technology that controls how purchased digital content can be played, copied or shared, such as limiting devices or apps. The EULA is the legal agreement, and DRM enforces terms like these technically. DLP stops sensitive data from leaving an organization, and open-source licenses cover sharing source code.",
+"key": "Technology that limits how bought content is used → DRM.",
+"kw": [
+[
+"DRM",
+"digital rights management"
+]
+]
+},
+{
+"d": 4,
+"o": "4.6",
+"q": "Legal wants every company PC to show a notice before sign-in saying the system is for authorized use only and activity may be monitored. Users must click OK to continue. What should be configured?",
+"c": [
+"A password-protected screensaver",
+"An acceptable use policy posted on the intranet",
+"A logon splash screen (legal notice) set through Group Policy",
+"A Windows Hello sign-in option"
+],
+"a": 2,
+"why": "A logon splash screen shows a legal notice users must acknowledge before signing in. In Windows, set it with the Group Policy security options 'Interactive logon: Message title/text for users attempting to log on'. The AUP is the policy itself, and the splash screen is how you display it at every sign-in. Screensaver locks and Windows Hello don't show notices.",
+"key": "Notice before sign-in → splash screen (logon message via GPO).",
+"kw": [
+[
+"splash screen",
+"logon banner",
+"login banner",
+"legal notice"
+]
+]
+},
+{
+"d": 4,
+"o": "4.10",
+"q": "A help desk AI assistant answers questions from the company's internal knowledge base. It keeps giving steps for a VPN client the company replaced two years ago, and its answers match those old KB articles word for word. What is the root problem with the AI's answers?",
+"c": [
+"It's hallucinating answers with no source",
+"Its data source is outdated",
+"It's biased against the new VPN vendor",
+"It's a public model leaking company data"
+],
+"a": 1,
+"why": "AI output is only as good as its data source. Here the answers match real but outdated articles, so the problem is the data source, not a hallucination, which is invented content. Keep sources current and authoritative, and check outputs for accuracy.",
+"key": "Correctly repeats stale content → fix the data source. Invents content → hallucination.",
+"kw": [
+[
+"data source",
+"source data",
+"outdated"
+]
+]
+},
+{
+"d": 2,
+"o": "2.8",
+"q": "A sales rep's company phone is set to be remotely wiped if it's lost. What makes sure their contacts, photos and app data can be put back on a replacement phone?",
+"c": [
+"Enable content filtering",
+"Turn on the locator app",
+"Require a 6-digit PIN",
+"Remote (cloud) backup"
+],
+"a": 3,
+"why": "Remote backup copies the phone's data to the cloud so a wiped or replaced phone can be restored. The locator finds the phone, a PIN protects it while it's in hand, and content filtering blocks websites. None of them keeps a copy of the data.",
+"key": "Restore data after a wipe or loss → remote (cloud) backup.",
+"kw": [
+[
+"backup"
+]
+]
+},
+{
+"d": 4,
+"o": "4.3",
+"q": "A law firm can afford to lose at most one hour of document edits. Its only backup runs nightly at 11 PM. What should change?",
+"c": [
+"Move the nightly backup offsite",
+"Switch the nightly full backup to a nightly differential",
+"Back up more often (for example, hourly incrementals)",
+"Test a restore from the nightly backup each month"
+],
+"a": 2,
+"why": "Backup frequency sets how much data you can lose: with one backup a night, a failure at 10 PM loses almost a day of work. Hourly backups (usually incrementals) keep the loss to an hour or less. Changing the backup type, moving it offsite or testing it are all good practice, but none of them shortens the gap between backups.",
+"key": "Can lose at most X of data → back up at least every X (increase frequency).",
+"kw": [
+[
+"frequen",
+"hourly",
+"every hour"
+]
+]
+},
+{
+"d": 4,
+"o": "4.4",
+"q": "A tech notices the round ground prong has been broken off a desktop PC's power cord. What should they do?",
+"c": [
+"Use a 3-to-2 prong adapter so it fits the outlet",
+"Replace the power cord before using the PC again",
+"Plug it into a surge protector instead of the wall",
+"Wear an ESD strap when touching the case"
+],
+"a": 1,
+"why": "The ground prong connects the case to equipment ground, so a fault sends current to ground instead of through a person. Without it the metal case can become live. Replace the cord. A 3-to-2 adapter and a surge protector don't restore the ground path, and an ESD strap protects components, not people, from shock.",
+"key": "Missing ground prong → replace the cord (equipment grounding).",
+"kw": [
+[
+"replace"
+],
+[
+"cord",
+"cable"
+]
+]
+}
+]);
 
 </script>
 <script>
@@ -2303,7 +3204,7 @@ function cpList() {
   cp.list = shuffle(items.filter(inDom)); cp.i = 0; cp.r = 0; cp.n = 0; cp.answered = false;
 }
 const normC = s => String(s).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim();
-function cmdOK(x, input) { const s = normC(input); return x.ok.some(r => new RegExp(r, "i").test(s)); }
+function cmdOK(x, input) { const s = normC(input); return x.ok.some(r => new RegExp(r, x.cs ? "" : "i").test(s)); }
 function renderCode() {
   const v = $("#view-code");
   if (!cp.list.length && cp.i === 0) cpList();
@@ -3099,16 +4000,16 @@ const STUDY_TIPS = [
   { t: "Explain the why.", d: "After a miss, say in your own words why the right answer is right and why yours was wrong. That's what makes it stick." },
   { t: "Test yourself to learn.", d: "Quizzes aren't just for measuring. Every retrieval strengthens the memory (the testing effect), so mocks and the daily challenge are study, not just checkups." },
   { t: "Mix it up.", d: "Switching between topics (interleaving) feels harder than drilling one, but it trains you to recognize which tool or fix a question needs, just like the real exam." },
-  { t: "Harder is better.", d: "Typing an answer beats picking one, and near-miss choices beat easy ones. If it feels like effort, it's working." },
+  { t: "Harder is better, up to a point.", d: "Typing an answer beats picking one, and near-miss choices beat easy ones. Effort that ends in the right answer builds memory. If you're just lost, go back and reread the explanation first." },
   { t: "Short and daily beats long and rare.", d: "20–40 minutes every day outlasts a 3-hour Sunday cram. Keep the daily streak going even on busy days." },
   { t: "Read the explanation even when you're right.", d: "Lucky guesses hide gaps. Ten seconds on the why confirms you actually knew it." },
   { t: "Mine your mistakes.", d: "The Missed tab is your highest-value study list. Each miss tells you exactly what the exam can still catch you on." },
-  { t: "Take real breaks.", d: "Focus fades after 20–25 minutes. Use the Pomodoro timer and get up during breaks. Look away from screens and stretch." },
+  { t: "Take real breaks.", d: "Short, regular breaks keep you fresh over a long session. The Pomodoro timer (20 minutes on, 5 off) paces you. Get up during breaks, look away from screens and stretch." },
   { t: "Sleep on it.", d: "Your brain locks in what you studied while you sleep. A good night beats a late-night cram, especially before the exam." },
   { t: "Make it yours.", d: "Tie a concept to something real: the last time you reset a password, mapped a drive or cleaned malware at work. Personal links are easier to recall." },
-  { t: "Use a memory hook for ordered lists.", d: "Build a silly sentence from the first letters, e.g. the 10 malware removal steps as five phases: find it (investigate), fence it (quarantine), freeze restore (disable System Restore), fix it (remediate → update → scan/remove → reimage), then protect and teach (schedule scans, re-enable restore, educate)." },
+  { t: "Use a memory hook for ordered lists.", d: "Group the steps into a few memorable phases. For example, the 10 malware removal steps as five phases: find it (investigate), fence it (quarantine), freeze restore (disable System Restore in Windows Home), fix it (remediate → update anti-malware → scan/remove → reimage), then protect and teach (schedule scans and updates, re-enable System Restore and create a restore point, educate the user)." },
   { t: "Teach it.", d: "Explaining a topic to someone else (even an imaginary student) shows you what you don't really understand yet." },
-  { t: "Practice like it's game day.", d: "Take a timed mock once a week. Getting used to the clock and the PBQs-first layout takes the surprise out of the real thing." }
+  { t: "Practice like it's game day.", d: "Take a timed mock once a week. Getting used to the clock and to PBQs (which often come first) takes the surprise out of the real thing." }
 ];
 let tipOffset = 0;
 function tipHTML() { const i = (Math.floor(sod(nowMs()) / DAY) + tipOffset) % STUDY_TIPS.length, t = STUDY_TIPS[(i + STUDY_TIPS.length) % STUDY_TIPS.length]; return `<div class="tip" id="tipbox"><span class="tipi" aria-hidden="true">💡</span><div><b>Study tip:</b> <b>${esc(t.t)}</b> ${esc(t.d)}</div><button class="btn ghost sm" id="tipnext" type="button" aria-label="Show another study tip">Another tip</button></div>`; }
