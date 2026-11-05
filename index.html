@@ -466,6 +466,10 @@ main{padding-bottom:70px}
 @media (max-width:560px){.zd{order:3;flex-basis:100%;margin:6px 0 0;text-align:center}}
 /* ---------- UI cleanup ---------- */
 .labsw{margin:0 0 14px}
+.planbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 14px;padding:10px 14px;border:1.5px solid var(--accent);border-radius:10px;background:var(--accent-soft)}
+.planbar[hidden]{display:none}
+.planbar .pbstep{font:700 .82rem var(--f-mono);margin-right:auto}
+.planbar #plannext{max-width:100%;white-space:normal;text-align:left}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .teaser .ts{display:flex;flex-direction:column;gap:1px;min-width:0}
 .teaser .ts b{font:800 1.25rem/1.1 var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
@@ -502,6 +506,7 @@ main{padding-bottom:70px}
 <main><div class="wrap">
   <div class="seg labsw" id="labsw" role="group" aria-label="Lab type" hidden><button type="button" id="labsw-pbq">PBQ lab</button><button type="button" id="labsw-scen">Troubleshoot tickets</button></div>
   <div class="bar" id="domainbar"><span class="lbl">Domains</span></div>
+  <div class="planbar" id="planbar" role="region" aria-label="Today plan progress" hidden></div>
   <section id="view-today" hidden></section>
   <section id="view-cards" hidden></section>
   <section id="view-code" hidden></section>
@@ -3062,7 +3067,7 @@ function setTab(t) {
   $("#labsw").hidden = !(t === "pbq" || t === "scen"); $("#labsw-pbq").setAttribute("aria-pressed", t === "pbq"); $("#labsw-scen").setAttribute("aria-pressed", t === "scen");
   render();
 }
-document.querySelectorAll(".tab").forEach(b => b.onclick = () => { rv.on = false; setTab(b.dataset.tab); });
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => { rv.on = false; planCur = null; setTab(b.dataset.tab); });
 
 /* ================= FLASHCARDS ================= */
 const fc = { mode: store.get("fcmode", "mc"), deck: [], i: 0, r: 0, n: 0, answered: false, match: null };
@@ -3315,6 +3320,7 @@ function pickExam(N) {
 function renderExam() {
   clearInterval(ex.tick);
   const v = $("#view-exam");
+  paintPlanBar();
   if (ex.phase === "setup") return examSetup(v);
   if (ex.phase === "run") { const r = ex.mode === "typed" ? examTyped(v) : examMC(v); saveEx(); return r; }
   return examResults(v);
@@ -3575,7 +3581,7 @@ function pbqBlank(q) {
   });
   return vals;
 }
-function pbqInit(q) { pq.id = q.id; pq.vals = pbqBlank(q); pq.graded = false; }
+function pbqInit(q) { pq.id = q.id; pq.vals = pbqBlank(q); pq.graded = false; pq.force = false; }
 function fieldOK(f, v) {
   if (f.type === "text") return f.re.some(r => new RegExp(r, "i").test(normC(v)));
   if (f.type === "check") return v.length === f.ans.length && f.ans.every(a => v.includes(a));
@@ -3680,7 +3686,8 @@ const labSwitch = () => "";
 function wireLabSwitch() { }
 (() => { const a = $("#labsw-pbq"), b = $("#labsw-scen"); a.textContent = `PBQ lab · ${PBQS.length}`; b.textContent = `Troubleshoot tickets · ${SCENS.length}`; a.onclick = () => setTab("pbq"); b.onclick = () => setTab("scen"); })();
 function renderPBQ() {
-  const v = $("#view-pbq"), list = pbqList(), best = store.get("pbqbest", {});
+  const v = $("#view-pbq"), best = store.get("pbqbest", {}); let list = pbqList();
+  if (pq.force && !list.some(x => x.id === pq.id)) { const f = PBQS.find(x => x.id === pq.id); if (f) list = [f, ...list]; } // Today's lab shows even if the domain filter hides it
   if (!list.length) { v.innerHTML = labSwitch("pbq") + `<div class="panel empty">No PBQs in the selected domains.</div>`; wireLabSwitch(); return; }
   let q = list.find(x => x.id === pq.id);
   if (!q) { q = list[0]; pbqInit(q); }
@@ -3716,7 +3723,7 @@ function renderPBQ() {
 /* ================= TERMINAL SCENARIOS ================= */
 const sc = { id: null, st: null };
 function scList() { return SCENS.filter(inDom); }
-function scInit(s) { sc.id = s.id; sc.st = { lines: [], hist: [], hi: 0, n: 0, fixed: false, fixBy: null, diag: null, fix: null, verified: false, hints: 0, stage: "explore", done: false }; }
+function scInit(s) { sc.id = s.id; sc.force = false; sc.st = { lines: [], hist: [], hi: 0, n: 0, fixed: false, fixBy: null, diag: null, fix: null, verified: false, hints: 0, stage: "explore", done: false }; }
 const promptFor = s => s.sh === "cmd" ? `C:\\Users\\${s.user}>` : `${s.user}@${s.host}:~$`;
 function scRun(s, raw) {
   const st = sc.st, c = normC(raw);
@@ -3748,7 +3755,8 @@ function scFinish(s) {
   const b = store.get("scbest", {}); b[s.id] = Math.max(b[s.id] || 0, ok ? 1 : 0); store.set("scbest", b);
 }
 function renderScen() {
-  const v = $("#view-scen"), list = scList(), best = store.get("scbest", {});
+  const v = $("#view-scen"), best = store.get("scbest", {}); let list = scList();
+  if (sc.force && !list.some(x => x.id === sc.id)) { const f = SCENS.find(x => x.id === sc.id); if (f) list = [f, ...list]; }
   if (!list.length) { v.innerHTML = labSwitch("scen") + `<div class="panel empty">No troubleshooting tickets in the selected domains. They cover 1.0 and 2.0.</div>`; wireLabSwitch(); return; }
   let s = list.find(x => x.id === sc.id);
   if (!s) { s = list[0]; scInit(s); }
@@ -3870,7 +3878,29 @@ function missCard(key) {
 /* ---------- shared flip-card review deck ---------- */
 const rv = { on: false, deck: [], i: 0, flipped: false, got: 0, again: 0, label: "", mode: "review", from: "today" };
 function todayPlan() { const td = sod(nowMs()); let TP = store.get("todayplan", null); if (!TP || TP.day !== td) TP = { day: td, items: [], done: {} }; return TP; }
-function planMark(id) { const TP = todayPlan(); TP.done[id] = true; store.set("todayplan", TP); }
+function planMark(id) { const TP = todayPlan(); TP.done[id] = true; store.set("todayplan", TP); paintPlanBar(); }
+/* ---------- "Next" bar: walks down Today's plan from inside each activity ---------- */
+let planCur = null, planAuto = null, planLast = [];
+function planCurDone() {
+  const id = planCur; if (!id) return false;
+  const TP = todayPlan(), it = TP.items.find(i => i.id === id);
+  return !!(TP.done[id] || (id === "ppbq" && it && TP.done["pbq:" + it.meta]) || (id === "ptkt" && it && TP.done["tkt:" + it.meta]) ||
+    (id === "pdaily" && store.get("daily", {})[dayKey(nowMs())] != null) || (id === "pmock" && stats.exams.some(e => e.n >= 30 && e.t >= TP.day)) ||
+    (id === "pbak" && (store.get("lastbak", 0) || 0) >= TP.day) || (id === "pres" && !(typeof savedEx === "function" && savedEx())));
+}
+function paintPlanBar() {
+  const bar = $("#planbar"); if (!bar) return;
+  const inDeck = rv.on && rv.from === "today" && tab === "today";
+  const show = planCur && planLast.some(p => p.id === planCur) && (tab !== "today" || inDeck) && !(tab === "exam" && ex.phase === "run");
+  if (!show) { bar.hidden = true; bar.innerHTML = ""; return; }
+  const i = planLast.findIndex(p => p.id === planCur), done = planCurDone();
+  const nx = planLast.slice(i + 1).find(p => !p.done && p.b && p.id !== planCur);
+  bar.hidden = false; bar.className = "planbar" + (done ? " done" : "");
+  bar.innerHTML = `<span class="pbstep">📋 Today · step ${i + 1} of ${planLast.length}${done ? ' · <b style="color:var(--good)">✓ done</b>' : ""}</span>
+    <button class="btn${done ? "" : " ghost"} sm" id="plannext" type="button">${nx ? `${done ? "Next" : "Skip to next"}: ${esc(nx.t)} →` : "Back to Today →"}</button>`;
+  $("#plannext").onclick = planGoNext;
+}
+function planGoNext() { const from = planCur; rv.on = false; planCur = null; planAuto = from; setTab("today"); window.scrollTo({ top: 0 }); }
 function startDeck(keys, label, mode, from) {
   Object.assign(rv, { on: true, deck: keys, i: 0, flipped: false, got: 0, again: 0, label, mode, from, planId: null });
   setTab(from); window.scrollTo({ top: 0 });
@@ -4077,6 +4107,7 @@ function renderToday() {
   plan.length = 0; plan.push(...finalPlan);
   const sx = typeof savedEx === "function" && savedEx();
   if (sx) { const d = savedExDesc(sx); plan.unshift({ t: `Resume your unfinished ${d.kind}`, s: d.text, b: "Resume", id: "pres" }); }
+  planLast = plan.map(p => ({ id: p.id, t: p.t, done: !!p.done, b: !!p.b }));
   const checks = [
     [R[1].ret + R[2].ret + R[3].ret + R[4].ret >= 0.8 * CARDS.length, `Retain 80% of flashcards (recalled after a gap of 3+ days)`, `${Math.round(100 * (R[1].ret + R[2].ret + R[3].ret + R[4].ret) / CARDS.length)}%`],
     [mocks.length >= 2 && mocks.slice(-2).every(m => m.pct >= 0.85), "85%+ on your last two mock exams of 30+ questions", mocks.length ? mocks.slice(-2).map(m => Math.round(m.pct * 100) + "%").join(", ") : "none yet"],
@@ -4116,7 +4147,7 @@ function renderToday() {
         <li><b>Logistics:</b> bring a valid government ID. For online proctoring, start check-in about 30 minutes early with a clear desk and a tested webcam.</li>
       </ul></details>`;
   wireHall();
-  const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = fn; };
+  const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = () => { if (planLast.some(p => p.id === id && p.b)) planCur = id; fn(); paintPlanBar(); }; };
   go("pdue", () => { startDeck(todayRev, "Today", "review", "today"); rv.planId = "pdue"; });
   go("pdaily", startDaily);
   go("pres", resumeEx);
@@ -4125,8 +4156,8 @@ function renderToday() {
   go("tsarc", () => setTab("arcade"));
   go("pnew", () => { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; startDeck(shuffle(pick).slice(0, 15).map(c => "c:" + c.t), `New · ${weakDom}.0 ${DOMAINS[weakDom].short}`, "learn", "today"); rv.planId = "pnew"; });
   go("pobj", () => { const keys = shuffle([...CARDS.filter(c => c.o === weakObj.o).map(c => "c:" + c.t), ...Object.keys(srs).filter(k => srs[k].o === weakObj.o && !k.startsWith("c:") && missCard(k))]); startDeck(keys, `Objective ${weakObj.o}`, "practice", "today"); rv.planId = "pobj"; });
-  go("ppbq", () => { pbqInit(nextPbq); setTab("pbq"); });
-  go("ptkt", () => { scInit(nextTicket); setTab("scen"); });
+  go("ppbq", () => { pbqInit(nextPbq); pq.force = true; setTab("pbq"); });
+  go("ptkt", () => { scInit(nextTicket); sc.force = true; setTab("scen"); });
   go("tsboss", startBoss);
   go("pbak", () => { setTab("stats"); setTimeout(() => { const p = $("#syncpanel"); if (p) p.scrollIntoView({ block: "start", behavior: "smooth" }); }, 60); });
   go("bgo", () => {
@@ -4137,6 +4168,13 @@ function renderToday() {
   });
   document.querySelectorAll("[data-bdel]").forEach(x => x.onclick = () => { const b = store.get("bench", []) || []; b.splice(+x.dataset.bdel, 1); store.set("bench", b); stay(); });
   go("pmock", () => { ex.phase = "setup"; ex.mode = "mc"; ex.len = 30; store.set("exmode", "mc"); store.set("exlen", 30); setTab("exam"); });
+  if (planAuto) {
+    const from = planAuto; planAuto = null;
+    const i = planLast.findIndex(p => p.id === from);
+    const nx = planLast.slice(i + 1).find(p => !p.done && p.b && p.id !== from) || planLast.find(p => !p.done && p.b && p.id !== from);
+    if (nx && $("#" + nx.id)) setTimeout(() => { const b = $("#" + nx.id); if (b) b.click(); }, 0);
+    else if (typeof toast === "function") toast("Today's plan is done ✓", "good");
+  }
 }
 
 /* ================= PROGRESS SYNC (export / import) ================= */
@@ -5256,6 +5294,7 @@ function render() {
   else if (tab === "missed") renderMissed();
   else if (tab === "arcade") renderArcade();
   else renderStats();
+  paintPlanBar();
 }
 document.addEventListener("keydown", e => { if (fc.keyHandler) fc.keyHandler(e); });
 buildDomainBar();
