@@ -468,6 +468,17 @@ main{padding-bottom:70px}
 .labsw{margin:0 0 14px}
 .planbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 14px;padding:10px 14px;border:1.5px solid var(--accent);border-radius:10px;background:var(--accent-soft)}
 .planbar[hidden]{display:none}
+.trendwrap{width:100%;overflow:hidden}.trend{width:100%;height:auto;display:block;margin-top:8px}
+.trend .tg{stroke:var(--line);stroke-width:1}.trend .tl{fill:var(--muted);font:11px var(--f-mono)}
+.trend .t85{stroke:var(--good);stroke-width:1.5;stroke-dasharray:6 4}
+.trend .tsc{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.trend .trd{fill:none;stroke:var(--d4);stroke-width:2;stroke-dasharray:2 4;stroke-linecap:round}
+.trend .tdot{fill:var(--accent);stroke:var(--card);stroke-width:2}.trend .tpt:hover .tdot{r:6}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted)}.legend .lg{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent)}.legend i.lgrd{border-top:2px dotted var(--d4)}
+.flaglist,.domtrend{margin:0;padding-left:0;list-style:none;display:grid;gap:6px}
+.domtrend{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.tview{margin-top:8px}.tview summary{cursor:pointer}
 .planbar .pbstep{font:700 .82rem var(--f-mono);margin-right:auto}
 .planbar #plannext{max-width:100%;white-space:normal;text-align:left}
 .teaser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -3013,6 +3024,7 @@ function record(key, d, o, ok, kind) {
   ok ? it.r++ : it.w++;
   store.set("stats", stats);
   if (!key.startsWith("p:")) missUpdate(key, d, o, ok);
+  if (kind === "exam") qlogAdd(d, o, ok);
   hypeEvent(key, d, ok);
   achSoon();
 }
@@ -3321,6 +3333,8 @@ function renderExam() {
   clearInterval(ex.tick);
   const v = $("#view-exam");
   paintPlanBar();
+  if (ms.on && (ex.phase === "run" || ex.mode !== "mastery")) { ms.on = false; ms.done = false; }
+  if (ms.on && ex.phase !== "run") return masteryRun(v);
   if (ex.phase === "setup") return examSetup(v);
   if (ex.phase === "run") { const r = ex.mode === "typed" ? examTyped(v) : examMC(v); saveEx(); return r; }
   return examResults(v);
@@ -3333,12 +3347,13 @@ function examSetup(v) {
   v.innerHTML = resumeBannerHTML() + `<div class="panel setup">
     <h2>Mock exam</h2>
     <p class="note" style="margin:0">Questions are drawn to match the official domain weights (28 / 28 / 23 / 21) across the domains selected above. The bank has ${poolN} scenario questions for this selection.</p>
-    <div class="bar"><span class="lbl">Mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "sim", "Full simulation", ex.mode)}${sb("mode", "typed", aiState === "ready" ? "Typed answers (AI-graded)" : "Typed answers (keyword-graded)", ex.mode)}</span></div>
+    <div class="bar"><span class="lbl">Mode</span><span class="seg">${sb("mode", "mc", "Multiple choice", ex.mode)}${sb("mode", "sim", "Full simulation", ex.mode)}${sb("mode", "mastery", "Mastery", ex.mode)}${sb("mode", "typed", aiState === "ready" ? "Typed answers (AI-graded)" : "Typed answers (keyword-graded)", ex.mode)}</span></div>
     ${ex.mode === "sim" ? `<div class="fb"><b class="v">Real exam conditions</b>4 performance-based labs first, then 86 multiple-choice questions, all on a single 90-minute clock. Flag a PBQ and come back to it, just like the real test. Each PBQ is worth 3 points with partial credit.</div>` : ""}
-    <div class="bar" ${ex.mode === "sim" ? "hidden" : ""}><span class="lbl">Length</span><span class="seg">${lens.map(n => sb("len", String(n), n === 90 ? "90 (full)" : String(n), String(ex.len))).join("")}</span></div>
+    ${ex.mode === "mastery" ? masterySetupHTML() : ""}
+    <div class="bar" ${ex.mode === "sim" || ex.mode === "mastery" ? "hidden" : ""}><span class="lbl">Length</span><span class="seg">${lens.map(n => sb("len", String(n), n === 90 ? "90 (full)" : String(n), String(ex.len))).join("")}</span></div>
     <div class="bar" ${ex.mode !== "mc" ? "hidden" : ""}><span class="lbl">Timer</span><span class="seg">${sb("timed", "on", "1 min / question", ex.timed ? "on" : "off")}${sb("timed", "off", "Untimed", ex.timed ? "on" : "off")}</span></div>
     <div class="bar" ${ex.mode !== "typed" ? "hidden" : ""}><span data-ai></span><span class="note ainote"></span></div>
-    <div class="row"><button class="btn" id="exstart">Start ${ex.mode === "typed" ? "typed drill" : ex.mode === "sim" ? "simulation" : "exam"}</button></div></div>
+    <div class="row"><button class="btn" id="exstart">Start ${ex.mode === "typed" ? "typed drill" : ex.mode === "sim" ? "simulation" : ex.mode === "mastery" ? "a round of " + MS_ROUND : "exam"}</button></div></div>
     ${stats.exams.length ? `<div class="note">Last attempt: ${esc(cleanLabel(stats.exams[stats.exams.length - 1].label))}</div>` : ""}
     ${genPanelHTML()}`;
   wireGen(v); wireResume(renderExam);
@@ -3347,6 +3362,7 @@ function examSetup(v) {
   v.querySelectorAll("[data-len]").forEach(b => b.onclick = () => { ex.len = +b.dataset.len; store.set("exlen", ex.len); renderExam(); });
   v.querySelectorAll("[data-timed]").forEach(b => b.onclick = () => { ex.timed = b.dataset.timed === "on"; store.set("extimed", ex.timed); renderExam(); });
   $("#exstart").onclick = () => {
+    if (ex.mode === "mastery") return mastStart();
     ex.tag = null;
     if (ex.mode === "sim") {
       const pb = shuffle(PBQS.filter(inDom)).slice(0, 4).map(q => ({ ...q, pbq: true }));
@@ -3397,7 +3413,7 @@ function examMC(v) {
   }, 1000);
 }
 function finishMC() {
-  clearInterval(ex.tick); clearExSave();
+  clearInterval(ex.tick); clearExSave(); ex.rd0 = readiness().all;
   hypeMute = true;
   ex.qs.forEach((q, i) => {
     if (q.pbq) { record("p:" + q.id, q.d, q.o, isRight(q, ex.ans[i]), "lab"); q.fields.forEach(f => missUpdate("pf:" + q.id + ":" + f.id, q.d, q.o, fieldOK(f, ex.ans[i][f.id]))); }
@@ -3407,7 +3423,7 @@ function finishMC() {
   const got = ex.qs.reduce((a, q, i) => a + itemPts(q, ex.ans[i]), 0), max = ex.qs.reduce((a, q) => a + itemMax(q), 0), pct = got / max;
   const right = ex.qs.filter((q, i) => isRight(q, ex.ans[i])).length;
   const kind = ex.mode === "sim" ? "full simulation" : ex.tag === "daily" ? "daily challenge" : ex.tag === "gen" ? "AI question set" : "multiple choice";
-  stats.exams.push({ t: Date.now(), mode: ex.mode === "sim" ? "sim" : "mc", tag: ex.tag || null, n: ex.qs.length, pct, label: `${right}/${ex.qs.length} ${kind} (${Math.round(pct * 100)}%)` });
+  stats.exams.push({ t: Date.now(), mode: ex.mode === "sim" ? "sim" : "mc", tag: ex.tag || null, n: ex.qs.length, pct, dom: domPct(ex.qs, ex.ans), rd: readiness().all, label: `${right}/${ex.qs.length} ${kind} (${Math.round(pct * 100)}%)` });
   if (typeof afterExam === "function") afterExam(pct, right);
   store.set("stats", stats);
   ex.phase = "results"; renderExam();
@@ -3435,8 +3451,9 @@ function examResults(v) {
       ${weak.length ? `<p style="margin:8px 0 0"><b>Weakest domain:</b> ${weak[0]}.0 ${esc(DOMAINS[weak[0]].name)} (${Math.round(100 * rows[weak[0]].got / rows[weak[0]].tot)}%)</p>` : ""}
       ${weakObjs.length ? `<p class="note" style="margin:4px 0 0"><b>Objectives to review:</b> ${weakObjs.map(o => `${o.o} ${esc((typeof OBJ_TITLES !== "undefined" && OBJ_TITLES[o.o]) || "")} (${Number.isInteger(o.got) ? o.got : o.got.toFixed(1)}/${o.tot})`).join(" · ")}</p>` : ""}
       ${pbqs.length ? `<p class="note" style="margin:6px 0 0">PBQs: ${pbqs.map(x => { const r = pbqScore(x.q, ex.ans[x.i]); return `${esc(x.q.title)} ${r.pts}/${r.tot}`; }).join(" · ")}</p>` : ""}
-      <p class="note">No scaled score here on purpose: CompTIA converts results to its 100–900 scale with an unpublished method, so a straight conversion from percent correct would be misleading. <a href="https://help.comptia.org/hc/en-us/articles/11186025660308-How-Are-CompTIA-Exams-Scored" target="_blank" rel="noopener">How CompTIA scores exams</a></p></div>
-      ${domainTable(rows)}
+      <p class="note">No scaled score here on purpose: CompTIA converts results to its 100–900 scale with an unpublished method, so a straight conversion from percent correct would be misleading. <a href="https://help.comptia.org/hc/en-us/articles/11186025660308-How-Are-CompTIA-Exams-Scored" target="_blank" rel="noopener">How CompTIA scores exams</a></p>
+      ${readinessLine(readiness().all, ex.rd0)}</div>
+      ${domainTable(rows)}${flagsHTML()}${ex.tag === "daily" || ex.tag === "gen" ? "" : trendHTML()}
       <div class="panel"><h3>Review</h3>${ex.qs.map((q, i) => { const ok = isRight(q, ex.ans[i]);
         if (q.pbq) { const r = pbqScore(q, ex.ans[i]); return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : r.pts + "/" + r.tot}</span><span>${i + 1}. PBQ: ${esc(q.title)}</span></summary><div class="winbody" style="padding:8px 0 4px 0">${pbqFormHTML(q, ex.ans[i], true, "xr-" + i)}</div></details>`; }
         return `<details class="rev"${ok ? "" : " open"}><summary><span class="mk" style="color:var(--${ok ? "good" : "bad"})">${ok ? "✓" : "✗"}</span><span>${i + 1}. ${esc(q.q)}</span></summary>
@@ -3556,13 +3573,14 @@ function renderStats() {
   it.forEach(x => { const o = byObj[x.o] || (byObj[x.o] = { o: x.o, d: x.d, r: 0, n: 0 }); o.r += x.r; o.n += x.r + x.w; });
   const weak = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n).slice(0, 6);
   v.innerHTML = `<div class="tbl"><table><thead><tr><th>Domain</th><th>Flashcards</th><th>Commands</th><th>Exam Qs</th><th>Labs</th><th style="width:28%">Overall</th></tr></thead><tbody>${rows}</tbody></table></div>
+    ${trendHTML()}${flagsHTML()}
     <div class="panel"><h3>Weakest objectives</h3>${weak.length ? `<div class="tbl" style="margin-top:10px"><table><thead><tr><th>Objective</th><th>Accuracy</th><th>Attempts</th></tr></thead><tbody>${weak.map(o => `<tr><td><span class="tag"><span class="dd d${o.d}">${o.d}.0</span> ${esc(o.o)}</span></td><td class="num">${Math.round(100 * o.r / o.n)}%</td><td class="num">${o.n}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Needs at least 3 attempts on an objective.</p>`}</div>
     ${stats.exams.length ? `<div class="panel"><h3>Exam history</h3><ul style="margin:8px 0 0;padding-left:18px">${stats.exams.slice(-8).reverse().map(e => `<li><span class="mono note">${new Date(e.t).toLocaleDateString()}</span> ${esc(cleanLabel(e.label))}</li>`).join("")}</ul></div>` : ""}
     ${achHTML()}${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
   wireSync();
   $("#reset").onclick = () => {
     $("#resetrow").innerHTML = `<span class="confirm"><span class="note">Erase all saved progress in this browser?</span><button class="btn" id="resetyes">Erase</button><button class="btn ghost" id="resetno">Cancel</button></span>`;
-    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); store.set("bench", []); store.set("zdays", []); store.set("zbest", 0); paintHud(); paintBadges(); renderStats(); };
+    $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); mast = {}; store.set("mast", {}); store.set("qlog", []); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); store.set("bench", []); store.set("zdays", []); store.set("zbest", 0); paintHud(); paintBadges(); renderStats(); };
     $("#resetno").onclick = renderStats;
   };
 }
@@ -4074,7 +4092,8 @@ function renderToday() {
   }
   const weakDom = [1, 2, 3, 4].sort((a, b) => R[a].score - R[b].score)[0];
   const byObj = {}; Object.values(stats.items).forEach(x => { const o = byObj[x.o] || (byObj[x.o] = { o: x.o, d: x.d, r: 0, n: 0 }); o.r += x.r; o.n += x.r + x.w; });
-  const weakObj = Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n)[0];
+  const wf = weakFlags().objs[0];
+  const weakObj = wf ? { o: wf.o, d: wf.d, r: wf.n - wf.wrong, n: wf.n, flag: true } : Object.values(byObj).filter(o => o.n >= 3).sort((a, b) => a.r / a.n - b.r / b.n)[0];
   const best = store.get("pbqbest", {}), sb = store.get("scbest", {});
   const nextPbq = PBQS.find(q => (best[q.id] || 0) < 100), nextTicket = SCENS.find(s => !sb[s.id]);
   const mocks = stats.exams.filter(e => (e.mode === "mc" || e.mode === "sim") && e.n >= 30), lastMock = mocks[mocks.length - 1];
@@ -4086,7 +4105,7 @@ function renderToday() {
   plan.push(due.length ? { t: `Review ${todayRev.length} card${todayRev.length === 1 ? "" : "s"}`, s: `Misses and most overdue first · about ${Math.max(1, Math.round(todayRev.length * 0.25))} min${extra > 0 ? ` · ${extra} more roll over to later days` : ""}`, b: "Start review", id: "pdue" } : { t: "Reviews: all caught up", s: "Nothing due today.", done: true, id: "pdue" });
   plan.push(dailyPlanItem());
   if (unseen.length) { const pick = unseen.filter(c => c.d === weakDom).length ? unseen.filter(c => c.d === weakDom) : unseen; plan.push({ t: `Learn ${Math.min(15, pick.length)} new flashcards`, s: `From ${weakDom}.0 ${DOMAINS[weakDom].name}, your lowest-readiness domain · ${unseen.length} cards not started yet`, b: "Learn", id: "pnew" }); }
-  if (weakObj) plan.push({ t: `Drill objective ${weakObj.o}`, s: `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
+  if (weakObj) plan.push({ t: `${weakObj.flag ? "🚩 " : ""}Drill objective ${weakObj.o}`, s: weakObj.flag ? `Flagged: you missed ${weakObj.n - weakObj.r} of your last ${weakObj.n} questions on it` : `Your weakest objective so far (${Math.round(100 * weakObj.r / weakObj.n)}% over ${weakObj.n} answers)`, b: "Drill", id: "pobj" });
   if (nextPbq) plan.push({ t: `PBQ lab: ${nextPbq.title}`, s: best[nextPbq.id] != null ? `Best so far ${best[nextPbq.id]}%. Get it to 100%.` : "Not attempted yet", b: "Open lab", id: "ppbq", meta: nextPbq.id });
   else if (nextTicket) plan.push({ t: `Troubleshoot: ${nextTicket.title}`, s: "Unsolved ticket", b: "Open ticket", id: "ptkt", meta: nextTicket.id });
   if (needBak) plan.push({ t: "Back up your progress", s: lastBak ? `Last backup was ${bakDays} days ago. Clearing browser data would wipe your review schedule.` : "Your progress only lives in this browser. Save a backup file or code so it can't be lost.", b: "Back up", id: "pbak" });
@@ -4179,7 +4198,7 @@ function renderToday() {
 
 /* ================= PROGRESS SYNC (export / import) ================= */
 const BENCH_SRC = ["Professor Messer practice exam", "Jason Dion practice exam", "CompTIA CertMaster Practice", "Mike Meyers / Total Seminars", "Other"];
-const SYNC_KEYS = ["zdays", "zbest", "bench", "hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
+const SYNC_KEYS = ["mast", "qlog", "zdays", "zbest", "bench", "hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
 function syncPanelHTML() {
   const lb = store.get("lastbak", 0) || 0;
   return `<div class="panel" id="syncpanel"><h3>Back up and move your progress</h3><p class="note" style="margin:6px 0 10px">Progress is saved only in this browser, so clearing browser data wipes it. Save a backup file (or code) every week. Use the same file or code to move progress to another device. Restoring replaces the progress on that device.</p>
@@ -5280,6 +5299,168 @@ function buildPomoUI() {
 }
 buildPomoUI();
 window.__c2pomo = { state: () => JSON.parse(JSON.stringify(PO)), left: poLeft, end: () => { if (PO.running) { PO.endAt = Date.now() - 1; poTick(); } } };
+
+/* ================= MASTERY MODE · TREND GRAPH · WEAK-SPOT FLAGS ================= */
+/* Mastery: rounds of 20 from your selected domains. A miss comes back 3–5 questions later in the same round,
+   and the round doesn't end until you get it right. A question is mastered when you get it right on the first
+   try ever, or (after a miss) on your first try in 2 later rounds in a row. */
+const MS_ROUND = 20;
+let mast = store.get("mast", {}) || {};
+const ms = { on: false, done: false, queue: [], i: 0, sel: null, checked: false, first: {}, requeued: 0, flagsBefore: [], newFlags: [], rd0: null };
+const mastered = k => mast[k] && mast[k].need === 0;
+function mastPool() { return EXAM.map((q, k) => ({ ...q, k })).filter(q => !q.off && inDom(q)); }
+function mastCounts() {
+  const by = { 1: { m: 0, t: 0, l: 0 }, 2: { m: 0, t: 0, l: 0 }, 3: { m: 0, t: 0, l: 0 }, 4: { m: 0, t: 0, l: 0 } };
+  EXAM.forEach((q, k) => { if (q.off) return; by[q.d].t++; if (mastered(k)) by[q.d].m++; else if (mast[k]) by[q.d].l++; });
+  return by;
+}
+function mastPick() {
+  const pool = mastPool();
+  const learning = shuffle(pool.filter(q => mast[q.k] && mast[q.k].need > 0)).sort((a, b) => (mast[b.k].miss || 0) - (mast[a.k].miss || 0));
+  const unseen = shuffle(pool.filter(q => !mast[q.k]));
+  let pick = learning.slice(0, 10);
+  pick = pick.concat(unseen.slice(0, MS_ROUND - pick.length));
+  if (pick.length < MS_ROUND) pick = pick.concat(learning.slice(10, 10 + MS_ROUND - pick.length));
+  if (!pick.length) pick = shuffle(pool).slice(0, MS_ROUND); // everything mastered: a refresher round
+  return shuffle(pick);
+}
+function mastStart() {
+  Object.assign(ms, { on: true, done: false, queue: mastPick(), i: 0, sel: null, checked: false, first: {}, requeued: 0, flagsBefore: weakFlags().objs.map(f => f.o), newFlags: [], rd0: readiness().all });
+  ex.mode = "mastery"; store.set("exmode", "mastery"); renderExam(); window.scrollTo({ top: 0 });
+}
+function mastAnswer(q, ok) {
+  if (ms.first[q.k] === undefined) { // only the first try in a round counts
+    ms.first[q.k] = ok;
+    const m = mast[q.k];
+    if (ok) { if (!m) mast[q.k] = { need: 0, seen: 1, miss: 0 }; else { m.seen++; if (m.need > 0) m.need--; } }
+    else mast[q.k] = { need: 2, seen: (m ? m.seen : 0) + 1, miss: (m ? m.miss : 0) + 1 };
+    store.set("mast", mast);
+    record("e:" + q.k, q.d, q.o, ok, "exam");
+    const now = weakFlags().objs.map(f => f.o);
+    const fresh = now.filter(o => !ms.flagsBefore.includes(o) && !ms.newFlags.includes(o));
+    if (fresh.length) { ms.newFlags.push(...fresh); toast(`🚩 Objective ${fresh[0]} flagged for more study`, "bad"); }
+  }
+  if (!ok) { const at = Math.min(ms.i + 3 + Math.floor(Math.random() * 3), ms.queue.length); ms.queue.splice(at, 0, q); ms.requeued++; }
+}
+function masteryRun(v) {
+  if (ms.done) return masteryResults(v);
+  const q = ms.queue[ms.i], C = mastCounts(), M = [1, 2, 3, 4].reduce((a, d) => a + C[d].m, 0), T = [1, 2, 3, 4].reduce((a, d) => a + C[d].t, 0);
+  const uniq = new Set(ms.queue.map(x => x.k)).size, cleared = Object.keys(ms.first).filter(k => !ms.queue.slice(ms.i).some(x => String(x.k) === k)).length;
+  const multi = isMulti(q), sel = ms.sel, ok = ms.checked && isRight(q, sel);
+  const again = ms.first[q.k] !== undefined && !ms.checked;
+  const optCls = i => { if (!ms.checked) return (multi ? (sel || []).includes(i) : sel === i) ? " sel" : "";
+    const isKey = multi ? q.a.includes(i) : q.a === i, picked = multi ? (sel || []).includes(i) : sel === i;
+    return isKey ? " ok" : picked ? " no" : ""; };
+  v.innerHTML = `<div class="bar"><span class="lbl">Mastery round · question ${ms.i + 1} of ${ms.queue.length}</span><span class="note">${cleared}/${uniq} cleared this round${ms.requeued ? ` · ${ms.requeued} came back` : ""}</span><span class="score">Mastered ${M} / ${T}</span></div>
+    <div class="meter" style="margin:0 0 12px"><i style="width:${Math.round(100 * M / Math.max(1, T))}%"></i></div>
+    <div class="panel"><div class="bar">${tagHTML(q)}${again ? `<span class="tag" style="color:var(--bad)">↻ back again: get it right to clear it</span>` : ""}</div>
+      <p class="prompt" style="margin:10px 0 12px">${esc(q.q)}</p>
+      ${multi ? `<p class="note" style="margin:-6px 0 10px"><b>Choose ${q.a.length}.</b> ${(sel || []).length}/${q.a.length} selected</p>` : ""}
+      <div class="opts">${q.c.map((o, i) => `<button class="opt${optCls(i)}${multi ? " multi" : ""}" type="button" data-i="${i}" aria-pressed="${multi ? (sel || []).includes(i) : sel === i}" ${ms.checked ? "disabled" : ""}><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+      ${ms.checked ? `<div class="fb ${ok ? "good" : "bad"}" style="margin-top:12px"><b class="v">${ok ? "Correct" : "Not quite"}</b>${ok ? "" : `Answer: <b>${esc(keyText(q))}</b><br>`}${esc(q.why)}${ok ? "" : `<br><span class="note">This one comes back in a few questions. Get it right to clear it.</span>`}</div>` : ""}
+      <div class="row">${ms.checked ? `<button class="btn" id="msnext" type="button">${ms.i + 1 < ms.queue.length ? "Next →" : "Finish round →"}</button>` : `<button class="btn" id="mscheck" type="button" ${(multi ? (sel || []).length === q.a.length : sel !== null) ? "" : "disabled"}>Check answer</button>`}
+        <button class="btn ghost" id="msend" type="button" style="margin-left:auto">End round</button></div></div>`;
+  v.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i;
+    if (multi) { let c = Array.isArray(ms.sel) ? ms.sel.slice() : []; c = c.includes(i) ? c.filter(x => x !== i) : [...c, i]; if (c.length > q.a.length) c.shift(); ms.sel = c; }
+    else ms.sel = i;
+    renderExam();
+  });
+  if ($("#mscheck")) $("#mscheck").onclick = () => { ms.checked = true; mastAnswer(q, isRight(q, ms.sel)); renderExam(); };
+  if ($("#msnext")) $("#msnext").onclick = () => { ms.i++; ms.sel = null; ms.checked = false; if (ms.i >= ms.queue.length) mastFinish(); renderExam(); window.scrollTo({ top: 0 }); };
+  $("#msend").onclick = () => { mastFinish(); renderExam(); window.scrollTo({ top: 0 }); };
+}
+function mastFinish() {
+  const ks = Object.keys(ms.first), right = ks.filter(k => ms.first[k]).length, n = ks.length;
+  ms.done = true;
+  if (!n) return;
+  const dom = {}; ks.forEach(k => { const q = EXAM[k], r = dom[q.d] || (dom[q.d] = [0, 0]); r[1]++; if (ms.first[k]) r[0]++; });
+  ms.result = { n, right, pct: right / n, dom };
+  stats.exams.push({ t: Date.now(), mode: "mastery", n, pct: right / n, dom, rd: readiness().all, label: `mastery round, ${right}/${n} right first try (${Math.round(100 * right / n)}%)` });
+  store.set("stats", stats);
+}
+function masteryResults(v) {
+  const r = ms.result, C = mastCounts(), R = readiness();
+  const M = [1, 2, 3, 4].reduce((a, d) => a + C[d].m, 0), T = [1, 2, 3, 4].reduce((a, d) => a + C[d].t, 0);
+  v.innerHTML = `<div class="panel"><span class="lbl">Mastery round done</span>
+      ${r ? `<div class="big ${r.pct >= 0.85 ? "pass" : "fail"}">${Math.round(r.pct * 100)}%<span style="font-size:.4em;color:var(--muted)"> right first try</span></div>
+      <p style="margin:6px 0 0">${r.right} of ${r.n} right on the first try${ms.requeued ? `, ${ms.requeued} repeat${ms.requeued === 1 ? "" : "s"} until you got them` : ""}. Every question in the round is now cleared.</p>` : `<p>No questions answered this round.</p>`}
+      ${readinessLine(R.all, ms.rd0)}
+      <h3 style="margin:16px 0 6px">Mastered ${M} of ${T}</h3>
+      <div class="tbl"><table><thead><tr><th>Domain</th><th>Mastered</th><th>Still learning</th><th style="width:34%">Progress</th></tr></thead><tbody>
+      ${[1, 2, 3, 4].map(d => `<tr><td><span class="tag"><span class="dd d${d}">${d}.0</span></span> ${esc(DOMAINS[d].short)}</td><td class="num">${C[d].m}/${C[d].t}</td><td class="num">${C[d].l}</td><td><div class="meter"><i style="width:${Math.round(100 * C[d].m / Math.max(1, C[d].t))}%;background:var(--d${d})"></i></div></td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="row"><button class="btn" id="msagain" type="button">Next round of ${MS_ROUND} →</button><button class="btn ghost" id="msback" type="button">Back to Mock exam</button></div></div>
+    ${flagsHTML(ms.newFlags)}
+    ${trendHTML()}`;
+  $("#msagain").onclick = mastStart;
+  $("#msback").onclick = () => { ms.on = false; ms.done = false; ex.phase = "setup"; renderExam(); };
+}
+function masterySetupHTML() {
+  const C = mastCounts(), pool = mastPool(), M = pool.filter(q => mastered(q.k)).length, L = pool.filter(q => mast[q.k] && mast[q.k].need > 0).length;
+  return `<div class="fb"><b class="v">Practice until you know it</b>Rounds of ${MS_ROUND} from the domains selected above, with the answer and explanation after each question. A miss comes back a few questions later, and the round doesn't end until you get it right. A missed question counts as mastered once you get it right on the first try in 2 later rounds.</div>
+    <p style="margin:10px 0 4px"><b>Mastered ${M} of ${pool.length}</b> in this selection · ${L} still learning · ${pool.length - M - L} not seen yet</p>
+    <div class="meter"><i style="width:${Math.round(100 * M / Math.max(1, pool.length))}%"></i></div>
+    <p class="note" style="margin:6px 0 0">${[1, 2, 3, 4].filter(d => active.has(d)).map(d => `${d}.0: ${C[d].m}/${C[d].t}`).join(" · ")}</p>`;
+}
+
+/* ---------- answer log (exam questions only) → weak-spot flags ---------- */
+function qlogAdd(d, o, ok) { const L = store.get("qlog", []) || []; L.push({ d, o, ok: ok ? 1 : 0, t: Date.now() }); store.set("qlog", L.slice(-600)); }
+function weakFlags() {
+  const L = store.get("qlog", []) || [], byO = {}, byD = {};
+  L.forEach(x => { (byO[x.o] = byO[x.o] || { o: x.o, d: x.d, a: [] }).a.push(x.ok); (byD[x.d] = byD[x.d] || []).push(x.ok); });
+  const objs = Object.values(byO).map(g => { const last = g.a.slice(-6), tail = g.a.slice(-3);
+    return { o: g.o, d: g.d, n: last.length, wrong: last.filter(v => !v).length, flagged: last.length >= 4 && last.filter(v => !v).length >= 3 && !(tail.length === 3 && tail.every(v => v)) }; })
+    .filter(g => g.flagged).sort((a, b) => b.wrong / b.n - a.wrong / a.n || a.o.localeCompare(b.o));
+  const doms = [1, 2, 3, 4].map(d => { const a = (byD[d] || []).slice(-30); return { d, n: a.length, acc: a.length ? a.filter(v => v).length / a.length : null }; })
+    .filter(x => x.n >= 10 && x.acc < 0.7);
+  return { objs, doms };
+}
+function flagsHTML(fresh) {
+  const F = weakFlags(); if (!F.objs.length && !F.doms.length) return "";
+  const T = typeof OBJ_TITLES !== "undefined" ? OBJ_TITLES : {};
+  return `<div class="panel"><h3 style="margin:0 0 6px">🚩 Study more</h3>
+    <p class="note" style="margin:0 0 8px">Flagged from your recent answers. An objective clears once you get 3 in a row right on it. Today's plan drills the top one.</p>
+    <ul class="flaglist">${F.doms.map(x => `<li><span class="tag"><span class="dd d${x.d}">${x.d}.0</span></span> <b>${esc(DOMAINS[x.d].name)}</b> <span class="note">${Math.round(x.acc * 100)}% over your last ${x.n} questions</span></li>`).join("")}
+    ${F.objs.map(x => `<li><span class="tag"><span class="dd d${x.d}">${x.d}.0</span>Obj ${esc(x.o)}</span> ${esc(T[x.o] || "")} <span class="note">missed ${x.wrong} of your last ${x.n}${fresh && fresh.includes(x.o) ? " · new" : ""}</span></li>`).join("")}</ul></div>`;
+}
+
+/* ---------- readiness line + trend graph ---------- */
+function readinessLine(now, before) {
+  const d = before == null ? null : Math.round(100 * now) - Math.round(100 * before);
+  return `<p style="margin:10px 0 0"><b>Exam readiness: ${Math.round(now * 100)}%</b>${d === null ? "" : d === 0 ? ` <span class="note">(no change)</span>` : ` <span style="color:var(--${d > 0 ? "good" : "bad"})">${d > 0 ? "▲ +" : "▼ "}${d}</span>`} <span class="note">· target 85%</span></p>`;
+}
+function trendHTML() {
+  const big = stats.exams.filter(e => e.n >= 20 && (e.mode === "mc" || e.mode === "sim" || e.mode === "mastery") && e.tag !== "daily").slice(-15);
+  const dailies = stats.exams.filter(e => e.tag === "daily").slice(-7);
+  const dailyNote = dailies.length ? `<p class="note" style="margin:8px 0 0">Daily challenges (10 questions, shown separately): last ${dailies.length} average ${Math.round(100 * dailies.reduce((a, e) => a + e.pct, 0) / dailies.length)}%.</p>` : "";
+  if (big.length < 2) return `<div class="panel"><h3 style="margin:0 0 6px">Your trend</h3><p class="note" style="margin:0">Finish ${big.length ? "one more quiz" : "two quizzes"} of 20+ questions (mock exam, simulation or mastery round) to start your trend line.</p>${dailyNote}</div>`;
+  const W = 640, H = 220, L = 38, Rt = 14, Tp = 12, B = 30, x = i => L + (W - L - Rt) * (big.length === 1 ? 0.5 : i / (big.length - 1)), y = p => Tp + (H - Tp - B) * (1 - p);
+  const path = pts => pts.map((p, i) => p ? `${i && pts[i - 1] ? "L" : "M"}${x(i).toFixed(1)},${y(p).toFixed(1)}` : "").join("");
+  const sc = big.map(e => e.pct), rd = big.map(e => e.rd != null ? e.rd : null), hasRd = rd.filter(v => v != null).length >= 2;
+  const lbl = e => e.mode === "mastery" ? "Mastery" : e.mode === "sim" ? "Simulation" : "Mock";
+  const day = t => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const svg = `<svg viewBox="0 0 ${W} ${H}" class="trend" role="img" aria-label="Quiz scores and readiness over your last ${big.length} quizzes">
+    ${[0, .25, .5, .75, 1].map(p => `<line x1="${L}" x2="${W - Rt}" y1="${y(p)}" y2="${y(p)}" class="tg"/><text x="${L - 6}" y="${y(p) + 4}" class="tl" text-anchor="end">${p * 100}%</text>`).join("")}
+    <line x1="${L}" x2="${W - Rt}" y1="${y(.85)}" y2="${y(.85)}" class="t85"/><text x="${W - Rt}" y="${y(.85) - 5}" class="tl" text-anchor="end">85% target</text>
+    ${hasRd ? `<path d="${path(rd)}" class="trd"/>` : ""}
+    <path d="${path(sc)}" class="tsc"/>
+    ${big.map((e, i) => `<g class="tpt"><circle cx="${x(i)}" cy="${y(e.pct)}" r="4.5" class="tdot"/><circle cx="${x(i)}" cy="${y(e.pct)}" r="12" fill="transparent"><title>${day(e.t)} · ${lbl(e)} · ${e.n} questions · ${Math.round(e.pct * 100)}%${e.rd != null ? ` · readiness ${Math.round(e.rd * 100)}%` : ""}</title></circle></g>`).join("")}
+    <text x="${x(0)}" y="${H - 8}" class="tl">${day(big[0].t)}</text><text x="${x(big.length - 1)}" y="${H - 8}" class="tl" text-anchor="end">${day(big[big.length - 1].t)}</text>
+  </svg>`;
+  const last = big[big.length - 1], prev = big[big.length - 2];
+  const domRows = [1, 2, 3, 4].map(d => { const f = e => e.dom && e.dom[d] && e.dom[d][1] ? e.dom[d][0] / e.dom[d][1] : null; const a = f(prev), b = f(last);
+    return b === null ? "" : `<li><span class="tag"><span class="dd d${d}">${d}.0</span></span> ${esc(DOMAINS[d].short)}: <b>${Math.round(b * 100)}%</b>${a === null ? "" : (() => { const ch = Math.round(100 * b) - Math.round(100 * a); return ch ? ` <span style="color:var(--${ch > 0 ? "good" : "bad"})">${ch > 0 ? "▲ +" : "▼ "}${ch}</span>` : ` <span class="note">same</span>`; })()}</li>`; }).join("");
+  return `<div class="panel"><div class="bar"><h3 style="margin:0;margin-right:auto">Your trend</h3>
+      <span class="legend"><span class="lg"><i class="lgsc"></i>Quiz score</span>${hasRd ? `<span class="lg"><i class="lgrd"></i>Readiness</span>` : ""}</span></div>
+    <div class="trendwrap">${svg}</div>
+    ${domRows ? `<p class="note" style="margin:8px 0 4px">By domain, last quiz vs. the one before:</p><ul class="domtrend">${domRows}</ul>` : ""}
+    ${dailyNote}
+    <details class="tview"><summary class="note">Show as a table</summary><div class="tbl"><table><thead><tr><th>Date</th><th>Type</th><th>Questions</th><th>Score</th><th>Readiness</th></tr></thead><tbody>
+    ${big.slice().reverse().map(e => `<tr><td>${day(e.t)}</td><td>${lbl(e)}</td><td class="num">${e.n}</td><td class="num">${Math.round(e.pct * 100)}%</td><td class="num">${e.rd != null ? Math.round(e.rd * 100) + "%" : "–"}</td></tr>`).join("")}
+    </tbody></table></div></details></div>`;
+}
+function domPct(qs, ans) { const dom = {}; qs.forEach((q, i) => { const r = dom[q.d] || (dom[q.d] = [0, 0]); r[1] += itemMax(q); r[0] += itemPts(q, ans[i]); }); return dom; }
 
 /* ---------- boot ---------- */
 function resetViews() { fc.deck = []; cp.list = []; cp.i = 0; if (ex.phase === "setup") {} }
