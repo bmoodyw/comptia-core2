@@ -492,6 +492,22 @@ main{padding-bottom:70px}
 .arcintro{text-align:center;padding:30px 16px}
 .arcintro p{max-width:46ch;margin:8px auto 16px}
 .tab-arcade{color:var(--t5)}
+/* round 7 */
+.xdin{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.xdcount{border-left:4px solid var(--accent)}
+.guessbtn.on{background:var(--accent-soft);border-color:var(--accent)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cram{position:fixed;inset:0;z-index:80;overflow:auto;background:var(--card);color:var(--ink);padding:20px max(16px,4vw) 60px}
+html.cramopen body{overflow:hidden}
+.cramhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:-20px;background:var(--card);padding:8px 0;border-bottom:1px solid var(--line);z-index:1}
+.cramsub{margin:8px 0 14px}
+.cramdom h3{margin:18px 0 6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cramobj{break-inside:avoid;margin:0 0 10px}.cramobj h4{margin:10px 0 4px;font-size:.92rem}
+.cram dl{margin:0;display:grid;grid-template-columns:minmax(120px,28%) 1fr;gap:3px 12px;font-size:.86rem}
+.cram dt{font-weight:700}.cram dd{margin:0;color:var(--ink)}
+@media (max-width:560px){.cram dl{grid-template-columns:1fr}.cram dd{margin:0 0 6px}}
+@media print{body>*:not(#cram){display:none!important}.cram{position:static;overflow:visible;padding:0;color:#000;background:#fff}.cramhead button{display:none}.cramhead{position:static}.cram dl{font-size:9.5pt}html.cramopen body{overflow:visible}}
+
 </style>
 
 <header class="mast">
@@ -528,7 +544,7 @@ main{padding-bottom:70px}
   <section id="view-missed" hidden></section>
   <section id="view-stats" hidden></section>
   <section id="view-arcade" hidden></section>
-  <footer class="sitefoot" id="sitever">Core 2 Drill Room · <b>v22</b> · updated Nov 10, 2026</footer>
+  <footer class="sitefoot" id="sitever">Core 2 Drill Room · <b>v23</b> · updated Nov 22, 2026</footer>
 </div></main>
 <script>
 /* ===== DATA: every item tagged with domain (d) and objective (o) per CompTIA 220-1202 v3.0 ===== */
@@ -3006,6 +3022,1024 @@ EXAM.push(...[
 }
 ]);
 
+/* ===== Round 7: third independent audit (checked against Messer 220-1202 v1.40 + TIA notes + vendor docs) ===== */
+(() => {
+  const setQ = (k, f) => Object.assign(EXAM[k], f);
+  // q154: guessable
+  setQ(154, {"c": ["Spotlight (Command+Space)", "Mission Control (three-finger swipe up)", "Launchpad (pinch with thumb and three fingers)", "App Exposé (three-finger swipe down)"], "a": 1, "why": "Mission Control (three- or four-finger swipe up) shows every open window and desktop. App Exposé (swipe down) shows only the current app's windows, Launchpad shows installed apps, and Spotlight searches."});
+  // q156: guessable
+  setQ(156, {"c": ["Root sessions can't open network connections", "The root password expires automatically every 30 days", "Mistakes and malware run unrestricted, with no named user", "Root is blocked from installing software packages"], "a": 2, "why": "Root (UID 0) can do anything, so a typo or malware running as root is unrestricted, and shared root use doesn't show who did what. A normal account plus sudo limits damage and logs each elevated command. Root can use the network, install packages and keeps its password until it's changed."});
+  // q267: guessable
+  setQ(267, {"c": ["A mapped drive share that locks the file while it's open", "Co-authoring in Excel for the web or Google Sheets", "Emailing updated copies of the file back and forth", "Passing the file around on a shared USB drive"], "a": 1, "why": "Cloud office tools let several people edit the same file in real time. Email and USB create conflicting copies, and a file lock allows only one editor at a time."});
+  // q21: wrong_answer
+  setQ(21, {"c": ["Shoulder surfing", "Tailgating", "Piggybacking", "Dumpster diving"], "a": 2, "why": "The employee knowingly holds the door, so the intruder has consent: that's piggybacking. Tailgating is slipping in behind someone without their knowledge or consent. Both are 220-1202 social engineering terms. Controls: an access control vestibule and training staff not to hold doors for anyone without a badge.", "key": "Piggybacking: an authorized person knowingly lets someone in (holds the door). Tailgating: following someone in without their consent."});
+  // q35: guessable
+  setQ(35, {"c": ["Delete all partitions on each", "Physically shred them", "Degauss them with the facility's unit", "Quick format each drive"], "a": 1, "why": "Degaussing doesn't affect flash storage, so the degausser is useless here. Physical destruction (shredding) is the reliable choice. If a vendor does it, get a certificate of destruction. Deleting partitions and quick formatting leave the data recoverable."});
+  // q100: guessable
+  setQ(100, {"c": ["Just-in-time access (JIT)", "Password vaulting", "Single sign-on (SSO)", "Multifactor authentication (MFA)"], "a": 2});
+  // q103: guessable
+  setQ(103, {"c": ["WEP with a 128-bit key", "WPA3-Personal with a long passphrase", "An open network with a captive portal", "WPA3-Enterprise with 802.1X and RADIUS"], "a": 3});
+  // q112: guessable
+  setQ(112, {"c": ["Overwrite it with a whole-drive wipe tool", "Drill holes through the platters", "Degauss each drive with a wand", "Quick format and reinstall Windows"], "a": 0, "why": "Overwriting the whole drive (a wipe tool such as DBAN, or a full format, which writes zeros) removes the data and leaves the drive usable. Degaussing and drilling destroy the drive, and a quick format leaves the data recoverable."});
+  // q164: guessable
+  setQ(164, {"c": ["Keep them standard; an admin elevates via UAC", "Add them to the Power Users group", "Enable the Guest account for them", "Add them to Administrators permanently"], "a": 0});
+  // q174: guessable
+  setQ(174, {"c": ["Enable BitLocker on each workstation", "Join them to the domain", "Change the default admin password", "Set a BIOS/UEFI password"], "a": 2});
+  // q182: guessable
+  setQ(182, {"c": ["It's safe if the download page uses HTTPS", "It may bundle malware; get it from the vendor", "The only risk is that it won't auto-update", "It's safe if antivirus finds nothing"], "a": 1});
+  // q279: guessable
+  setQ(279, {"c": ["Reimage the OS from known-good media", "Run Disk Cleanup and rescan in Safe Mode", "Update the browser and rescan the PC", "Scan offline from a recovery environment", "Disable System Restore and rescan"], "a": [0, 3]});
+  // q288: guessable
+  setQ(288, {"c": ["Confirm the symptoms point to malware", "Disable System Restore", "Teach the user about phishing", "Wipe the drive right away"], "a": 0});
+  // q302: guessable
+  setQ(302, {"c": ["Clear the browser cache and retry", "Don't sign in; contact the bank", "Disable the pop-up blocker", "Click 'Proceed anyway'; the URL is right"], "a": 1});
+  // q303: guessable
+  setQ(303, {"c": ["Use the same strong password everywhere", "Turn on browser sync without MFA", "Use a password manager for unique passwords", "Write the passwords in a notebook"], "a": 2});
+  const card = (t, f) => { const c = CARDS.find(x => x.t === t); if (c) Object.assign(c, f); };
+  const dropCard = t => { const i = CARDS.findIndex(x => x.t === t); if (i >= 0) CARDS.splice(i, 1); };
+  card("TPM 2.0", {"o": "1.2"}); // wrong_tag
+  dropCard("Update limitations"); // duplicate
+  card("Change freeze", {"def": "Set block of time (e.g., Nov 15 to Jan 5, peak season) when no changes are made for any reason."}); // wrong_explanation
+  card("Backup plan (change)", {"def": "Alternate way to complete the change if the main method fails, e.g., update file pre-staged on a flash drive and installed from the CLI. A rollback plan reverts the change instead."}); // wrong_explanation
+  card("Unwanted OS notifications", {"def": "Unwanted notifications from apps or sites. Turn them off globally or per app in the OS notification settings, and revoke push permission in the browser for any website sending them."}); // wrong_explanation
+  card("Incremental backup", {"def": "Backs up changes since the last full or incremental backup; restore needs the full plus every incremental."}); // wrong_explanation
+  dropCard("Professional appearance"); // duplicate
+  // ---- tickets: balanced choice lengths, answers spread across A–D (they were nearly all B) ----
+  const tk = (id, part, c, a, why) => { const s = SCENS.find(x => x.id === id); if (s) Object.assign(s[part], why ? { c, a, why } : { c, a }); };
+  tk("apipa", "diag", ["No DHCP lease, so Windows self-assigned APIPA", "The NIC driver is corrupted and needs reinstalling", "The DNS server address is misconfigured", "The default gateway is down for the VLAN"], 0);
+  tk("apipa", "fix", ["Set a static IP of 169.254.88.14 on the NIC", "Run sfc /scannow to repair network files", "Release and renew the lease (ipconfig /release, /renew)", "Reinstall the network adapter driver"], 2);
+  tk("dns", "diag", ["The default gateway address is wrong", "The ISP's connection is down for the site", "The browser cache is corrupted", "The static DNS server 10.0.0.250 doesn't answer"], 3);
+  tk("dns", "fix", ["Set DNS to 10.0.0.53 (or switch back to DHCP)", "Flush the DNS cache and change nothing else", "Make 8.8.8.8 the adapter's only DNS server", "Replace the patch cable and retest"], 0);
+  tk("gpo", "diag", ["fs01 is offline for maintenance", "Group Policy hasn't refreshed in a week", "The GPO is filtered: she isn't in the Sales group", "Her roaming profile is corrupted"], 2);
+  tk("gpo", "fix", ["Map S: by hand with net use at each login", "Give Everyone Full Control on the sales share", "Add her to Sales, run gpupdate /force, sign in again", "Reinstall Windows and rejoin the domain"], 2);
+  tk("hosts", "diag", ["DNS has the wrong A record for payroll", "A stale hosts-file entry overrides DNS", "The payroll server is down", "The PC is on the wrong VLAN"], 1);
+  tk("hosts", "fix", ["Ask the DNS admin to change the A record", "Reboot the payroll server and retest", "Add a second DNS server to the adapter", "Delete the hosts line (as admin), flush DNS"], 3);
+  tk("isp", "diag", ["The PC's network adapter", "The office LAN switch", "Upstream at the ISP, past hop 2", "The DNS server only"], 2);
+  tk("isp", "fix", ["Replace the office router and reconfigure the WAN", "Reimage FRONT-01 and retest the connection", "Open an ISP ticket with the tracert output and time", "Set every office PC to a static IP address"], 2);
+  tk("rat", "diag", ["A failing hard drive slowing every process", "Teams flooding the link with video traffic", "A remote access Trojan (svch0st.exe) on TCP 4444", "A DNS misconfiguration causing timeouts"], 2, "A misspelled system process ('svch0st.exe', with a zero, not an o), an established session to an external host on port 4444 (a common reverse-shell port), and the 'mouse moves by itself' report all point to a RAT under remote control.");
+  tk("rat", "fix", ["Kill the process and close the ticket", "Quarantine: take it off the network", "Disable System Restore before anything else", "Educate the user about phishing"], 1);
+  tk("disk", "diag", ["Root is 100% full from a 29 GB debug log", "Failing RAM is corrupting writes", "DNS resolution is failing", "/etc/fstab is missing a mount entry"], 0);
+  tk("disk", "fix", ["Delete large files in /usr to free space", "Reboot the server to clear temporary files", "Run fsck on the mounted root file system", "Truncate the log, add logrotate, lower log level"], 3);
+  tk("perm", "diag", ["The wrong user owns the file", "A syntax error in the script", "The user needs sudo to run it", "The execute bit isn't set (-rw-r--r--)"], 3);
+  tk("perm", "fix", ["chmod u+x deploy.sh (or chmod 755)", "sudo chown root deploy.sh", "Rename it to deploy.bat", "Run fsck on the disk"], 0);
+  tk("ldns", "diag", ["The default route is missing", "Resolver still uses retired DNS 192.168.1.250", "The database server is down", "/etc/hosts is corrupted"], 1);
+  tk("ldns", "fix", ["Add db.corp.local to /etc/hosts", "Point the resolver at 192.168.1.53", "Reboot the database server", "Flush the ARP cache"], 1);
+  // ---- command drills: Linux is case-sensitive; accept correct forms, reject wrong ones ----
+  const dr = (i, f) => Object.assign(CMDS[i], f);
+  for (let i = 25; i <= 51; i++) CMDS[i].cs = true;
+  dr(25, {"ok": ["^ls\\s+(-(?=[lahA]*l)(?=[lahA]*[aA])[lahA]+|-l\\s+-a|-a\\s+-l)$"]});
+  dr(33, {"ok": ["^(sudo\\s+)?grep\\s+(-i\\s+)?([\"'])Failed password\\3\\s+/var/log/auth\\.log$", "^(sudo\\s+)?grep\\s+-i\\s+([\"'])[Ff][Aa][Ii][Ll][Ee][Dd] [Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]\\2\\s+/var/log/auth\\.log$"]});
+  dr(41, {"ok": ["^dig\\s+(example\\.com\\s+(mx|MX)|(mx|MX)\\s+example\\.com|-t\\s+(mx|MX)\\s+example\\.com|example\\.com\\s+-t\\s+(mx|MX))$"]});
+  dr(52, {"ok": ["^restart-computer\\s+((-computername|-cn)\\s+)?kiosk01\\s+-force$", "^restart-computer\\s+-force\\s+((-computername|-cn)\\s+)?kiosk01$"]});
+  dr(53, {"ok": ["^new-psdrive(?=.*\\s-name\\s+s(\\s|$))(?=.*\\s-psprovider\\s+filesystem(\\s|$))(?=.*\\s-root\\s+\\\\\\\\fs01\\\\sales(\\s|$))(?=.*\\s-persist(\\s|$)).*$", "^net\\s+use\\s+s:\\s+\\\\\\\\fs01\\\\sales\\s+[/-]persistent:yes$"]});
+  dr(17, {"ok": ["^chkdsk\\s+(c:\\s+)?[/-]r$", "^chkdsk\\s+(c:\\s+)?([/-]f\\s+[/-]r|[/-]r\\s+[/-]f)$"]});
+  Object.assign(SCRIPTS[8], {"c": ["It needs Python installed to parse users.txt", "It could hit the wrong accounts, so test first", "It will only run on a domain controller", "It must be renamed to .ps1 to reach AD"], "a": 1});
+  { const P = PBQS.find(q => q.id === 'sim-evt'); const fs = id => P.fields.find(x => x.id === id);
+    Object.assign(fs('s3'), {"opts": ["Defragment D: to consolidate the bad blocks", "Run sfc /scannow to repair the D: volume", "Back up D:, run chkdsk /r, plan a replacement", "Clear the System log and watch for repeats", "Format D: and restore it from last month"], "ans": "Back up D:, run chkdsk /r, plan a replacement"});
+    Object.assign(fs('s4'), {"opts": ["Windows Update history for a scheduled restart", "Power: UPS, cables and any outage near 2:15 AM", "The DNS cache and the DHCP lease history", "The pagefile size and free space on C:"], "ans": "Power: UPS, cables and any outage near 2:15 AM", "why": "Kernel-Power 41 means the PC restarted without a clean shutdown. A scheduled update restart is a clean shutdown and logs 1074 and 6006 first, and neither was logged. With no BSOD logged, check the power path first, then temperatures and drivers."}); }
+  { const P = PBQS.find(q => q.id === 'sim-dev'), f = P && P.fields.find(x => x.id === 's3'); if (f && f.ans === "It was disabled; right-click › Enable device") Object.assign(f, {"opts": ["Its driver is missing; reinstall it", "It was disabled; right-click \u203a Enable device", "The hardware failed; replace the card", "It's an unknown device; find a driver"], "ans": "It was disabled; right-click \u203a Enable device"}); }
+  // ---- Domain 3-4 questions ----
+  setQ(63, {"c": ["Least privilege: too many admins", "GFS: missing monthly tapes", "Order of volatility", "3-2-1: no offsite or third copy"], "a": 3, "why": "3-2-1 means 3 copies of the data, on 2 different media types, with 1 copy offsite. The server plus the NAS is only two copies, and both are in the same closet.", "key": "The 3-2-1 rule: they need a third copy, kept offsite (cloud or offsite media)."}); // wrong_explanation
+  EXAM[71].off = true; // duplicate of q214
+  setQ(46, {"c": ["Run Disk Cleanup to remove temporary files", "Increase the paging file size and close large apps", "Clear the browser cache and cookies", "Defragment the SSD to speed up swapping"], "a": 1}); // guessable
+  setQ(48, {"c": ["Logon uses a distant domain controller over a slow WAN link", "A screen saver policy is delaying the desktop from loading", "A corrupt keyboard driver is slowing credential entry", "The user's password expires within the next few days"], "a": 0}); // guessable
+  setQ(49, {"c": ["Clock skew is breaking Kerberos; resync the time", "The computer certificate expired; renew it", "The DNS cache is poisoned; flush it", "The user account is disabled; enable it"], "a": 0}); // guessable
+  setQ(51, {"c": ["Hold Power and Volume Down to boot to Recovery mode", "Install Xcode on a Mac and connect the phone", "Root the device with a custom firmware image", "Tap Build number seven times in About phone"], "a": 3}); // guessable
+  setQ(122, {"c": ["Rotation lock is off on both iPhones", "NFC is turned on in both iPhones' settings", "Wi-Fi, Bluetooth and AirDrop discovery are on", "Both iPhones have an active cellular plan"], "a": 2}); // guessable
+  setQ(123, {"c": ["A full cache; clear the browser data", "A failing display; replace the screen", "A carrier outage; wait for it to clear", "Adware; uninstall the app and scan the phone"], "a": 3}); // guessable
+  setQ(124, {"c": ["Factory reset the phone right away", "Call the support number in the pop-up", "Close the tab without installing anything", "Install the recommended cleaner app"], "a": 2}); // guessable
+  setQ(125, {"c": ["Update all apps to their latest versions", "No action, since MDM is already installed", "Block access, factory reset, change passwords", "Turn off Developer options on the device"], "a": 2}); // guessable
+  setQ(185, {"c": ["Disk Management's volume properties", "The Dependencies tab in services.msc", "The driver's Details tab in Device Manager", "The Software Environment node in msinfo32"], "a": 1}); // guessable
+  setQ(66, {"c": ["The product's Safety Data Sheet (SDS)", "The acceptable use policy (AUP)", "The end-user license agreement (EULA)", "The service level agreement (SLA)"], "a": 0}); // guessable
+  setQ(67, {"c": ["Wipe the drive so the content is gone", "Delete the files and finish the repair", "Email copies to your manager as proof", "Stop, preserve it as is, and report it"], "a": 3}); // guessable
+  setQ(75, {"c": ["Hallucinated errors in the cleaned list", "Plagiarism of the chatbot's formatting", "Bias in how the chatbot sorts names", "Data privacy: PII shared with a public AI"], "a": 3}); // guessable
+  setQ(130, {"c": ["Asset management with asset tags", "An acceptable use policy (AUP)", "The change management process", "A service level agreement (SLA)"], "a": 0}); // guessable
+  setQ(133, {"c": ["Team lift or use a cart, lifting with your legs", "Drag it across the floor by its power cord", "Lift quickly with your back to save time", "Lift it alone and twist to set it on the cart"], "a": 0}); // guessable
+  setQ(137, {"c": ["Use a key generator to license the extra copies", "Nothing, since the software was purchased", "Report it and remove or license the extra installs", "Rename the PCs so the audit can't match them"], "a": 2}); // guessable
+  setQ(138, {"c": ["Don't read them; ask the user to close them", "Photograph the screen for the ticket notes", "Read them quickly for troubleshooting context", "Email copies to HR to report the exposure"], "a": 0}); // guessable
+  setQ(326, {"c": ["Being culturally insensitive to the user", "Not offering the user repair options", "Not avoiding distractions while listening", "Using too much technical jargon"], "a": 2}); // guessable
+  setQ(333, {"c": ["SPICE", "VPN", "RMM", "SSH"], "a": 2}); // guessable
+  setQ(65, {"c": ["A foam extinguisher", "A CO2 extinguisher", "A water extinguisher", "A Class A extinguisher"], "a": 1}); // guessable
+  setQ(74, {"c": ["Exposed RDP; block it and require VPN with MFA", "Exposed Telnet; no internal change is needed", "Exposed SSH; move it to a nonstandard port", "Exposed web server; add an HTTPS certificate"], "a": 0}); // guessable
+  setQ(77, {"c": ["Listen fully, take notes, then restate the issue", "Interrupt early with the fix you suspect", "Put them on hold to research the issue", "Explain that most issues are user error"], "a": 0}); // guessable
+  setQ(64, {"c": ["Touch the PSU fan to discharge yourself", "Raise the room humidity to about 90%", "Clip a wrist strap to the outlet ground", "Unplug it and clip a wrist strap to the chassis"], "a": 3}); // guessable
+  setQ(373, { why: "A change freeze is a set block of time, usually a business's busiest season, when changes aren't made (Messer: \"no changes for any reason\"; some companies, like this one, still allow true emergencies). A maintenance window is the opposite: a scheduled, low-impact time when changes are allowed." }); // align with Messer 4.2
+/*__MORE__*/
+})();
+
+/* ===== Round 7: wrong choices rewritten so the right answer no longer stands out by length (independently re-checked) ===== */
+(() => {
+  Object.assign(EXAM[10], {"c": ["The PC couldn't reach a DHCP server, so it used APIPA", "The subnet mask was mistyped, so the gateway is unreachable", "The DNS server is down, so names can't be resolved", "The default gateway is wrong, so traffic can't leave the LAN"], "a": 0, "why": "169.254.x.x is an APIPA self-assigned address: no DHCP answer was received."});
+  Object.assign(EXAM[17], {"c": ["A smart card reader (badge authentication)", "A TPM (Trusted Platform Module chip)", "An external hardware token (license dongle)", "A USB Wi-Fi adapter (wireless NIC)"], "a": 2, "why": "Some high-cost software enforces licensing with an external hardware token."});
+  Object.assign(EXAM[20], {"c": ["A magnetometer at the entrance", "Brighter lighting at the door", "An access control vestibule", "Bollards outside the entrance"], "a": 2, "why": "A vestibule lets one door open at a time, so people pass through one by one."});
+  Object.assign(EXAM[25], {"c": ["SQL injection, prevented by input validation and parameterized queries", "XSS, prevented by disabling cookies in the user's browser", "Brute force, prevented by account lockout after failed logins", "On-path attack, prevented by forcing HTTPS on the login page"], "a": 0, "why": "That string changes the SQL query logic. Validate input and parameterize queries."});
+  Object.assign(EXAM[39], {"c": ["Least functionality hardening", "Group Policy restricted groups", "Just-in-time access through PAM", "Single sign-on through SAML"], "a": 2, "why": "Just-in-time access, part of PAM, issues time-limited elevated credentials from a vault."});
+  Object.assign(EXAM[41], {"c": ["Remote wipe through MDM or the locator service", "Change the user's password in Active Directory", "Suspend the phone's cellular service with the carrier", "Factory reset the phone once it's recovered"], "a": 0, "why": "A remote wipe erases the device even while it's lost."});
+  Object.assign(EXAM[43], {"c": ["Replace the hard drive and restore from backup", "Run sfc /scannow from an elevated prompt in Windows", "Reinstall Windows from the installation media", "Boot to WinRE and run Startup Repair or bootrec /rebuildbcd"], "a": 3, "why": "Boot loader/BCD damage is fixed from the Windows Recovery Environment."});
+  Object.assign(EXAM[47], {"c": ["Replace the USB cable with a longer, shielded one", "Disable USB selective suspend in the power plan", "Install a new webcam driver from the vendor's site", "Move the device to a port on a different USB controller"], "a": 3, "why": "The controller has run out of endpoints. Spread devices across controllers."});
+  Object.assign(EXAM[50], {"c": ["Device Manager, plus the display adapter's driver version", "Event Viewer, plus the service's dependencies and logon account", "Disk Management, plus the volume's status and free space", "msconfig > Startup, plus the apps listed in Task Manager"], "a": 1, "why": "Event Viewer's System log names the service and the error. Then check the service's dependencies and its logon account in services.msc."});
+  Object.assign(EXAM[52], {"c": ["Clear the game's cache and storage in Settings, then keep using it", "Update Android to the latest version and keep the app installed", "Factory reset the phone right away and restore all apps from backup", "Treat it as malware: uninstall the app, run anti-malware, and factory reset if needed"], "a": 3, "why": "A sideloaded app plus heavy data use and battery drain points to malware. Uninstall it and scan first; a factory reset is the fallback if that doesn't clean it."});
+  Object.assign(EXAM[54], {"c": ["Developer mode", "Rotation lock", "Storage space", "NFC settings"], "a": 1, "why": "Rotation lock stops autorotation. If nothing rotates even with it off, suspect the sensor."});
+  Object.assign(EXAM[55], {"c": ["The homepage setting changed by itself; just set it back in the browser's settings", "Browser-redirect malware; scan and clean, and restore from a known-good backup to be sure", "Stale DNS cache; run ipconfig /flushdns and restart the browser to clear it", "An outage at the ISP's proxy; wait for the ISP to restore normal service"], "a": 1, "why": "Repeated redirects to an unfamiliar search site are a classic browser hijacker. Scan and clean (remove malicious extensions too); just changing the setting back lets the malware change it again."});
+  Object.assign(EXAM[56], {"c": ["Turn off certificate checking", "Clear the DNS resolver cache", "Correct the system date and time", "Reinstall the default browser"], "a": 2, "why": "Certificate validity depends on the correct date."});
+  Object.assign(EXAM[57], {"c": ["Uninstall the browser and reinstall it from the vendor's site", "Turn off all Windows notifications under Settings > System > Notifications", "Revoke that site's browser notification permission and run a malware scan", "Clear the browser cache and temporary internet files"], "a": 2, "why": "The site was allowed to send push notifications, so revoke that permission in the browser's site settings, then run a malware scan. Turning off all notifications hides useful alerts too."});
+  Object.assign(EXAM[81], {"c": ["Indexing Options in Control Panel", "USB selective suspend in the power plan", "BitLocker device encryption settings", "Hibernate file size set with powercfg"], "a": 1, "why": "Selective suspend powers down idle USB devices. Disable it for that device or plan."});
+  Object.assign(EXAM[83], {"c": ["Enable BitLocker on the D: drive", "Defragment D: with Optimize Drives", "Run chkdsk /r on the D: drive", "Add D:\\Projects in Indexing Options"], "a": 3, "why": "Only indexed locations search quickly."});
+  Object.assign(EXAM[84], {"c": ["Active hours in Windows Update", "Fast startup in Power Options", "Hibernate in the power plan", "Delivery Optimization settings"], "a": 0, "why": "Active hours stop automatic restarts during the hours you set."});
+  Object.assign(EXAM[85], {"c": ["Devices and Printers (Add a device or printer)", "User Accounts (Change your account name)", "System (System Properties > Computer Name > Change)", "Network and Sharing Center (Change adapter settings)"], "a": 2, "why": "System Properties (sysdm.cpl) handles the computer name and domain or workgroup membership. In Settings it's System > About."});
+  Object.assign(EXAM[92], {"c": ["Disk Utility app", "Stage Manager", "Spotlight search", "Mission Control"], "a": 2, "why": "Spotlight searches files, apps and email system-wide."});
+  Object.assign(EXAM[97], {"c": ["Hides the share from network browsing, but it isn't a security control", "Makes the share read-only for everyone who connects over the network", "Encrypts the share's traffic with SMB encryption on the network", "Limits access to members of the local Administrators group"], "a": 0, "why": "A $ suffix hides the share from browsing. Anyone who knows the name and has permissions can still open it."});
+  Object.assign(EXAM[101], {"c": ["Windows Hello for Business", "BitLocker Drive Encryption", "User Account Control (UAC)", "Microsoft Defender SmartScreen"], "a": 2, "why": "UAC prompts for elevation on the secure desktop."});
+  Object.assign(EXAM[102], {"c": ["EFS (Encrypting File System)", "BitLocker Drive Encryption", "FileVault (macOS disk encryption)", "BitLocker To Go (removable drives)"], "a": 0, "why": "EFS encrypts individual files and folders per user on NTFS. BitLocker encrypts whole volumes."});
+  Object.assign(EXAM[104], {"c": ["Potentially unwanted program (PUP)", "Boot sector virus (MBR malware)", "Ransomware (crypto-malware)", "Rootkit (kernel-level malware)"], "a": 0, "why": "PUPs are bundled, unwanted software such as toolbars and search hijackers."});
+  Object.assign(EXAM[106], {"c": ["Evil twin attack", "Smishing attack", "QR code phishing", "Whaling attack"], "a": 2, "why": "Swapping QR codes to send people to malicious sites is QR code phishing."});
+  Object.assign(EXAM[111], {"c": ["Fully enroll the phones in MDM as company-owned so IT can wipe the device", "Require an always-on VPN app on each phone before it can reach email", "Enroll in MDM with a separate work profile or container that can be selectively wiped", "Install a mobile antivirus app and require a screen lock on each phone"], "a": 2, "why": "A work profile/container separates corporate data so IT can selectively wipe only that. Full-device enrollment would let IT wipe personal photos too, which the employees don't want."});
+  Object.assign(EXAM[114], {"c": ["Secure DNS / DNS over HTTPS (DoH)", "Clear cache and cookies on exit", "Private (InPrivate) browsing mode", "Ad blocker / tracking prevention"], "a": 0, "why": "DoH sends DNS queries inside HTTPS."});
+  Object.assign(EXAM[116], {"c": ["Boot to WinRE and uninstall the latest update", "Replace the hard drive and restore from backup", "Run chkdsk /r from a command prompt in Windows", "Reinstall Windows from the installation media"], "a": 0, "why": "Rolling back the update that caused the problem is the least invasive fix. WinRE has Uninstall Updates."});
+  Object.assign(EXAM[121], {"c": ["Likely an OS bug: update iOS to the latest version and restart", "Likely a swollen battery: power it off and have it replaced", "Likely cached data: clear the cache and restart the phone", "Likely bad calibration: fully drain the battery, then recharge it"], "a": 1, "why": "Heat, random reboots and a lifting screen point to a swollen battery, which is a fire risk. Power it off, stop charging it, and have the battery replaced."});
+  Object.assign(EXAM[126], {"c": ["Run an anti-malware scan right away, then restore any encrypted files", "Shut the PC down, wipe its drive, and reinstall Windows from media", "Disconnect the PC from the network to quarantine it, then follow incident response", "Restore the files from the latest backup to the shared drive right away"], "a": 2, "why": "Disconnect it from the network first so the ransomware can't encrypt more shares, then follow the malware removal steps. Restoring before you clean it risks re-encryption."});
+  Object.assign(EXAM[127], {"c": ["The Reliability Monitor (perfmon /rel)", "The Disk Defragmenter (dfrgui)", "The Resource Monitor (resmon)", "The Windows Update troubleshooter"], "a": 3, "why": "Settings > System > Troubleshoot > Other troubleshooters > Windows Update."});
+  Object.assign(EXAM[139], {"c": ["Send a coworker in your place without telling the customer first", "Skip the appointment and reschedule it once you're back at the office", "Show up late and finish the work quickly without mentioning the delay", "Contact the customer before the appointment time, apologize and give a new ETA"], "a": 3, "why": "Be on time, and if you can't, contact the customer."});
+  Object.assign(EXAM[144], {"c": ["Use Load driver to add the RAID controller's storage driver", "Run chkdsk /r on the disks from the Setup command prompt", "Boot from PXE instead so the network installer finds the disks", "Convert the disks to MBR with diskpart from Setup"], "a": 0, "why": "Setup lacks the third-party storage driver. Load driver lets you supply it from USB."});
+  Object.assign(EXAM[145], {"c": ["Image deployment from a sysprepped reference image", "Clean install from a USB flash drive on each PC", "Repair installation on each PC from the ISO", "In-place upgrade on each PC from Windows Update"], "a": 0, "why": "Capture one configured reference image (after Sysprep) and deploy it to all 60."});
+  Object.assign(EXAM[152], {"c": ["Allow the app through Windows Defender Firewall on the office network's profile", "Open every inbound port in Windows Defender Firewall on the Public profile", "Change the office network to the Public profile so the app is allowed", "Turn off Windows Defender Firewall for all profiles in Control Panel"], "a": 0, "why": "'Allow an app through Windows Firewall' scopes access to that one program on the right profile: Private for a trusted workgroup network, Domain for a domain-joined PC. Disabling the firewall or opening every port is never the best answer."});
+  Object.assign(EXAM[155], {"c": ["The kernel (vmlinuz)", "The init system (systemd)", "The mount file (fstab)", "The bootloader (GRUB)"], "a": 3, "why": "GRUB is the bootloader. It loads the chosen kernel, which then starts systemd."});
+  Object.assign(EXAM[165], {"c": ["The OU's Delegate Control wizard", "Local Users and Groups on each PC", "The user's Profile tab: home folder", "The user's Account tab: logon hours"], "a": 2, "why": "In AD Users and Computers, the Profile tab sets the home folder drive (and the logon script). The Account tab covers logon hours and account options, not drive mappings."});
+  Object.assign(EXAM[168], {"c": ["System Restore from Settings", "msconfig > Boot > Safe boot", "Safe Mode with Networking", "Windows Recovery Environment"], "a": 3, "why": "If Windows won't start, you need the Windows Recovery Environment, whose command prompt runs bootrec and offline scans. Safe Mode and Settings require Windows to boot, and msconfig runs inside Windows."});
+  Object.assign(EXAM[183], {"c": ["Replace the drive and restore from backup", "Remove the USB stick and check the boot order", "Run bootrec /rebuildbcd from WinRE", "Reinstall Windows from installation media"], "a": 1, "why": "Start with the simplest cause: the PC is trying to boot from USB. Fix the boot order before repairing boot records."});
+  Object.assign(EXAM[189], {"c": ["Replace the battery at a repair shop", "Force-stop it and clear the app's cache", "Factory reset the phone from Settings", "Root the phone and reinstall the app"], "a": 1, "why": "Start with the least invasive app-level fixes: force stop, clear cache, update or reinstall. Then restart the phone."});
+  Object.assign(EXAM[190], {"c": ["Perform a factory reset and restore from backup", "Restrict that app's background activity or uninstall it", "Lower the screen brightness and shorten the timeout", "Replace the battery with a new OEM battery"], "a": 1, "why": "Battery stats point to one app. Restrict its background activity or uninstall it. Brightness and a new battery don't fix a single app draining 45%."});
+  Object.assign(EXAM[196], {"c": ["Ask the user for the admin password and retry the fix", "Reinstall the server software to clear the error", "Close the ticket and tell the user it can't be fixed", "Escalate the ticket to the next tier with clear notes"], "a": 3, "why": "Escalate per the process and document everything you tried in the progress notes."});
+  Object.assign(EXAM[198], {"c": ["The vendor that supplied the system", "The change advisory board (CAB)", "The help desk team on shift", "The end users affected by it"], "a": 1, "why": "The CAB approves or rejects changes after reviewing the risk analysis."});
+  Object.assign(EXAM[204], {"c": ["A household vacuum", "A hot, wet cloth", "Compressed air", "A toner vacuum"], "a": 3, "why": "Toner particles are fine enough to pass through, or even ignite in, a normal vacuum. Use a toner vacuum and check the SDS."});
+  Object.assign(EXAM[208], {"c": ["Defragment the drive first so files are easier to recover", "Run chkdsk /r on the original to fix damaged sectors", "Boot the original drive and browse its files for evidence", "Make a forensic image, hash it, and work only on the copy"], "a": 3, "why": "A hashed bit-for-bit copy proves nothing changed. Never work on the original."});
+  Object.assign(EXAM[216], {"c": ["OpenSSH client / PowerShell remoting", "Telnet client from a command prompt", "RDP session that locks the user's screen", "Quick Assist / Windows Remote Assistance"], "a": 3, "why": "Quick Assist and MSRA are invitation-based screen sharing: the user stays signed in, watches and approves. An RDP connection to a Windows client locks or disconnects the local console session, so the user can't watch."});
+  Object.assign(EXAM[219], {"c": ["An incident report form", "An AI appropriate-use policy", "An end-user license (EULA)", "A service-level agreement (SLA)"], "a": 1, "why": "Appropriate-use policies govern AI tools and the data put into them."});
+  Object.assign(EXAM[220], {"c": ["~/Library", "/Applications", "/Library", "/System"], "a": 0, "why": "Per-user preferences and support files live in the user's Library folder. /Library is system-wide, /System is the protected OS, and /Applications holds the apps."});
+  Object.assign(EXAM[224], {"c": ["Partnership SLA", "Company-wide AUP", "Unilateral NDA", "Mutual NDA (MNDA)"], "a": 3, "why": "An MNDA binds both parties to protect each other's information. A one-way (unilateral) NDA protects only one side."});
+  Object.assign(EXAM[240], {"c": ["System Information (msinfo32.exe)", "Device Manager (devmgmt.msc)", "Resource Monitor (resmon.exe)", "About Windows (winver.exe)"], "a": 0, "why": "msinfo32 shows the BIOS version and date, installed physical memory and the OS version and build. winver shows only the Windows version."});
+  Object.assign(EXAM[243], {"c": ["Event Viewer > Windows Logs > System", "Services (services.msc) > Startup type", "System Configuration (msconfig) > Services", "Task Manager > Services > Stop"], "a": 2, "why": "msconfig's Services tab has 'Hide all Microsoft services' and 'Disable all', the standard clean-boot method. services.msc works one service at a time."});
+  Object.assign(EXAM[247], {"c": ["net use S: \\\\FS01\\Sales /persistent:yes", "robocopy \\\\FS01\\Sales S:\\ /mir", "net user S: \\\\FS01\\Sales /active:yes", "net use S: \\\\FS01\\Sales /delete"], "a": 0, "why": "net use maps network drives, and /persistent:yes reconnects them at sign-in. /delete removes a mapping, net user manages accounts, and robocopy copies files."});
+  Object.assign(EXAM[249], {"c": ["whoami /user", "whoami /groups", "net localgroup", "net accounts"], "a": 1, "why": "whoami /groups lists the current user's group memberships. whoami /user shows only the account name and SID, net localgroup lists the PC's local groups rather than your memberships, and net accounts shows password policy."});
+  Object.assign(EXAM[252], {"c": ["Settings > System > Display > Advanced display settings", "Control Panel > Power Options > Choose what the power buttons do", "Control Panel > Devices and Printers > Add a device", "Settings > Accessibility > Keyboard > Sticky keys"], "a": 1, "why": "Power Options lets you choose what the power button, sleep button and lid do, and turn on fast startup."});
+  Object.assign(EXAM[257], {"c": ["Keychain Access", "Disk Utility", "Time Machine", "FileVault"], "a": 1, "why": "Disk Utility's First Aid checks and repairs the disk. Time Machine backs up, FileVault encrypts and Keychain stores passwords."});
+  Object.assign(EXAM[258], {"c": ["Continuity", "FileVault", "Time Machine", "Mission Control"], "a": 0, "why": "Continuity features like Universal Clipboard, Handoff and AirDrop let Apple devices signed in to the same Apple ID work together."});
+  Object.assign(EXAM[264], {"c": ["Open the ISO with diskpart and assign it a drive letter", "Rename the .iso to .exe and run it as administrator", "Double-click the ISO to mount it as a virtual drive", "Burn the ISO to a DVD and insert it in the laptop"], "a": 2, "why": "Windows mounts ISO files as virtual drives. No physical media is needed."});
+  Object.assign(EXAM[266], {"c": ["Integrated graphics share system RAM and don't meet a dedicated VRAM requirement", "The display driver is outdated and is underreporting the available VRAM", "The video app must be run as administrator to access the GPU memory", "Adding 16 GB more system RAM will give the GPU 8 GB of dedicated VRAM"], "a": 0, "why": "Integrated GPUs borrow system memory and usually can't meet a dedicated VRAM requirement. Install a dedicated graphics card that meets the spec."});
+  Object.assign(EXAM[268], {"c": ["Folder backup (Known Folder Move) in OneDrive settings", "Turn off sync for those folders in OneDrive settings", "Files On-Demand (online-only files) in OneDrive settings", "File History to a USB drive in Control Panel"], "a": 0, "why": "OneDrive's folder backup (Known Folder Move) syncs Desktop, Documents and Pictures. Files On-Demand only saves local space."});
+  Object.assign(EXAM[270], {"c": ["A magnetometer at the main entrance", "Motion sensors tied to an alarm system", "Bollards around the building perimeter", "A badge reader on each exterior door"], "a": 1, "why": "Motion sensors detect movement and trigger alarms and lighting. Bollards stop vehicles, and magnetometers detect metal."});
+  Object.assign(EXAM[276], {"c": ["Multifactor authentication", "Kerberos authentication", "WPA3-Personal (SAE)", "Single sign-on (SSO)"], "a": 0, "why": "A password (something you know) plus an app code (something you have) is multifactor authentication."});
+  Object.assign(EXAM[284], {"c": ["Safe Mode won't start unless System Restore is turned off", "Restore points may contain the malware and could reinfect the PC", "It stops the malware from disabling the antivirus during the scan", "It prevents Windows Update from interfering with the removal"], "a": 1, "why": "Infected restore points could bring the malware back. Turning System Restore off deletes them."});
+  Object.assign(EXAM[286], {"c": ["Quarantine the system and disconnect it from the network", "Educate the end user on avoiding future infections", "Enable System Restore and create a restore point", "Disable System Restore and delete the restore points"], "a": 2, "why": "Turn System Restore back on and create a clean restore point. Educating the user comes last."});
+  Object.assign(EXAM[290], {"c": ["Full-disk encryption such as BitLocker", "A strong Windows password with lockout", "Disabling the Guest and default accounts", "A screensaver lock after five minutes"], "a": 0, "why": "A thief can pull the drive and read it in another PC. Encryption makes the data unreadable without the key; passwords alone don't."});
+  Object.assign(EXAM[291], {"c": ["Screen lock timeout setting", "Content filtering policy", "Remote wipe through MDM", "Failed login attempt restrictions"], "a": 3, "why": "The device enforces the failed-attempt limit itself. A remote wipe is triggered manually by an admin or the owner."});
+  Object.assign(EXAM[294], {"c": ["Content filtering", "A locator app", "Remote wipe", "Device encryption"], "a": 0, "why": "Content filtering blocks categories of sites or apps."});
+  Object.assign(EXAM[295], {"c": ["Drill holes through each drive's flash chips", "Use the manufacturer's secure erase / sanitize tool", "Degauss each drive with a degaussing tool", "Quick format them in Disk Management as NTFS"], "a": 1, "why": "Secure erase (or crypto-erase) resets all cells, including ones hidden by wear leveling. Degaussing doesn't affect flash, a quick format leaves the data, and drilling destroys the drive."});
+  Object.assign(EXAM[297], {"c": ["Delete all partitions in Disk Management", "Quick format them in File Explorer", "Run Disk Cleanup on each of the drives", "Drill several holes through the platters"], "a": 3, "why": "Drilling physically damages the platters so they can't be read. Formatting and deleting partitions leave recoverable data."});
+  Object.assign(EXAM[298], {"c": ["True low-level formatting is done at the factory; 'low-level format' tools today actually zero-fill the drive", "It permanently damages the drive's servo tracks, so the drive can't be reused afterward", "It's the same as a quick format; it only rewrites the file system table and leaves the data", "It erases data using a strong magnetic field, the same way a degausser wipes a hard drive"], "a": 0, "why": "Modern drives are low-level formatted at the factory. Utilities sold as 'low-level format' overwrite the drive with zeros so it can be reused."});
+  Object.assign(EXAM[304], {"c": ["Set time automatically (Settings > Time & language > Sync now)", "Run sfc /scannow to repair the Windows Time service files", "Roll back the display driver in Device Manager", "Replace the network card and reinstall its driver"], "a": 0, "why": "Syncing with an internet time server fixes time drift, which breaks certificate checks and Kerberos."});
+  Object.assign(EXAM[305], {"c": ["Run chkdsk /r to scan the system drive for bad sectors", "Remove or reseat the new RAM and run Windows Memory Diagnostic", "Reinstall Windows from USB media to replace corrupt files", "Roll back the graphics driver in Device Manager and reboot"], "a": 1, "why": "The change that came before the BSOD was new RAM. Undo it and test memory before anything more drastic."});
+  Object.assign(EXAM[306], {"c": ["That rotation lock is off and the screen brightness is turned up", "That Bluetooth is on and the phone is paired with the payment terminal", "That NFC is on and the right wallet app is set as the default payment app", "That Developer options are enabled and USB debugging is turned on"], "a": 2, "why": "Contactless payment uses NFC and the default payment app setting. Bluetooth isn't involved."});
+  Object.assign(EXAM[308], {"c": ["Jailbreaking removes iOS security controls and allows unsigned apps", "It mainly causes faster battery drain from background tweaks", "It voids Apple's warranty, so the device can't get repairs", "It turns on full-disk encryption that MDM can't manage"], "a": 0, "why": "Jailbreaking removes sandboxing and app-signing checks, which opens the door to malware. MDM typically blocks such devices."});
+  Object.assign(EXAM[309], {"c": ["The browser cache holds stale certificates; clear it and restart the browser", "Malware installed a rogue root certificate; remove it and run a malware scan", "The clock is out of sync; set the time automatically and reboot", "The browser is outdated; uninstall it and install the latest version"], "a": 1, "why": "A rogue root certificate lets malware intercept HTTPS traffic (an on-path attack). Remove the certificate, then clean the PC."});
+  Object.assign(EXAM[311], {"c": ["The user's password so the next tech can sign in quickly", "A short 'Fixed.' so the queue moves faster", "Who caused the problem and how they should be disciplined", "What fixed it and how it was verified, in clear language"], "a": 3, "why": "Clear resolution notes help the next tech and feed the knowledge base. Never record passwords."});
+  Object.assign(EXAM[318], {"c": ["Route them away from the walkway or use a cable cover", "Run them under a rug so they're hidden from view", "Leave them in place, since the desk is only temporary", "Hang them across the walkway at waist height"], "a": 0, "why": "Loose cables are trip and fire hazards. Proper cable management keeps walkways clear."});
+  Object.assign(EXAM[319], {"c": ["Nothing, since it's only household dust", "Safety goggles and an air filter mask", "An ESD strap and nothing else", "Latex gloves and hearing protection"], "a": 1, "why": "Blown dust and debris can hit the eyes and be inhaled. Goggles and a mask are the objective's PPE."});
+  Object.assign(EXAM[321], {"c": ["Move the UPS closer to the servers to steady their power", "Raise the humidity so the air carries heat away faster", "Add surge suppressors to protect the servers from power spikes", "Cooling and ventilation, keeping temperature within the manufacturer's range"], "a": 3, "why": "Heat shortens hardware life and causes shutdowns. Fix airflow and HVAC, and keep vents clear."});
+  Object.assign(EXAM[322], {"c": ["Burn it in an incinerator to destroy the leftover toner", "Return or recycle it per the manufacturer's program and the SDS", "Put it in the regular trash after sealing it in a plastic bag", "Throw it in the office paper recycling bin with the printouts"], "a": 1, "why": "Toner cartridges shouldn't go in the regular trash or be burned. Follow the SDS and local regulations, and use the manufacturer's return or recycling program."});
+  Object.assign(EXAM[325], {"c": ["Your company T-shirt so you're easy to identify", "Formal business attire to match the environment", "Casual clothes, since IT staff aren't client-facing", "Whatever's most comfortable for crawling under desks"], "a": 1, "why": "Match the attire of the environment: formal where the client is formal, business casual elsewhere."});
+  Object.assign(EXAM[327], {"c": ["Repair it as quoted without mentioning that it costs nearly as much as a new one", "Tell them the laptop is junk and recommend they buy a new one", "Order a replacement for them without asking, since it's cheaper overall", "Explain both options with costs and timelines and let the customer decide"], "a": 3, "why": "Offer repair or replacement options, set expectations, and let the customer choose."});
+  Object.assign(EXAM[339], {"c": ["Training data source", "Application integration", "AI hallucination", "Private AI deployment"], "a": 1, "why": "AI built into existing apps is application integration."});
+  Object.assign(EXAM[341], {"c": ["Reset this PC with 'Remove everything' and cloud download", "Clean install of the same Windows version from USB media", "Repair installation (in-place reinstall of the same version)", "Restore from the OEM recovery partition (factory image)"], "a": 2, "why": "A repair installation reinstalls the same Windows version over itself and replaces system files without removing apps or data. You can run it from Settings > System > Recovery > 'Fix problems using Windows Update', or run setup.exe from matching media and choose to keep files and apps. A clean install, 'Remove everything' and a factory recovery-partition restore all wipe apps and data."});
+  Object.assign(EXAM[362], {"c": ["Whaling (executive phishing)", "Business email compromise (BEC)", "Smishing (SMS phishing)", "Vishing (voice phishing)"], "a": 1, "why": "BEC uses a compromised or impersonated business email account to redirect payments or steal data. Because the message often has no malware or links, filters miss it. Verify any payment change by calling a known phone number. Whaling targets executives, smishing uses text messages, and vishing uses phone calls."});
+})();
+
+/* ===== Round 7: 40 questions for exam topics both Messer and TIA cover but the bank didn't test (independently verified). Appended only: indices 381+ ===== */
+EXAM.push(...[
+{
+"d": 1,
+"o": "1.4",
+"q": "A user says someone keeps trying to sign in to their Windows PC overnight. Logon auditing is enabled. Where do you confirm the failed sign-in attempts?",
+"c": [
+"Event Viewer, System log",
+"Event Viewer, Security log",
+"Event Viewer, Application log",
+"Event Viewer, Setup log"
+],
+"a": 1,
+"why": "Logon successes and failures are audit events, and Windows writes them to the Security log as Audit Failure entries (event 4625 for a failed logon). The System log holds OS and driver events, the Application log holds app events, and the Setup log holds install and update events.",
+"key": "Failed sign-ins appear as Audit Failure events in Event Viewer's Security log.",
+"kw": [
+[
+"security"
+]
+]
+},
+{
+"d": 1,
+"o": "1.4",
+"q": "A tech wants one saved console that holds the Certificates (local computer), Event Viewer and Local Users and Groups tools, so they can open all three in one window. What should they use?",
+"c": [
+"Windows Tools (Administrative Tools) folder",
+"Computer Management (compmgmt.msc)",
+"System Configuration (msconfig.exe)",
+"Microsoft Management Console (mmc.exe)"
+],
+"a": 3,
+"why": "The Microsoft Management Console (mmc.exe) lets you build a custom console from snap-ins (File > Add/Remove Snap-in) and save it as an .msc file. Computer Management has Event Viewer and Local Users and Groups but no Certificates snap-in. msconfig manages startup, and the Windows Tools folder only holds shortcuts that open separate windows.",
+"key": "Build a custom console from snap-ins with mmc.exe and save it as .msc.",
+"kw": [
+[
+"mmc",
+"microsoft management console"
+]
+]
+},
+{
+"d": 1,
+"o": "1.7",
+"q": "A laptop on hotel Wi-Fi already uses the Public network profile. For the rest of the stay, the user wants every inbound connection blocked, even for apps on the firewall's allowed list. What should you set?",
+"c": [
+"Block all incoming connections, including allowed apps",
+"Switch the network profile to Private",
+"Turn off Windows Defender Firewall for Public",
+"Add an outbound block rule for each app"
+],
+"a": 0,
+"why": "Windows Defender Firewall's 'Block all incoming connections, including those in the list of allowed apps' setting ignores the exception list for that profile. The Public profile alone still honors allowed-app exceptions. Private is less restrictive, turning the firewall off removes protection, and outbound rules don't stop inbound connections.",
+"key": "'Block all incoming connections' overrides the allowed-apps exception list.",
+"kw": [
+[
+"block"
+],
+[
+"incoming",
+"inbound"
+]
+]
+},
+{
+"d": 1,
+"o": "1.7",
+"q": "A field technician's Windows 11 laptop has a built-in LTE modem with a carrier SIM card, so it can get online at job sites that have no Wi-Fi. What type of network connection is this?",
+"c": [
+"VPN",
+"WLAN (802.11 Wi-Fi)",
+"WWAN (cellular)",
+"PAN (Bluetooth)"
+],
+"a": 2,
+"why": "A wireless wide area network (WWAN) connection uses a cellular adapter (4G/5G) from a mobile carrier. WLAN is local Wi-Fi, a VPN is an encrypted tunnel that runs over another connection, and Bluetooth PANs are short-range.",
+"key": "A built-in cellular modem with a SIM is a WWAN connection.",
+"kw": [
+[
+"wwan",
+"wireless wide area",
+"cellular"
+]
+]
+},
+{
+"d": 1,
+"o": "1.8",
+"q": "A vendor sends a Mac installer that opens Apple's Installer app, runs an install script and asks for an administrator password. Which file type is this?",
+"c": [
+".iso",
+".dmg",
+".app",
+".pkg"
+],
+"a": 3,
+"why": "A .pkg is an installer package that runs through the macOS Installer and its scripts. A .dmg is a disk image that mounts in Finder (it often contains an .app or .pkg), an .app is the application bundle itself, and .iso is an optical disc image.",
+"key": ".pkg = installer package (runs Installer and scripts); .dmg = mountable disk image.",
+"kw": [
+[
+"pkg",
+"package"
+]
+]
+},
+{
+"d": 1,
+"o": "1.8",
+"q": "A Mac user wants one full-screen desktop for email and chat and a second desktop for design apps, and to switch between them with a swipe. Which macOS feature does this?",
+"c": [
+"Continuity and Handoff",
+"Spaces in Mission Control",
+"Spotlight categories",
+"Stacks on the Dock"
+],
+"a": 1,
+"why": "Spaces are multiple desktops that you add from the Spaces bar in Mission Control. You switch between them by swiping left or right with three or four fingers (or Control-Left/Right Arrow). Continuity/Handoff pass work between Apple devices, Spotlight searches, and Dock stacks group files.",
+"key": "Multiple desktops on a Mac are Spaces, managed in Mission Control.",
+"kw": [
+[
+"spaces",
+"space"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "A laptop disappeared from an open lobby where visitors don't have to badge in. Security wants to see who picked it up yesterday around 3 PM. Which control would provide this?",
+"c": [
+"A motion-sensor alarm",
+"Badge reader access logs",
+"Recorded video surveillance",
+"Bollards at the entrance"
+],
+"a": 2,
+"why": "Recorded cameras show who was in the lobby and what they did. An NVR keeps IP camera footage so you can review it later. Badge logs only record people who swipe, a motion alarm signals movement but doesn't identify anyone, and bollards stop vehicles.",
+"key": "Video surveillance (CCTV/IP cameras with recording) identifies who did what, and when.",
+"kw": [
+[
+"video",
+"camera",
+"cctv",
+"surveillance"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "Headquarters wants every visitor's ID checked against that day's list of approved names at reception, with arrival and departure times recorded. Which control fits?",
+"c": [
+"A security guard at the front desk",
+"A badge reader on the lobby door",
+"An access control vestibule",
+"Video surveillance of the reception area"
+],
+"a": 0,
+"why": "A guard checks identification against the access list and keeps the visitor log. Badge readers only work for people who already have badges, a vestibule controls how people pass through doors but checks no IDs, and cameras record but don't verify anyone.",
+"key": "Guards enforce access lists and keep visitor logs.",
+"kw": [
+[
+"guard"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "An IT office inside a courthouse must screen everyone at the entrance for knives and guns before they reach the secure area. Which device should be used?",
+"c": [
+"A badge reader at the door",
+"A walk-through magnetometer",
+"A retina scanner at the door",
+"A passive infrared motion sensor"
+],
+"a": 1,
+"why": "Magnetometers passively detect metal objects such as weapons. They don't detect ceramic or plastic items. Badge readers and retina scanners identify people, and motion sensors detect movement.",
+"key": "Magnetometers detect metal weapons; they miss non-metal objects.",
+"kw": [
+[
+"magnetometer",
+"metal detector"
+]
+]
+},
+{
+"d": 2,
+"o": "2.1",
+"q": "An attacker convinces a mobile carrier to move a victim's phone number to a new SIM card. Which MFA method does this attack defeat MOST directly?",
+"c": [
+"A smart card with a PIN",
+"Codes from an authenticator app (TOTP)",
+"A FIDO2 hardware security key",
+"One-time codes sent by SMS text message"
+],
+"a": 3,
+"why": "SMS codes go to whatever phone holds the number, so a reassigned or ported number receives them. Messages can also be intercepted or spoofed. Authenticator-app codes come from a secret stored on the device, and security keys and smart cards are physical tokens, so moving a phone number doesn't affect them.",
+"key": "SIM swapping or interception defeats SMS codes, because they go to whatever phone holds the number.",
+"kw": [
+[
+"sms",
+"text"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "A user worries that their 6-digit Windows Hello PIN is weaker than their long domain password. What is the main reason the PIN is still considered secure?",
+"c": [
+"It's tied to that device and never sent to a server",
+"It is changed automatically every 30 seconds",
+"It is stored on the domain controller and synced",
+"It is encrypted by BitLocker before every sign-in"
+],
+"a": 0,
+"why": "A Windows Hello PIN is a local access code tied to the device's TPM-protected credentials. A stolen PIN is useless without that physical device, and the PIN itself never travels to a server. TOTP codes rotate every 30 seconds, not PINs, and the PIN isn't stored on a DC.",
+"key": "A Windows Hello PIN is tied to one device; it isn't a password that works anywhere else.",
+"kw": [
+[
+"device",
+"local"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "The Projects folder gives Interns an inherited Deny Write. On the Projects\\Drafts subfolder, an admin adds an explicit Allow Modify for Interns. What can Interns do in Drafts?",
+"c": [
+"Nothing, because inherited permissions apply first",
+"Only read, because a Deny always beats an Allow",
+"Modify files, because explicit permissions override inherited ones",
+"Modify only after the parent folder's Deny is removed"
+],
+"a": 2,
+"why": "Explicit permissions take precedence over inherited permissions, including inherited Denies. The order is explicit Deny, then explicit Allow, then inherited Deny, then inherited Allow. 'Deny beats Allow' only applies between entries at the same level.",
+"key": "Explicit permissions beat inherited ones, even an inherited Deny.",
+"kw": [
+[
+"modify"
+],
+[
+"explicit"
+]
+]
+},
+{
+"d": 2,
+"o": "2.2",
+"q": "A tech signed in with an account in the local Administrators group opens Command Prompt and runs a command that changes protected system files. It fails with 'Access is denied.' What should they do?",
+"c": [
+"Turn off User Account Control",
+"Add the account to the Power Users group",
+"Take ownership of the C:\\Windows folder",
+"Open Command Prompt with Run as administrator"
+],
+"a": 3,
+"why": "With UAC, administrators run with standard rights until they elevate. Right-click the app and choose Run as administrator (or press Ctrl+Shift+Enter) to get an elevated token. Power Users adds no real rights in modern Windows, taking ownership of system folders is risky, and turning off UAC weakens security.",
+"key": "Being in Administrators isn't enough; elevate with Run as administrator.",
+"kw": [
+[
+"run as",
+"elevat"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "Malware spreads from PC to PC across the office network through an unpatched network service. No one opened an attachment or ran a program. What type of malware is this?",
+"c": [
+"Virus",
+"Worm",
+"Trojan",
+"Rootkit"
+],
+"a": 1,
+"why": "Worms replicate across networks by themselves, with no user action. A virus also replicates, but it needs someone to run an infected program or file. A Trojan pretends to be legitimate software, and a rootkit hides in the OS.",
+"key": "Worm = spreads on its own; virus = needs a user to run something.",
+"kw": [
+[
+"worm"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "A hidden program on a user's PC records everything they type, including passwords entered on HTTPS sites, and uploads it to a remote server every hour. Which malware type is this?",
+"c": [
+"Cryptominer",
+"Adware",
+"Keylogger",
+"Rootkit"
+],
+"a": 2,
+"why": "A keylogger captures keystrokes, so it gets passwords before encryption ever applies. That's why HTTPS doesn't help. Adware shows ads, a cryptominer uses the CPU to mine currency, and a rootkit hides itself in the OS.",
+"key": "Keyloggers capture keystrokes in the clear, getting around encryption.",
+"kw": [
+[
+"keylog",
+"key log",
+"keystroke"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "A small firm worries that ransomware could encrypt its backups along with its file server. Which backup approach protects against this BEST?",
+"c": [
+"Keep a backup copy offline or air-gapped",
+"Back up to a NAS that stays mapped as a drive",
+"Mirror the server's disks with RAID 1",
+"Sync files continuously to a second drive"
+],
+"a": 0,
+"why": "Ransomware can encrypt anything it can reach, including mapped NAS shares and synced copies. A RAID mirror simply copies the encrypted data. An offline (air-gapped) copy isn't connected, so the malware can't touch it.",
+"key": "Defend against ransomware with an offline/air-gapped backup.",
+"kw": [
+[
+"offline",
+"air gap",
+"air-gap",
+"airgap",
+"disconnected"
+]
+]
+},
+{
+"d": 2,
+"o": "2.4",
+"q": "A company wants its PCs' firmware to refuse to run any bootloader or early boot code that isn't digitally signed, to stop rootkits and boot-sector malware. What should be enabled?",
+"c": [
+"A BIOS/UEFI supervisor password",
+"UEFI Secure Boot",
+"BitLocker drive encryption",
+"Windows Defender Firewall"
+],
+"a": 1,
+"why": "Secure Boot checks the signatures of boot components and blocks unsigned or modified code before the OS loads. A supervisor password locks firmware settings, BitLocker encrypts the drive, and the firewall filters network traffic.",
+"key": "Secure Boot blocks unsigned boot code, defeating boot-sector malware and rootkits.",
+"kw": [
+[
+"secure boot"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "At an airport gate, a stranger standing behind an employee watches them type their VPN password on their laptop. Which attack is this?",
+"c": [
+"Evil twin",
+"Tailgating",
+"Impersonation",
+"Shoulder surfing"
+],
+"a": 3,
+"why": "Shoulder surfing means watching someone's screen or keystrokes, in person or through a camera. Privacy filters and awareness of your surroundings help prevent it. Tailgating means following someone through a secured door, impersonation means pretending to be someone else, and an evil twin is a fake access point.",
+"key": "Watching a screen or keyboard is shoulder surfing; defend with privacy filters.",
+"kw": [
+[
+"shoulder"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "An attacker found printed customer lists and an old org chart by searching the office's outdoor recycling bin. Which control BEST prevents this?",
+"c": [
+"Shred sensitive documents before disposal",
+"Install privacy filters on monitors",
+"Add an access control vestibule",
+"Run anti-phishing training"
+],
+"a": 0,
+"why": "This is dumpster diving: getting information from trash. Shredding (or burning) documents removes what the attacker is looking for. Privacy filters stop shoulder surfing, vestibules stop tailgating, and phishing training targets email attacks.",
+"key": "Dumpster diving is defeated by shredding.",
+"kw": [
+[
+"shred"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "A man in a delivery uniform tells the receptionist he's from the copier vendor and needs to get into the server room to 'service the network scanner.' No visit was scheduled. Which attack is this?",
+"c": [
+"Whaling",
+"Tailgating",
+"Impersonation",
+"Shoulder surfing"
+],
+"a": 2,
+"why": "Pretending to be a trusted person, such as a vendor, help-desk worker or executive, to get access is impersonation. Verify such requests with a known contact. He isn't following anyone through a door (tailgating), whaling is phishing aimed at executives, and he isn't watching anyone's screen.",
+"key": "Pretending to be a vendor or tech to gain access is impersonation; verify through a known contact.",
+"kw": [
+[
+"impersonat",
+"pretext"
+]
+]
+},
+{
+"d": 2,
+"o": "2.5",
+"q": "Sign-in logs for one account show attempts with aaaa1, aaaa2, aaaa3 and so on, working through every possible character combination. Which attack is this, and what slows it down online?",
+"c": [
+"Dictionary; requiring a password manager",
+"Dictionary; account lockout after failed attempts",
+"Brute force; disabling the Guest account",
+"Brute force; account lockout after failed attempts"
+],
+"a": 3,
+"why": "Trying every combination is a brute-force attack. Locking the account after a set number of failed attempts (and requiring long, complex passwords) defeats it online. A dictionary attack tries words from a list, and disabling Guest doesn't protect this account.",
+"key": "Every combination = brute force; account lockout stops online brute force.",
+"kw": [
+[
+"brute"
+]
+]
+},
+{
+"d": 2,
+"o": "2.7",
+"q": "A user is forced to change their password every 90 days. When they try to set it back to the previous password, Windows rejects it. Which policy setting causes this?",
+"c": [
+"Password must meet complexity requirements",
+"Enforce password history",
+"Account lockout threshold",
+"Minimum password length"
+],
+"a": 1,
+"why": "Enforcing password history makes Windows remember previous passwords and reject them, so users can't cycle back to an old one after it expires. Complexity controls character types, lockout counts failed sign-ins, and minimum length sets how many characters are needed.",
+"key": "Password history blocks reuse; expiration forces the change.",
+"kw": [
+[
+"history"
+]
+]
+},
+{
+"d": 2,
+"o": "2.7",
+"q": "A kiosk PC in a public area must not start at all unless someone enters a password, before any operating system loads. What should you configure?",
+"c": [
+"A password-protected screensaver",
+"A BIOS/UEFI supervisor password",
+"A BIOS/UEFI user (power-on) password",
+"UEFI Secure Boot"
+],
+"a": 2,
+"why": "A BIOS/UEFI user password must be entered before the system boots. A supervisor (administrator) password only stops changes to firmware settings, a screensaver lock works after Windows is running, and Secure Boot checks boot code signatures.",
+"key": "BIOS/UEFI user password = prevents booting; supervisor password = prevents setting changes.",
+"kw": [
+[
+"user",
+"power-on",
+"power on",
+"boot"
+],
+[
+"bios",
+"uefi"
+]
+]
+},
+{
+"d": 2,
+"o": "2.7",
+"q": "An audit finds the built-in Guest account enabled on several workstations, so anyone can sign in without a password. What's the BEST fix?",
+"c": [
+"Disable the Guest account",
+"Rename the Guest account",
+"Add Guest to the Users group",
+"Set Guest's password to never expire"
+],
+"a": 0,
+"why": "Best practice is to disable unnecessary accounts, starting with Guest. Renaming it leaves it usable, adding it to Users gives it more rights, and a never-expiring password is irrelevant when the account is open to anyone.",
+"key": "Disable the Guest account and any other unnecessary accounts.",
+"kw": [
+[
+"disable"
+],
+[
+"guest"
+]
+]
+},
+{
+"d": 2,
+"o": "2.10",
+"q": "A small office's router and switch sit on the open reception desk, where visitors could press the reset button or plug in cables. What is the BEST fix?",
+"c": [
+"Disable SSID broadcast",
+"Move them to a locked closet or secured room",
+"Change the default admin password",
+"Enable UPnP for automatic setup"
+],
+"a": 1,
+"why": "Physical access beats most other protections. Anyone can factory-reset or cable into an exposed router. Placing network gear in a secured location prevents that. Hiding the SSID and changing the admin password don't stop a physical reset, and UPnP lowers security.",
+"key": "Secure SOHO network gear physically, in a locked location.",
+"kw": [
+[
+"lock",
+"secure",
+"closet"
+]
+]
+},
+{
+"d": 2,
+"o": "2.10",
+"q": "A visitor plugged a laptop into a live Ethernet wall jack in an empty conference room and got a network address. What should be done to prevent this?",
+"c": [
+"Create a guest Wi-Fi network",
+"Change the default SSID",
+"Enable WPA3 on the access points",
+"Administratively disable unused switch ports"
+],
+"a": 3,
+"why": "Unused wired ports should be disabled at the switch. Alternatively, NAC/802.1X can require authentication before a port passes traffic. SSID, WPA3 and guest Wi-Fi settings only affect wireless clients.",
+"key": "Disable unused physical ports (or require NAC/802.1X).",
+"kw": [
+[
+"disable",
+"shut"
+],
+[
+"port"
+]
+]
+},
+{
+"d": 2,
+"o": "2.11",
+"q": "A vendor's billing portal opens each invoice in a new window, but the browser blocks it. Other sites should stay protected. What's the BEST fix?",
+"c": [
+"Allow pop-ups for that portal's site only",
+"Turn off the pop-up blocker for all sites",
+"Clear the browser cache and cookies",
+"Open the portal in private browsing mode"
+],
+"a": 0,
+"why": "Pop-up blockers have per-site allow lists, so you can allow only the trusted site and keep blocking everywhere else. Turning the blocker off for all sites exposes users. Clearing the cache and private mode don't change pop-up settings.",
+"key": "Add the trusted site to the pop-up blocker's allow list.",
+"kw": [
+[
+"allow",
+"exception"
+],
+[
+"pop"
+]
+]
+},
+{
+"d": 2,
+"o": "2.11",
+"q": "A user wants their Edge favorites, saved passwords and browsing history to show up automatically on a new laptop and their phone. What should they do?",
+"c": [
+"Use InPrivate browsing on each device",
+"Export favorites to an HTML file monthly",
+"Sign in to the browser and turn on sync",
+"Clear browsing data before switching devices"
+],
+"a": 2,
+"why": "Browser data synchronization copies favorites, passwords, history and settings to every device signed in to the same browser account. Exporting is manual and covers only favorites, InPrivate doesn't save data, and clearing data deletes it.",
+"key": "Sign in to the browser to sync data across devices.",
+"kw": [
+[
+"sync"
+]
+]
+},
+{
+"d": 3,
+"o": "3.3",
+"q": "A user's phone has become laggy and slow to respond to taps. There are no extra ads, data use is normal, and no new apps were installed. What should you try FIRST?",
+"c": [
+"Root the phone to remove system apps",
+"Factory reset the device",
+"Replace the battery",
+"Restart the device"
+],
+"a": 3,
+"why": "For degraded response time, start with a restart, then check for OS and app updates and close apps you aren't using. A factory reset is the last resort, the battery isn't implicated, and rooting adds security risk.",
+"key": "Sluggish phone: restart, update, close apps; factory reset is the last resort.",
+"kw": [
+[
+"restart",
+"reboot"
+]
+]
+},
+{
+"d": 3,
+"o": "3.4",
+"q": "A Windows 11 user gets constant pop-up notifications from a shopping app but still wants Outlook and Teams notifications. Where do you fix this?",
+"c": [
+"Turn on Do not disturb permanently",
+"Settings > System > Notifications: turn off that app",
+"Settings > Privacy & security > General",
+"Uninstall Outlook and reinstall it"
+],
+"a": 1,
+"why": "Windows lets you turn notifications on or off for each app under Settings > System > Notifications. Do not disturb silences every app, the Privacy & security > General page controls ad and tracking settings, and reinstalling Outlook won't affect another app's notifications.",
+"key": "Control unwanted OS notifications per app in Settings > System > Notifications.",
+"kw": [
+[
+"notification"
+]
+]
+},
+{
+"d": 4,
+"o": "4.1",
+"q": "An employee requests a new laptop. The process includes budget approval, negotiating with the supplier, placing the order, and paying the invoice. What is this process called?",
+"c": [
+"Change management",
+"Asset tagging",
+"Procurement life cycle",
+"On-boarding"
+],
+"a": 2,
+"why": "Procurement is the purchasing process: the request (with budget and approvals), supplier negotiation, purchase, invoice and payment. Asset tagging happens once the device arrives, change management controls changes to systems, and on-boarding brings new people in.",
+"key": "Request > approve > negotiate > purchase > invoice > pay is the procurement life cycle.",
+"kw": [
+[
+"procure",
+"purchas"
+]
+]
+},
+{
+"d": 4,
+"o": "4.1",
+"q": "IT wants every tech to install the company's custom accounting package with the same exact steps, settings and tests, every time. Which document should they write?",
+"c": [
+"Standard operating procedure (SOP)",
+"Acceptable use policy (AUP)",
+"Service level agreement (SLA)",
+"Incident report"
+],
+"a": 0,
+"why": "SOPs give the step-by-step method for a routine task, such as the custom installation of a software package. An AUP defines what users may do, an SLA sets service terms, and an incident report documents a specific event.",
+"key": "Step-by-step instructions for a repeatable task belong in an SOP.",
+"kw": [
+[
+"sop",
+"standard operating"
+]
+]
+},
+{
+"d": 4,
+"o": "4.1",
+"q": "A phishing incident has been contained. Management wants a record of what happened, how it was handled, and what was learned, to refer to during future incidents. Which document is this?",
+"c": [
+"Standard operating procedure",
+"Incident report",
+"Rollback plan",
+"Service level agreement"
+],
+"a": 1,
+"why": "Incident reports (incident documentation) record the details of a security event and how it was handled, and become a reference for future incidents. SOPs describe routine tasks, a rollback plan undoes a change, and an SLA sets service terms.",
+"key": "Document security events in an incident report for future reference.",
+"kw": [
+[
+"incident"
+]
+]
+},
+{
+"d": 4,
+"o": "4.2",
+"q": "In a change request for a new HR system, which responsible party's budget pays for the change and is accountable for it?",
+"c": [
+"The change advisory board",
+"The business customer (end users)",
+"The IT team implementing it",
+"The organization sponsor"
+],
+"a": 3,
+"why": "The organization sponsor owns the budget (or the profit) behind the change. The business customer uses the technology, the IT team implements it, and the CAB reviews risk and approves or rejects the change.",
+"key": "Sponsor = budget owner; business customer = user; IT = implementer; CAB = approver.",
+"kw": [
+[
+"sponsor"
+]
+]
+},
+{
+"d": 4,
+"o": "4.6",
+"q": "A team wants software whose source code they can freely inspect, modify and compile themselves. Which license type should they look for?",
+"c": [
+"Open-source (FOSS) license",
+"Personal-use license",
+"Corporate site license",
+"Perpetual commercial license"
+],
+"a": 0,
+"why": "Free and open-source software makes its source code available, so users can modify it and compile their own executables. Personal, corporate and commercial licenses cover how compiled, closed-source software may be used.",
+"key": "Open source (FOSS) = source code available to read, change and compile.",
+"kw": [
+[
+"open source",
+"open-source",
+"foss"
+]
+]
+},
+{
+"d": 4,
+"o": "4.6",
+"q": "Legal says certain financial emails must be kept for seven years. IT is about to delete departed employees' mailboxes after one year to save space. Which requirement is at risk?",
+"c": [
+"Acceptable use policy",
+"Chain of custody",
+"Data retention requirements",
+"Digital rights management"
+],
+"a": 2,
+"why": "Data retention requirements, often set by law, define how long specific data types must be kept. Deleting the mailboxes early could break them. Chain of custody tracks evidence handling, an AUP covers acceptable use, and DRM controls how content is used.",
+"key": "Check data retention requirements before deleting data.",
+"kw": [
+[
+"retention",
+"retain"
+]
+]
+},
+{
+"d": 4,
+"o": "4.7",
+"q": "You're explaining a network outage to a non-technical office manager. Which approach is MOST professional?",
+"c": [
+"Refer them to the vendor's technical documentation",
+"Use precise terms like VLAN and DHCP to sound credible",
+"Email them the raw firewall logs instead",
+"Use plain language and avoid acronyms and jargon"
+],
+"a": 3,
+"why": "Avoid jargon, acronyms and slang, and explain things in terms the listener understands, because they make decisions based on what you say. Technical terms, raw logs and vendor documents won't help a non-technical listener.",
+"key": "Speak in plain language: avoid jargon and acronyms.",
+"kw": [
+[
+"jargon",
+"acronym",
+"plain"
+]
+]
+},
+{
+"d": 4,
+"o": "4.7",
+"q": "After a difficult on-site call, a technician wants to post the story on their personal social media without naming the customer. What should they do?",
+"c": [
+"Post it, as long as the company isn't named",
+"Don't post it, even without names",
+"Post it only after the ticket is closed",
+"Post it in a private group of IT friends"
+],
+"a": 1,
+"why": "Never discuss customer experiences on social media, even without names. Details can identify the customer and break confidentiality and professionalism. Closing the ticket or keeping the group private doesn't change that.",
+"key": "Never take customer situations to social media.",
+"kw": [
+[
+"not",
+"don't",
+"never"
+]
+]
+},
+{
+"d": 4,
+"o": "4.8",
+"q": "A web team needs a script that runs in the visitor's browser to check that a form is filled in correctly before it's submitted. Which scripting language fits?",
+"c": [
+"Bash (.sh)",
+"PowerShell (.ps1)",
+"JavaScript (.js)",
+"Batch (.bat)"
+],
+"a": 2,
+"why": "JavaScript runs in the browser and adds interactivity to HTML/CSS pages. PowerShell and batch files automate Windows, and Bash automates the Linux/Unix shell. None of those run in a web page.",
+"key": "Browser-side scripting is JavaScript (.js); JavaScript isn't Java.",
+"kw": [
+[
+"javascript",
+".js",
+"js"
+]
+]
+},
+{
+"d": 4,
+"o": "4.9",
+"q": "A designer must send a client a 20 GB video project, which is far too big for email. Which category of third-party remote tool fits BEST?",
+"c": [
+"File transfer / cloud file-sharing software",
+"Screen-sharing software",
+"Video-conferencing software",
+"Desktop management software"
+],
+"a": 0,
+"why": "File transfer tools (such as Dropbox, Box or Google Drive) store large files and share them by link. Screen-sharing shows a desktop, video conferencing hosts meetings, and desktop management controls endpoints.",
+"key": "Large file exchange = file transfer/cloud storage tools.",
+"kw": [
+[
+"file"
+],
+[
+"transfer",
+"shar"
+]
+]
+}
+]);
+
 </script>
 <script>
 (() => {
@@ -3564,7 +4598,7 @@ function finishTyped() {
 /* ================= STATS ================= */
 function renderStats() {
   const v = $("#view-stats"), it = Object.values(stats.items);
-  if (!it.length && !stats.exams.length) { v.innerHTML = `<div class="panel empty">No attempts recorded yet. Answer a few flashcards, commands, labs or exam questions and your accuracy by domain and objective will show up here (saved in this browser only).</div>` + achHTML() + syncPanelHTML(); wireSync(); return; }
+  if (!it.length && !stats.exams.length) { v.innerHTML = `<div class="panel empty">No attempts recorded yet. Answer a few flashcards, commands, labs or exam questions and your accuracy by domain and objective will show up here (saved in this browser only).</div>` + cramPanelHTML() + achHTML() + syncPanelHTML(); wireSync(); wireCram(); return; }
   const agg = (f) => it.filter(f).reduce((a, x) => (a.r += x.r, a.n += x.r + x.w, a), { r: 0, n: 0 });
   const cell = a => a.n ? `${Math.round(100 * a.r / a.n)}% <span class="note">(${a.n})</span>` : `<span class="note">–</span>`;
   const rows = [1, 2, 3, 4].map(d => {
@@ -3578,8 +4612,8 @@ function renderStats() {
     ${trendHTML()}${flagsHTML()}
     <div class="panel"><h3>Weakest objectives</h3>${weak.length ? `<div class="tbl" style="margin-top:10px"><table><thead><tr><th>Objective</th><th>Accuracy</th><th>Attempts</th></tr></thead><tbody>${weak.map(o => `<tr><td><span class="tag"><span class="dd d${o.d}">${o.d}.0</span> ${esc(o.o)}</span></td><td class="num">${Math.round(100 * o.r / o.n)}%</td><td class="num">${o.n}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Needs at least 3 attempts on an objective.</p>`}</div>
     ${stats.exams.length ? `<div class="panel"><h3>Exam history</h3><ul style="margin:8px 0 0;padding-left:18px">${stats.exams.slice(-8).reverse().map(e => `<li><span class="mono note">${new Date(e.t).toLocaleDateString()}</span> ${esc(cleanLabel(e.label))}</li>`).join("")}</ul></div>` : ""}
-    ${achHTML()}${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
-  wireSync();
+    ${cramPanelHTML()}${achHTML()}${syncPanelHTML()}<div class="row" id="resetrow"><button class="btn ghost" id="reset">Reset progress</button></div>`;
+  wireSync(); wireCram();
   $("#reset").onclick = () => {
     $("#resetrow").innerHTML = `<span class="confirm"><span class="note">Erase all saved progress in this browser?</span><button class="btn" id="resetyes">Erase</button><button class="btn ghost" id="resetno">Cancel</button></span>`;
     $("#resetyes").onclick = () => { stats = { items: {}, exams: [] }; store.set("stats", stats); srs = {}; store.set("srs", srs); mast = {}; store.set("mast", {}); store.set("qlog", []); store.set("pbqbest", {}); store.set("scbest", {}); hype = Object.assign(H0(), { on: hype.on, sound: hype.sound }); saveHype(); ["ach", "daily", "bosswins", "acrobest", "simdone", "gendone", "cleared"].forEach(k => store.set(k, k === "ach" || k === "daily" || k === "bosswins" ? {} : 0)); store.set("bench", []); store.set("zdays", []); store.set("zbest", 0); paintHud(); paintBadges(); renderStats(); };
@@ -4054,7 +5088,7 @@ const STUDY_TIPS = [
   { t: "Short and daily beats long and rare.", d: "20–40 minutes every day outlasts a 3-hour Sunday cram. Keep the daily streak going even on busy days." },
   { t: "Read the explanation even when you're right.", d: "Lucky guesses hide gaps. Ten seconds on the why confirms you actually knew it." },
   { t: "Mine your mistakes.", d: "The Missed tab is your highest-value study list. Each miss tells you exactly what the exam can still catch you on." },
-  { t: "Take real breaks.", d: "Short, regular breaks keep you fresh over a long session. The Pomodoro timer (20 minutes on, 5 off) paces you. Get up during breaks, look away from screens and stretch." },
+  { t: "Take real breaks.", d: "Short, regular breaks keep you fresh over a long session. The timer button in the header (20 minutes on, 5 off) paces you, a shorter take on the classic 25/5 Pomodoro. Get up during breaks, look away from screens and stretch." },
   { t: "Sleep on it.", d: "Your brain locks in what you studied while you sleep. A good night beats a late-night cram, especially before the exam." },
   { t: "Make it yours.", d: "Tie a concept to something real: the last time you reset a password, mapped a drive or cleaned malware at work. Personal links are easier to recall." },
   { t: "Use a memory hook for ordered lists.", d: "Group the steps into a few memorable phases. For example, the 10 malware removal steps as five phases: find it (investigate), fence it (quarantine), freeze restore (disable System Restore in Windows Home), fix it (remediate → update anti-malware → scan/remove → reimage), then protect and teach (schedule scans and updates, re-enable System Restore and create a restore point, educate the user)." },
@@ -4141,6 +5175,7 @@ function renderToday() {
   v.innerHTML = `<div class="panel"><div class="bar"><h2 style="margin-right:auto">Today</h2>${zdChip()}<span class="note">${new Date(nowMs()).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</span></div>
       <ol class="plan">${plan.map(p => `<li class="${p.done ? "done" : ""}"><div><b>${esc(p.t)}</b><br><span class="note">${esc(p.s)}</span></div>${p.b ? `<button class="btn${p.id === "pdue" || p.id === "pres" ? "" : " ghost"} sm" id="${p.id}" type="button">${p.b} →</button>` : ""}</li>`).join("")}</ol>
       ${tipHTML()}</div>
+    ${examDateHTML()}
     <div class="panel"><div class="bar"><h3 style="margin-right:auto">Exam readiness</h3><span class="big" style="font-size:2.2rem">${Math.round(R.all * 100)}%</span></div>
       <p class="note" style="margin:4px 0 10px">An estimate from cards retained, exam accuracy and labs, weighted by domain.</p>
       <div class="tbl"><table class="rdt"><thead><tr><th>Domain</th><th>Cards retained</th><th class="rdcol">Exam Qs</th><th class="rdcol">Labs</th><th style="width:26%">Readiness</th></tr></thead><tbody>
@@ -4168,6 +5203,7 @@ function renderToday() {
         <li><b>Logistics:</b> bring a valid government ID. For online proctoring, start check-in about 30 minutes early with a clear desk and a tested webcam.</li>
       </ul></details>`;
   wireHall();
+  wireExamDate();
   const go = (id, fn) => { const b = $("#" + id); if (b) b.onclick = () => { if (planLast.some(p => p.id === id && p.b)) planCur = id; fn(); paintPlanBar(); }; };
   go("pdue", () => { startDeck(todayRev, "Today", "review", "today"); rv.planId = "pdue"; });
   go("pdaily", startDaily);
@@ -4200,7 +5236,7 @@ function renderToday() {
 
 /* ================= PROGRESS SYNC (export / import) ================= */
 const BENCH_SRC = ["Professor Messer practice exam", "Jason Dion practice exam", "CompTIA CertMaster Practice", "Mike Meyers / Total Seminars", "Other"];
-const SYNC_KEYS = ["mast", "qlog", "zdays", "zbest", "bench", "hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
+const SYNC_KEYS = ["examdate", "mast", "qlog", "zdays", "zbest", "bench", "hype", "ach", "daily", "bosswins", "bosstries", "acrobest", "gen", "gendone", "simdone", "stats", "srs", "pbqbest", "scbest", "cleared", "domains", "fcmode", "cpsh", "exlen", "exmode", "extimed"];
 function syncPanelHTML() {
   const lb = store.get("lastbak", 0) || 0;
   return `<div class="panel" id="syncpanel"><h3>Back up and move your progress</h3><p class="note" style="margin:6px 0 10px">Progress is saved only in this browser, so clearing browser data wipes it. Save a backup file (or code) every week. Use the same file or code to move progress to another device. Restoring replaces the progress on that device.</p>
@@ -5330,11 +6366,12 @@ function mastStart() {
   Object.assign(ms, { on: true, done: false, queue: mastPick(), i: 0, sel: null, checked: false, first: {}, requeued: 0, flagsBefore: weakFlags().objs.map(f => f.o), newFlags: [], rd0: readiness().all });
   ex.mode = "mastery"; store.set("exmode", "mastery"); renderExam(); window.scrollTo({ top: 0 });
 }
-function mastAnswer(q, ok) {
+function mastAnswer(q, ok, guessed) {
   if (ms.first[q.k] === undefined) { // only the first try in a round counts
     ms.first[q.k] = ok;
     const m = mast[q.k];
-    if (ok) { if (!m) mast[q.k] = { need: 0, seen: 1, miss: 0 }; else { m.seen++; if (m.need > 0) m.need--; } }
+    if (ok && guessed) { if (!m) mast[q.k] = { need: 1, seen: 1, miss: 0, g: 1 }; else { m.seen++; m.need = Math.max(m.need, 1); m.g = (m.g || 0) + 1; } } // a lucky guess isn't mastery
+    else if (ok) { if (!m) mast[q.k] = { need: 0, seen: 1, miss: 0 }; else { m.seen++; if (m.need > 0) m.need--; } }
     else mast[q.k] = { need: 2, seen: (m ? m.seen : 0) + 1, miss: (m ? m.miss : 0) + 1 };
     store.set("mast", mast);
     record("e:" + q.k, q.d, q.o, ok, "exam");
@@ -5359,8 +6396,8 @@ function masteryRun(v) {
       <p class="prompt" style="margin:10px 0 12px">${esc(q.q)}</p>
       ${multi ? `<p class="note" style="margin:-6px 0 10px"><b>Choose ${q.a.length}.</b> ${(sel || []).length}/${q.a.length} selected</p>` : ""}
       <div class="opts">${q.c.map((o, i) => `<button class="opt${optCls(i)}${multi ? " multi" : ""}" type="button" data-i="${i}" aria-pressed="${multi ? (sel || []).includes(i) : sel === i}" ${ms.checked ? "disabled" : ""}><span class="bub">${LET[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
-      ${ms.checked ? `<div class="fb ${ok ? "good" : "bad"}" style="margin-top:12px"><b class="v">${ok ? "Correct" : "Not quite"}</b>${ok ? "" : `Answer: <b>${esc(keyText(q))}</b><br>`}${esc(q.why)}${ok ? "" : `<br><span class="note">This one comes back in a few questions. Get it right to clear it.</span>`}</div>` : ""}
-      <div class="row">${ms.checked ? `<button class="btn" id="msnext" type="button">${ms.i + 1 < ms.queue.length ? "Next →" : "Finish round →"}</button>` : `<button class="btn" id="mscheck" type="button" ${(multi ? (sel || []).length === q.a.length : sel !== null) ? "" : "disabled"}>Check answer</button>`}
+      ${ms.checked ? `<div class="fb ${ok ? "good" : "bad"}" style="margin-top:12px"><b class="v">${ok ? "Correct" : "Not quite"}</b>${ok ? "" : `Answer: <b>${esc(keyText(q))}</b><br>`}${esc(q.why)}${ok ? (ms.wasGuess ? `<br><span class="note">Right, but you guessed, so it isn't mastered yet. It comes back next round so you can prove you know it.</span>` : "") : `<br><span class="note">This one comes back in a few questions. Get it right to clear it.</span>`}</div>` : ""}
+      <div class="row">${ms.checked ? `<button class="btn" id="msnext" type="button">${ms.i + 1 < ms.queue.length ? "Next →" : "Finish round →"}</button>` : `<button class="btn" id="mscheck" type="button" ${(multi ? (sel || []).length === q.a.length : sel !== null) ? "" : "disabled"}>Check answer</button><button class="btn ghost sm guessbtn${ms.guess ? " on" : ""}" id="msguess" type="button" aria-pressed="${!!ms.guess}" title="Right answers you guessed come back next round instead of counting as mastered">🤔 ${ms.guess ? "Guessing ✓" : "I'm guessing"}</button>`}
         <button class="btn ghost" id="msend" type="button" style="margin-left:auto">End round</button></div></div>`;
   v.querySelectorAll(".opt").forEach(b => b.onclick = () => {
     const i = +b.dataset.i;
@@ -5368,8 +6405,9 @@ function masteryRun(v) {
     else ms.sel = i;
     renderExam();
   });
-  if ($("#mscheck")) $("#mscheck").onclick = () => { ms.checked = true; mastAnswer(q, isRight(q, ms.sel)); renderExam(); };
-  if ($("#msnext")) $("#msnext").onclick = () => { ms.i++; ms.sel = null; ms.checked = false; if (ms.i >= ms.queue.length) mastFinish(); renderExam(); window.scrollTo({ top: 0 }); };
+  if ($("#mscheck")) $("#mscheck").onclick = () => { ms.checked = true; ms.wasGuess = ms.guess && ms.first[q.k] === undefined; mastAnswer(q, isRight(q, ms.sel), ms.guess); renderExam(); };
+  if ($("#msguess")) $("#msguess").onclick = () => { ms.guess = !ms.guess; renderExam(); };
+  if ($("#msnext")) $("#msnext").onclick = () => { ms.i++; ms.sel = null; ms.checked = false; ms.guess = false; ms.wasGuess = false; if (ms.i >= ms.queue.length) mastFinish(); renderExam(); window.scrollTo({ top: 0 }); };
   $("#msend").onclick = () => { mastFinish(); renderExam(); window.scrollTo({ top: 0 }); };
 }
 function mastFinish() {
@@ -5489,8 +6527,89 @@ if (location.protocol === "https:" && !/(^|\.)(claude\.ai|claudeusercontent\.com
   add("link", { rel: "manifest", href: "manifest.webmanifest" }); add("link", { rel: "apple-touch-icon", href: "icon-192.png" }); add("meta", { name: "theme-color", content: "#1d47c9" });
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => { });
 }
+
+/* ================= ROUND 7: exam-date countdown · cram sheet ================= */
+/* ---------- exam date countdown + pace (Today) ---------- */
+function examDays() {
+  const s = store.get("examdate", ""); if (!/^\d{4}-\d{2}-\d{2}$/.test(s || "")) return null;
+  const [y, m, d] = s.split("-").map(Number), t = new Date(y, m - 1, d).getTime(), today = sod(nowMs());
+  return { s, t, days: Math.round((t - today) / 864e5) };
+}
+function examDateHTML() {
+  const E = examDays(), R = readiness();
+  if (!E || examDateEdit) return `<div class="panel" id="xdpanel"><div class="bar"><h3 style="margin:0;margin-right:auto">📅 ${E ? "Change your exam date" : "Booked your exam?"}</h3></div>
+    <p class="note" style="margin:4px 0 8px">Set the date for a countdown and a daily pace that gets you through every question in time.</p>
+    <div class="row" style="margin:0"><label class="sr-only" for="xdin">Exam date</label><input type="date" id="xdin" class="xdin" min="${(d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`)(new Date(nowMs()))}" value="${E ? E.s : ""}">
+    <button class="btn sm" id="xdset" type="button">Save date</button>${E ? `<button class="btn ghost sm" id="xdcancel" type="button">Cancel</button>` : ""}</div><p class="note" id="xdmsg" style="margin:6px 0 0"></p></div>`;
+  const when = new Date(E.t).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  if (E.days < 0) return `<div class="panel" id="xdpanel"><div class="bar"><h3 style="margin:0;margin-right:auto">📅 Exam date passed (${esc(when)})</h3><button class="btn ghost sm" id="xdedit" type="button">Update</button><button class="btn ghost sm" id="xdclear" type="button">Clear</button></div>
+    <p class="note" style="margin:4px 0 0">Passed? Congrats! Rescheduled? Set the new date.</p></div>`;
+  const live = EXAM.map((q, k) => k).filter(k => !EXAM[k].off), left = live.filter(k => !(mast[k] && mast[k].need === 0)).length;
+  const studyDays = Math.max(1, E.days - 2), perDay = Math.ceil(left / studyDays), ready = R.all >= 0.85;
+  const msg = E.days === 0 ? "It's exam day. Skip new material: do a light review, eat, and arrive early. You've got this."
+    : E.days <= 2 ? "Final days: due reviews, your Missed list and the cram sheet. No new material, and get a full night's sleep."
+    : left ? `To see every question in Mastery mode by then: about <b>${perDay} a day</b> (${left} not mastered yet; this leaves the last 2 days for review).`
+    : "Every question is mastered. Keep reviews going and take one full simulation a few days out.";
+  return `<div class="panel xdcount" id="xdpanel"><div class="bar"><h3 style="margin:0;margin-right:auto">📅 ${E.days === 0 ? "Exam day!" : `${E.days} day${E.days === 1 ? "" : "s"} to your exam`} <span class="note">· ${esc(when)}</span></h3><button class="btn ghost sm" id="xdedit" type="button">Change</button></div>
+    <p style="margin:6px 0 0">${msg}</p>
+    <p class="note" style="margin:6px 0 0">Readiness ${Math.round(R.all * 100)}% ${ready ? "✓ at or above the 85% target" : `· target 85% before exam day${E.days <= 7 && E.days > 0 ? ". If you're well short with a week to go, consider rescheduling. CompTIA lets you reschedule a test-center exam up to 24 hours before, and an online exam up to its start time" : ""}`}.</p></div>`;
+}
+let examDateEdit = false;
+function wireExamDate() {
+  const rer = () => { const p = $("#xdpanel"); if (p) { p.outerHTML = examDateHTML(); wireExamDate(); } };
+  if ($("#xdset")) $("#xdset").onclick = () => {
+    const v = $("#xdin").value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { $("#xdmsg").textContent = "Pick a date first."; return; }
+    store.set("examdate", v); examDateEdit = false; rer();
+  };
+  if ($("#xdcancel")) $("#xdcancel").onclick = () => { examDateEdit = false; rer(); };
+  if ($("#xdedit")) $("#xdedit").onclick = () => { examDateEdit = true; rer(); };
+  if ($("#xdclear")) $("#xdclear").onclick = () => { store.set("examdate", ""); examDateEdit = false; rer(); };
+}
+
+/* ---------- final-week cram sheet (Progress) ---------- */
+function cramWeakObjs() {
+  const set = new Set(weakFlags().objs.map(f => f.o)), byO = {};
+  Object.entries(stats.items).forEach(([k, x]) => { const o = byO[x.o] || (byO[x.o] = { r: 0, n: 0 }); o.r += x.r; o.n += x.r + x.w; });
+  Object.entries(byO).forEach(([o, x]) => { if (x.n >= 3 && x.r / x.n < 0.8) set.add(o); });
+  return set;
+}
+function cramCards(mode) {
+  if (mode !== "weak") return CARDS.slice();
+  const objs = cramWeakObjs();
+  return CARDS.filter(c => objs.has(c.o) || (srs["c:" + c.t] && srs["c:" + c.t].miss));
+}
+function cramPanelHTML() {
+  const n = cramCards("weak").length;
+  return `<div class="panel"><h3 style="margin:0 0 4px">📄 Final-week cram sheet</h3>
+    <p class="note" style="margin:0 0 8px">Every flashcard on one page, grouped by objective and ready to print or skim. "My weak spots" keeps only flagged objectives, objectives under 80%, and cards you've missed.</p>
+    <div class="row" style="margin:0"><button class="btn sm" id="cramall" type="button">All objectives (${CARDS.length} cards)</button><button class="btn ghost sm" id="cramweak" type="button" ${n ? "" : "disabled"}>My weak spots (${n})</button></div></div>`;
+}
+function openCram(mode) {
+  const cards = cramCards(mode), byO = {};
+  cards.forEach(c => (byO[c.o] = byO[c.o] || []).push(c));
+  const objs = Object.keys(byO).sort((a, b) => { const [x1, y1] = a.split(".").map(Number), [x2, y2] = b.split(".").map(Number); return x1 - x2 || y1 - y2; });
+  let el = $("#cram"); if (!el) { el = document.createElement("div"); el.id = "cram"; document.body.appendChild(el); }
+  el.className = "cram"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Cram sheet");
+  el.innerHTML = `<div class="cramhead"><h2 style="margin:0;margin-right:auto">Core 2 cram sheet${mode === "weak" ? ": my weak spots" : ""}</h2>
+      <button class="btn sm" id="cramprint" type="button">Print</button><button class="btn ghost sm" id="cramclose" type="button">Close</button></div>
+    <p class="note cramsub">${cards.length} cards · ${objs.length} objectives · CompTIA A+ 220-1202 · v23</p>
+    ${[1, 2, 3, 4].map(d => { const os = objs.filter(o => o.startsWith(d + ".")); if (!os.length) return "";
+      return `<section class="cramdom"><h3><span class="tag"><span class="dd d${d}">${d}.0</span></span> ${esc(DOMAINS[d].name)} <span class="note">(${DOMAINS[d].w}% of the exam)</span></h3>
+        ${os.map(o => `<div class="cramobj"><h4>${esc(o)} ${esc(OBJ_TITLES[o] || "")}</h4><dl>${byO[o].map(c => `<dt>${esc(c.t)}</dt><dd>${esc(c.def)}</dd>`).join("")}</dl></div>`).join("")}</section>`; }).join("")}`;
+  document.documentElement.classList.add("cramopen");
+  const esc1 = e => { if (e.key === "Escape") close(); };
+  const close = () => { el.remove(); document.documentElement.classList.remove("cramopen"); document.removeEventListener("keydown", esc1); const b = $("#cramall"); if (b) b.focus(); };
+  $("#cramclose").onclick = close; $("#cramprint").onclick = () => { try { window.print(); } catch (e) { toast("Printing isn't available here. Open the site in your browser to print.", "bad"); } };
+  document.addEventListener("keydown", esc1);
+  $("#cramclose").focus();
+}
+function wireCram() {
+  if ($("#cramall")) $("#cramall").onclick = () => openCram("all");
+  if ($("#cramweak")) $("#cramweak").onclick = () => openCram("weak");
+}
+
 setTab(tab);
 })();
-
 </script>
 </body></html>
